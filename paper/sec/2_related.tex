@@ -5,7 +5,8 @@
 Single-image metric depth has to resolve the focal length, since the same pixels are
 consistent with a wide-angle view of a near scene and a telephoto view of a far one.
 Early work fed the focal length to the network~\cite{he2018focal} or made convolutions
-camera-aware~\cite{facil2019camconvs}. Metric3D~\cite{yin2023metric3d,hu2024metric3dv2}
+camera-aware~\cite{facil2019camconvs}; FS-Depth~\cite{wei2023fsdepth} additionally augments the
+focal lengths of training sets by cropping, with depth labels. Metric3D~\cite{yin2023metric3d,hu2024metric3dv2}
 maps every training image to a canonical camera and needs $K$ at test time;
 Depth Any Camera~\cite{guo2025dac} and ZeroDepth~\cite{guizilini2023zerodepth} likewise
 condition on the camera. A second family predicts the camera from pixels:
@@ -17,6 +18,11 @@ heads of Depth Anything~\cite{yang2024da,yang2024dav2} and ZoeDepth~\cite{bhat20
 Large training mixtures with many cameras~\cite{ma2026metricanything} are meant to make
 camera inference robust. We provide a test of whether it is, and our three groups follow
 this taxonomy.
+
+\paragraph{Depth cues.}
+DepthCues~\cite{danier2025depthcues} probes which monocular cues, among them relative and familiar
+size, large vision models pick up. Our exponent $\alpha$ measures how much a metric depth model leans
+on apparent size in particular, and the zoom--squash ambiguity explains why that cue cannot see a zoom.
 
 \paragraph{Single-image calibration.}
 Perspective Fields~\cite{jin2023perspectivefields} and related methods predict the camera from
@@ -42,6 +48,8 @@ when crop, resize or padding changes the intrinsics but the pipeline passes the 
 and propose a mismatch-aware camera module. Our stale-$K$ experiment with Metric3D v2 is an
 instance of this setting; we include it to place camera-conditioned models next to the other two
 groups on one scale, not as a new finding.
+PlaneDepth~\cite{wang2023planedepth} observes that resize-and-crop augmentation breaks the plane
+geometry assumed by self-supervised depth and corrects the planes for it.
 KPE~\cite{prakash2024kpe} shows that crops introduce a perspective ambiguity in
 object-level 3D inference and adds the crop location as an input. Multi-crop human mesh
 recovery~\cite{nie2024multicrop} enforces camera consistency between crops of one person.
