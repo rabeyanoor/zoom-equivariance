@@ -8,15 +8,16 @@ cd "$(dirname "$0")/.." || exit 1
 USER_K=rabeya100x
 
 done_ok() { kaggle kernels status "$USER_K/zoom-equivariance-$1" 2>&1 | grep -q "COMPLETE"; }
-try_push() { kaggle kernels push -p "kaggle/$1" 2>&1 | tee -a outputs/queue.log | grep -q "successfully pushed"; }
+try_push() { kaggle kernels push -p "kaggle/build/$1" 2>&1 | tee -a logs/local/queue.log | grep -q "successfully pushed"; }
 
-pending="build_audit_b build_eft_baseline build_audit_a2"
+# folders under kaggle/build/ still to push, in order
+pending="${*:-eft_baseline audit_a2}"
 while [ -n "$pending" ]; do
     left=""
     for b in $pending; do
         ready=1
-        [ "$b" = build_eft_baseline ] && ! done_ok eft && ready=0
-        [ "$b" = build_audit_a2 ] && ! done_ok audit-a && ready=0
+        [ "$b" = eft_baseline ] && ! done_ok eft && ready=0
+        [ "$b" = audit_a2 ] && ! done_ok audit-a && ready=0
         if [ $ready = 1 ] && try_push "$b"; then
             echo "pushed $b"
         else

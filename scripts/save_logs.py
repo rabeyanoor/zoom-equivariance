@@ -2,12 +2,11 @@
 
     python scripts/save_logs.py
 
-- Kaggle kernel logs (JSON lines with time stamps) from outputs/kaggle_*/  ->  logs/kaggle/<kernel>.txt
-- local logs (push queue, downloads)                                     ->  logs/local/
+- Kaggle kernel logs (JSON lines with time stamps) from outputs/kaggle/*/  ->  logs/kaggle/<kernel>.txt
+- local logs (push queue, downloads) are written straight to logs/local/ by the scripts
 A log that already exists is never overwritten: a new version gets a numbered name.
 """
 import json
-import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,16 +40,12 @@ def main():
     (LOGS / "kaggle").mkdir(parents=True, exist_ok=True)
     (LOGS / "local").mkdir(parents=True, exist_ok=True)
     n = 0
-    for log in sorted(ROOT.glob("outputs/kaggle_*/*.log")):
+    for log in sorted(ROOT.glob("outputs/kaggle/*/*.log")):
         text = kaggle_to_text(log)
         stem = log.stem
         if same_as_existing(LOGS / "kaggle", stem, text):
             continue
         free_name(LOGS / "kaggle", stem, ".txt").write_text(text)
-        n += 1
-    for log in sorted((ROOT / "outputs").glob("*.log")) + sorted((ROOT / "data").glob("*.log")):
-        dst = LOGS / "local" / log.name
-        shutil.copy(log, dst)
         n += 1
     print(n, "logs saved to", LOGS)
 

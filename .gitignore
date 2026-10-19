@@ -1,8 +1,8 @@
 .venv/
 data/
 third_party/
-kaggle/build*/
-outputs/kaggle_*/
+kaggle/build/
+outputs/kaggle/
 outputs/eft/*.pt
 __pycache__/
 .ipynb_checkpoints/

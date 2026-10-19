@@ -1,8 +1,8 @@
-"""Build a one-file Kaggle kernel: project code (base64) + job list + kaggle/<kind>_main.py.
+"""Build a one-file Kaggle kernel: project code (base64) + job list + kaggle/templates/<kind>_main.py.
 
     python scripts/kaggle_build.py <kaggle-username> audit [smoke|a|b]   (a, b: two halves, 12 h limit)
     python scripts/kaggle_build.py <kaggle-username> eft [smoke]
-    kaggle kernels push -p kaggle/build_<kind>[_smoke]
+    kaggle kernels push -p kaggle/build/<kind>[_<part>]
 """
 import base64
 import json
@@ -55,9 +55,9 @@ files = {str(p.relative_to(ROOT)): base64.b64encode(p.read_bytes()).decode()
                          ROOT / "scripts/scene_stats.py"])}
 
 name = f"zoom-equivariance-{kind}{'-' + part if part and kind != 'stats' else ''}"
-out = ROOT / "kaggle" / f"build_{kind}{'_' + part if part else ''}"
+out = ROOT / "kaggle" / "build" / f"{kind}{'_' + part if part else ''}"
 out.mkdir(parents=True, exist_ok=True)
-body = (ROOT / "kaggle" / f"{'eft' if kind == 'eft' else 'audit'}_main.py").read_text()
+body = (ROOT / "kaggle" / "templates" / f"{'eft' if kind == 'eft' else 'audit'}_main.py").read_text()
 (out / "kernel.py").write_text(f"FILES = {json.dumps(files)}\nJOBS = {json.dumps(JOBS)}\n" + body)
 (out / "kernel-metadata.json").write_text(json.dumps({
     "id": f"{user}/{name}",
