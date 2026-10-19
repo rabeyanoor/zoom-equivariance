@@ -1,0 +1,20 @@
+\section{Limitations and conclusion}
+\label{sec:conclusion}
+
+\paragraph{Limitations.}
+A digital zoom is an exact camera change, but real zoom lenses add distortion and change focus; our
+optical-zoom control isolates detail loss from the camera change but is still a resampled image. For a
+model without camera input, a crop also removes context, so $\alpha=0$ is a target, not a guarantee, on
+every image (\cref{sec:audit}). The label-free score predicts zoom-induced error, not accuracy in general,
+and fails on DIODE-outdoor. EFT+B trades accuracy on unzoomed and unseen images for equivariance in our
+setting; it is a demonstration that the law can train a model, not a drop-in replacement. Stale
+intrinsics in camera-conditioned models are a known deployment problem~\cite{kim2026mismatch}; we only
+place them on the same scale as the other groups.
+
+\paragraph{Conclusion.}
+A crop is the simplest change of camera there is, and its effect is known exactly. Metric depth models
+that do not receive the camera largely ignore it: they read depth from apparent size, which a zoom cannot
+change, and the zoom--squash ambiguity says why. The two exponents make this visible without labels,
+place every model on a common scale, and point to what a correction has to avoid: a model can learn to
+detect a zoom from blur instead of geometry. We hope the audit becomes a routine check for any model that
+claims to output metres.

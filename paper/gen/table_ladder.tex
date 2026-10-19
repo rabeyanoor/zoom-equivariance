@@ -1,0 +1,13 @@
+\begin{table}[t]\centering\small
+\caption{Model ladder: larger variants and newer families. DA3-L and VGGT normalise depth per scene, so only $\beta$ is defined for them.}\label{tab:ladder}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llccc}\toprule
+Model & Group & $\alpha$ & $\beta$ & images \\ \midrule
+DA-V2-S & pixels only & 0.95 & -- & 800 \\
+DA-V2-B & pixels only & 0.85 & -- & 800 \\
+ZoeDepth & pixels only & 0.61 & -- & 800 \\
+Depth Pro & predicts camera & 0.31 & 0.65 & 800 \\
+MoGe-2-S & predicts camera & 0.36 & 0.56 & 800 \\
+UniDepthV2-S & predicts camera & 0.34 & 0.45 & 800 \\
+Metric3D v2-S & takes camera (true K) & -0.07 & -- & 800 \\
+\bottomrule\end{tabular}\end{table}

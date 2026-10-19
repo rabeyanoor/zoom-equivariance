@@ -18,12 +18,19 @@ import pandas as pd
 
 RESULTS = Path(os.environ.get("ZE_RESULTS", Path(__file__).resolve().parents[1] / "outputs" / "results"))
 
-GROUP = {"dav2-s": "pixels only", "dav2-b": "pixels only", "zoedepth": "pixels only",
+GROUP = {"dav2-l": "pixels only", "moge2-b": "predicts camera", "moge2-l": "predicts camera",
+         "unidepth2-b": "predicts camera", "unidepth2-l": "predicts camera", "unik3d-l": "predicts camera",
+         "da3-nested": "predicts camera", "da3-metric-l": "takes camera (true K)", "metric3d-l": "takes camera (true K)",
+         "da3-l": "predicts camera (rel.)", "vggt": "predicts camera (rel.)",
+         "dav2-s": "pixels only", "dav2-b": "pixels only", "zoedepth": "pixels only",
          "depthpro": "predicts camera", "moge2-s": "predicts camera", "unidepth2-s": "predicts camera",
          "metric3d-s": "takes camera (true K)", "metric3d-s-staleK": "takes camera (stale K)",
          "dav2-s-fixed": "pixels only", "dav2-s-eft": "pixels only + EFT",
          "dav2-s-anchor": "pixels only + anchor-only FT", "dav2-s-eftb": "pixels only + EFT+B"}
-PRETTY = {"dav2-s": "DA-V2-S", "dav2-b": "DA-V2-B", "zoedepth": "ZoeDepth", "depthpro": "Depth Pro",
+PRETTY = {"dav2-l": "DA-V2-L", "moge2-b": "MoGe-2-B", "moge2-l": "MoGe-2-L", "unidepth2-b": "UniDepthV2-B",
+          "unidepth2-l": "UniDepthV2-L", "unik3d-l": "UniK3D-L", "da3-nested": "DA3-Nested", "da3-metric-l": "DA3-Metric-L",
+          "metric3d-l": "Metric3D v2-L", "da3-l": "DA3-L", "vggt": "VGGT-1B", "dav2-s-zhong": "DA-V2-S + Zhong et al.-style",
+          "dav2-s": "DA-V2-S", "dav2-b": "DA-V2-B", "zoedepth": "ZoeDepth", "depthpro": "Depth Pro",
           "moge2-s": "MoGe-2-S", "unidepth2-s": "UniDepthV2-S", "metric3d-s": "Metric3D v2-S",
           "metric3d-s-staleK": "Metric3D v2-S (stale K)", "dav2-s-fixed": "DA-V2-S (frozen)",
           "dav2-s-eft": "DA-V2-S + EFT", "dav2-s-anchor": "DA-V2-S + anchor-only FT",

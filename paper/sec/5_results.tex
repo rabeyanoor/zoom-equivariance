@@ -1,0 +1,97 @@
+\section{Results: the zoom audit}
+\label{sec:results}
+
+\newcommand{\maybefig}[1]{\IfFileExists{fig/#1.pdf}{\includegraphics[width=\linewidth]{fig/#1.pdf}}{\fbox{\small figure #1 pending}}}
+
+\begin{figure*}[t]
+  \centering
+  \IfFileExists{fig/teaser.pdf}{\includegraphics[width=0.78\linewidth]{fig/teaser.pdf}}{\fbox{teaser pending}}
+  \caption{The same KITTI and NYUv2 images at $1\times$, $2\times$ and $3\times$ digital zoom. All depth
+  panels of a scene share one colour scale (metres); the number is the median depth of the pixels inside
+  the $3\times$ crop, i.e. the same physical points in every column. Depth Anything V2 moves the scene
+  closer as we zoom in; MoGe-2, which predicts its camera, moves it less; the ground truth does not move.}
+  \label{fig:teaser}
+\end{figure*}
+
+\input{gen/table1}
+
+\paragraph{No image-only model respects the zoom (H1).}
+\Cref{tab:audit} and \cref{fig:curves} summarise \nImages{} images per model. The pixels-only models
+shrink depth almost like $1/s$: $\alpha=\DavTwoSAlpha$ [\DavTwoSAlphaLo, \DavTwoSAlphaHi] for
+DA-V2-S, \DavTwoBAlpha{} for DA-V2-B and \ZoedepthAlpha{} for ZoeDepth. A $3\times$ zoom thus moves a
+scene to about \DavTwoSRatioThree{} of its predicted distance. Models that predict their camera do
+better but are far from equivariant ($\alpha$ between \DepthproAlpha{} and \MogeTwoSAlpha), and their
+focal estimate grows by only \UnidepthTwoSFocalThree--\DepthproFocalThree{} at $3\times$ instead of
+$3$. Metric3D with the correct $K'$ is close to the law ($\alpha=\MetricThreedSAlpha$, a slight
+over-correction), and with the stale $K$ its exponent is $\alpha=\MetricThreedSStaleKAlpha$, larger by
+\staleDiff{} per image as derived in \cref{sec:law}. The zoom costs accuracy accordingly: on the
+same pixels, the AbsRel of DA-V2-S grows from \DavTwoSBaseThree{} unzoomed to \DavTwoSAbsrelThree{}
+at $3\times$. Intervals in \cref{tab:audit} resample whole scenes (\nScenes{} in total); the
+image-level intervals are much narrower and would overstate certainty.
+
+\begin{figure}[t]
+  \centering
+  \maybefig{fig2_depth_and_focal_vs_zoom}
+  \caption{Depth (left) and predicted focal (right) of the same pixels as a function of the zoom factor,
+  median over images. Dashed: the law; dotted: apparent size only.}
+  \label{fig:curves}
+\end{figure}
+
+\paragraph{The failure follows apparent size (H2).}
+\Cref{fig:abplane} places each camera-predicting model in the $(\beta,\alpha)$ plane. Depth Pro lies on
+the line $\alpha+\beta=1$ (median \DepthproAlphaPlusBeta{} per image), MoGe-2 close to it
+(\MogeTwoSAlphaPlusBeta) and UniDepthV2 below it (\UnidepthTwoSAlphaPlusBeta). On this line a model keeps
+the lateral size of what it sees but not its depth, which is exactly the interpretation the
+zoom--squash ambiguity makes available: the zoomed image is consistent with a compressed scene in which
+every object keeps its width. A softer reading of the ambiguity, that scenes with a larger depth range
+would be easier, is not supported: the within-dataset rank correlation between $\alpha$ and the
+inter-quartile range of log depth is \DepthproSpreadRho{} for Depth Pro and \MogeTwoSSpreadRho{} for
+MoGe-2. The ambiguity explains the direction of the failure, not which images escape it.
+
+\begin{figure}[t]
+  \centering
+  \maybefig{fig3_alpha_beta_plane}
+  \caption{Camera-predicting models in the $(\beta,\alpha)$ plane. Dashed: $\alpha+\beta=1$, where
+  lateral sizes are preserved (apparent-size reasoning). The ideal model is at $(1,0)$.}
+  \label{fig:abplane}
+\end{figure}
+
+\paragraph{It is the camera, not the pixels.}
+The blur control, which loses as much detail as a $2\times$ zoom without changing the field of view,
+moves depth by only \DavTwoSBlur\% for DA-V2-S and at most \UnidepthTwoSBlur\% for any model in
+\cref{tab:audit}. \Cref{tab:controls} separates the two effects of a digital zoom directly: an
+\emph{optical} $2\times$ zoom with real detail changes the depth of DA-V2-S by a factor of
+\DavTwoSOptical, the same zoom done digitally by \DavTwoSDigitalLr, while bilinear resampling and JPEG
+compression change it by \DavTwoSBilinear{} and \DavTwoSJpeg.
+% TODO(results): one sentence on optical vs digital once audit-d is in.
+
+\input{gen/table_controls}
+
+\paragraph{Bigger and newer models.}
+\Cref{tab:ladder} extends the audit to larger variants and to Depth Anything~3, UniK3D and VGGT
+(100 images per set; 50 for the DA3 and VGGT runs).
+% TODO(results): describe the ladder only after audit-c1/c2 are in; no claim from the 1-image smoke run.
+
+\input{gen/table_ladder}
+
+\paragraph{Crop position and principal point.}
+Zooming into the four image quadrants instead of the centre leaves $\alpha$ of the same order (supplement).
+MoGe-2, Depth Anything~3 and VGGT place the principal point at the image centre whatever the crop, so
+off-centre crops are outside what their camera model can express.
+% TODO(results): numbers from principal_point() once audit-a2 is in.
+
+\paragraph{When does the label-free score predict error?}
+Across the \proxyPairs{} model--dataset pairs, $|\alpha|$ rank-correlates with AbsRel at $3\times$
+(Spearman \proxyRhoThree{}, 95\% interval [\proxyRhoThreeLo, \proxyRhoThreeHi]) and within KITTI, NYUv2
+and DIODE-indoor (\ProxyKitti, \ProxyNyu, \ProxyDiodeIn), but not within DIODE-outdoor
+(\ProxyDiodeOut), where errors are dominated by a heavy tail of UniDepthV2. It does not predict
+accuracy on unzoomed images (\proxyRhoOne). Part of the association is mechanical, since a shrinking
+depth is also a growing error, so we read it narrowly: without labels, the audit tells which model will
+degrade most under zoom, not which model is more accurate.
+
+\paragraph{A training-free fix when the zoom is known.}
+Phones record a digital zoom ratio, and apps know their own crops. Multiplying the depth by $s^{e}$,
+with $e$ chosen on the other datasets (leave-one-dataset-out), brings the $3\times$ AbsRel of DA-V2-S
+from \DavTwoSFixZoomed{} to \DavTwoSFixAbsrel{}, against \DavTwoSFixTarget{} for the unzoomed prediction
+on the same pixels (chosen $e=\DavTwoSFixE$).
+% TODO(results): check once audit-a2 (fix columns) is in.

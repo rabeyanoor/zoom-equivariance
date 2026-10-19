@@ -1,0 +1,52 @@
+\section{Introduction}
+\label{sec:intro}
+
+Single-image metric depth has improved quickly~\cite{bochkovskii2025depthpro,piccinelli2025unidepthv2,
+wang2025moge2,hu2024metric3dv2,yang2024dav2}, and these models now run on phones, robots and cars whose
+cameras they have never seen. To answer in metres, a model has to resolve a basic ambiguity: the same
+pixels fit a wide-angle view of a near scene and a telephoto view of a far one~\cite{he2018focal}.
+Some models take the intrinsics as input; others predict them; many simply regress metric depth from
+pixels. Whether the latter two groups really infer the camera, or fall back on the size of familiar
+objects, is hard to tell from benchmark accuracy, because test sets are dominated by a few cameras.
+
+We propose a test that needs no labels and no new data. Cropping an image and resizing it back is an
+\emph{exact} change of camera: the focal length is multiplied by the zoom factor $s$, the principal
+point moves in a known way, and every pixel that survives keeps its metric depth (\cref{sec:law}).
+A model that understands the camera should therefore keep its depth and scale its focal by $s$.
+We ask three questions:
+\begin{itemize}
+  \item[\textbf{H1}] Do current metric depth models keep the depth of the same scene points under a
+        digital zoom, and scale their focal estimate by $s$?
+  \item[\textbf{H2}] Do models that receive, predict, or ignore the camera fail in systematically
+        different ways, and do these failures follow from a geometric explanation?
+  \item[\textbf{H3}] Can the law be used as a training signal on unlabeled images without trading away
+        accuracy on ordinary images?
+\end{itemize}
+
+\paragraph{Findings.}
+For H1, no image-only model passes: Depth Anything V2 shrinks depth by about $1/s$
+($\alpha=\DavTwoSAlpha$), and models with a camera head close only part of the gap while
+under-scaling the focal (\cref{fig:curves}). For H2, the failures line up with the
+\emph{zoom--squash ambiguity} we derive: a zoomed image is identical to an image of the scene compressed
+along the optical axis, so cues that read apparent size cannot see a zoom; models that reason this way
+sit on the line $\alpha+\beta=1$, and Depth Pro does so per image. Camera-conditioned models are
+equivariant with the right intrinsics and inherit exactly $+1$ in $\alpha$ with stale ones. For H3, a
+self-consistency objective in the spirit of~\cite{zhong2023equivariance} learns a shortcut, ``blurry
+means zoomed''; adding blur invariance removes it and brings $\alpha$ near zero on the training
+domains, at a measurable cost on unzoomed and unseen images that we report in full.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+  \item A label-free \textbf{digital-zoom audit} for metric depth with exact geometry, two exponents for
+        depth and focal, and controls for interpolation, detail loss, compression and crop position,
+        including a separation of optical from digital zoom (\cref{sec:audit}).
+  \item A \textbf{taxonomy of failure modes} over three model groups and a model ladder up to
+        Depth Anything~3 and VGGT, with the zoom--squash ambiguity and the $\alpha+\beta=1$ line as a
+        falsifiable account of the dominant failure (\cref{sec:law,sec:results}).
+  \item An analysis of \textbf{when the label-free score predicts real error}, with scene-level
+        uncertainty and per-dataset checks, including where it does not (\cref{sec:results}).
+  \item An evaluation of \textbf{label-free correction}: self-consistency fine-tuning, the resolution
+        shortcut it learns, EFT+B that removes it, a training-free fix for known zoom factors, and the
+        accuracy cost on unseen domains (\cref{sec:eft,sec:eftresults}).
+\end{enumerate}
+Code, splits and all raw results are released.
