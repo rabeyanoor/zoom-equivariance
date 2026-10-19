@@ -173,7 +173,8 @@ for ds in A.DATASETS:
     put(key("proxy", ds), spearmanr(g.abs_alpha, g.absrel3).statistic if len(g) > 3 else np.nan)
 
 # ------------------------------------------------------------------ controls: optical vs digital, interpolation, JPEG
-ctrl = df[df.kind.isin(CONTROLS)]
+ctrl_files = list(A.RESULTS.glob("*__ctrl.csv"))
+ctrl = A.load("*__ctrl.csv") if ctrl_files else pd.DataFrame(columns=["model", "kind", "log_ratio_self"])
 rows = []
 for m in ("dav2-s", "depthpro", "moge2-s", "metric3d-s"):
     cells = []
@@ -193,8 +194,9 @@ write_table("table_controls", [
     r"Model & optical $2\times$ & digital $2\times$ & bilinear $2\times$ & JPEG \\ \midrule",
     *rows, r"\bottomrule\end{tabular}\end{table}"])
 
-# ------------------------------------------------------------------ ZoomFix
-fix = A.zoomfix(A.per_image(df[df.model.isin(MAIN)]))
+# ------------------------------------------------------------------ ZoomFix (cross-fitted, label-free exponent)
+fix_files = list(A.RESULTS.glob("*__fix.csv"))
+fix = A.zoomfix_crossfit(A.load("*__fix.csv")) if fix_files else pd.DataFrame()
 for m in MAIN:
     g = fix[fix.model == m] if len(fix) else pd.DataFrame()
     put(key(m, "fixE"), g.exponent.mean() if len(g) else np.nan)

@@ -8,7 +8,9 @@
 # 3. **Stale intrinsics.** Metric3D v2 with the unzoomed K: alpha_stale = alpha_true + 1 by
 #    construction (paper, Sec. 3); here we check the data.
 # 4. **ZoomFix.** When the zoom factor is known (EXIF DigitalZoomRatio, an app's own crop),
-#    multiplying depth by s**e undoes the shrink. The exponent is chosen leave-one-dataset-out.
+#    multiplying depth by s**e undoes the shrink. Two ways to pick e: leave-one-dataset-out on
+#    labelled data, or label-free from the same domain (alpha measured on half the images,
+#    scored on the other half). The second needs the --fine-fix run (exponents up to 1.5).
 
 # %%
 import sys
@@ -118,3 +120,12 @@ if len(fix):
     ps.save(fig, "fig6_zoomfix")
 else:
     print("no ZoomFix columns yet (they come with the audit-a2 run)")
+
+# %%
+fine = list(A.RESULTS.glob("*__fix.csv"))
+if fine:
+    cf = A.zoomfix_crossfit(A.load("*__fix.csv"))
+    cf.round(4).to_csv(TAB / "zoomfix_crossfit.csv", index=False)
+    display(cf.round(3))
+else:
+    print("cross-fitted ZoomFix needs the --fine-fix run (audit-d)")

@@ -91,8 +91,11 @@ depth is also a growing error, so we read it narrowly: without labels, the audit
 degrade most under zoom, not which model is more accurate.
 
 \paragraph{A training-free fix when the zoom is known.}
-Phones record a digital zoom ratio, and apps know their own crops. Multiplying the depth by $s^{e}$,
-with $e$ chosen on the other datasets (leave-one-dataset-out), brings the $3\times$ AbsRel of DA-V2-S
-from \DavTwoSFixZoomed{} to \DavTwoSFixAbsrel{}, against \DavTwoSFixTarget{} for the unzoomed prediction
-on the same pixels (chosen $e=\DavTwoSFixE$).
+Phones record a digital zoom ratio, and apps know their own crops. Since $\alpha$ needs no labels, a
+user can measure it on their own photos and multiply the depth of zoomed images by $s^{\hat\alpha}$.
+We evaluate this cross-fitted: $\hat\alpha$ is measured on half of a dataset's images and the
+correction scored on the other half. For DA-V2-S at $3\times$ the AbsRel goes from \DavTwoSFixZoomed{}
+to \DavTwoSFixAbsrel{}, against \DavTwoSFixTarget{} for the unzoomed prediction on the same pixels.
+A single global factor cannot undo everything: the zoomed prediction is also distorted in shape
+(\cref{sec:audit}), which the remaining gap reflects.
 % TODO(results): check once audit-a2 (fix columns) is in.

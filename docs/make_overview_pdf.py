@@ -175,6 +175,10 @@ for m, r in t1.iterrows():
     rows.append([m, groups[m], f"{f2(r.alpha)} [{f2(r.alpha_lo)}, {f2(r.alpha_hi)}]", f2(r.beta), f2(r.alpha_plus_beta),
                  f"{100 * r.blur2:.1f}%", f2(r.absrel1, 3), f2(r.absrel3, 3)])
 table(rows, [2.9 * cm, 2.8 * cm, 2.7 * cm, 1.1 * cm, 1.1 * cm, 1.7 * cm, 1.6 * cm, 1.6 * cm])
+P("<i>Note: ei table er AbsRel 4 ta dataset er gor (DIODE-outdoor er boro error shoho). Section 7 er EFT table e "
+  "protita dataset alada, ar sheta 392 px input e chale. Tai DA-V2-S er 1x AbsRel ekhane 0.317, ar EFT table e "
+  "KITTI te 0.138. KITTI te default preprocessing e eta 0.133, mane duita mile jay. CI ekhane image-level; "
+  "paper e scene-level cluster bootstrap use kora hoy, jeta aro chouro.</i>")
 P("<b>Ja pelam:</b>")
 bullets([f"Pixels-only model gulo prai puro shortcut use kore: DA-V2-S α = {f2(t1.loc['DA-V2-S', 'alpha'])}.",
          f"Camera predict kora model gulo ordhek bujhe: α ≈ 0.31–0.36, ar focal 3x er jaygay "
