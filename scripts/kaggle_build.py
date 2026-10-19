@@ -41,6 +41,9 @@ if kind == "audit":
         JOBS = [f"{m} {SETS} --n 100" for m in LADDER[:6]]
     elif part == "c2":
         JOBS = [f"{m} {SETS} --n 50" for m in LADDER[6:]]  # 50: keeps the week within the Kaggle GPU quota
+    elif part == "d":
+        # confounder controls (optical vs digital zoom, interpolation, JPEG) for one model per group
+        JOBS = [f"{m} {SETS} --n 100 --controls-only --out-tag ctrl" for m in ("dav2-s", "depthpro", "moge2-s", "metric3d-s")]
     elif part == "csmoke":
         # CPU kernel (no GPU slot needed); Metric3D has hard-coded .cuda() calls
         JOBS = [f"{m} kitti --n 1" for m in LADDER if m != "metric3d-l"]
@@ -49,7 +52,8 @@ if kind == "audit":
         JOBS.append("scripts/count_params.py")
 elif kind == "stats":
     # CPU only: per-image scene statistics + Figure 1 depth maps
-    JOBS = [f"scripts/scene_stats.py --n {N} " + ("--figure-only" if part == "fig" else "--figure1")]
+    flag = {"fig": "--figure-only", "scenes": "--nyu-scenes"}.get(part, "--figure1")
+    JOBS = [f"scripts/scene_stats.py --n {N} {flag}"]
 else:
     # eft: the method; eft_baseline (part "baseline"): anchor-only fine-tuning, same data and steps
     steps = 20 if SMOKE else 3000
@@ -63,8 +67,8 @@ else:
     elif part == "ablate":
         # anchor-only turned out to be the frozen model (student == teacher at step 0, so the
         # loss and its gradient are exactly zero); the blur-only run is the real baseline
-        runs = ["--w-zoom 0 --w-blur 1 --tag blur", "--w-blur 1 --w-anchor 3 --tag eftb3"]
-        evals = ("dav2-s-blur", "dav2-s-eftb3")
+        runs = ["--target student --tag zhong", "--w-zoom 0 --w-blur 1 --tag blur", "--w-blur 1 --w-anchor 3 --tag eftb3"]
+        evals = ("dav2-s-zhong", "dav2-s-blur", "dav2-s-eftb3")
     else:
         runs, evals = ["--tag eft"], ("dav2-s-fixed", "dav2-s-eft")
     JOBS = []

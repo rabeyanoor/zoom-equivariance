@@ -31,6 +31,77 @@ def depth_errors(pred, gt, max_depth):
                 n_gt=int(m.sum()))
 
 
+def self_consistency(d_a, d_b):
+    """Median log ratio of two depth maps on the same pixels (the global scale change), and the
+    shape error left after removing it: median |log(d_a/d_b) - median log ratio|."""
+    ok = np.isfinite(d_a) & np.isfinite(d_b) & (d_a > 1e-3) & (d_b > 1e-3)
+    if ok.sum() <= 50:
+        return np.nan, np.nan
+    r = np.log(d_a[ok] / d_b[ok])
+    m = float(np.median(r))
+    return m, float(np.median(np.abs(r - m)))
+
+
+def control_rows(model, sample, max_depth, centre=(0.5, 0.5)):
+    """Confounder controls, each against the right reference:
+
+    optical   : a camera with half the resolution of the dataset image is "zoomed" 2x optically
+                by taking the same field of view from the full-resolution image (real detail);
+    digital_lr: the same 2x zoom done digitally on the half-resolution image (crop + upsample);
+                both are compared with the half-resolution camera's own unzoomed prediction,
+                so optical vs digital_lr separates the field-of-view change from detail loss;
+    bilinear  : the main 2x digital zoom with bilinear instead of bicubic resampling;
+    jpeg      : JPEG quality 75 at 1x (no zoom; compression only).
+    """
+    img, gt, K = sample["img"], sample["depth"], sample["K"]
+    h, w = img.shape[:2]
+    rows = []
+
+    def row(kind, zoom_, out, ref_out, d_s, d_ref, gt_box, fx_gt):
+        lr, shape = self_consistency(d_s, d_ref)
+        r = dict(name=sample["name"], kind=kind, zoom=zoom_, cx=centre[0], cy=centre[1], sec=np.nan,
+                 log_ratio_self=lr, shape_err=shape, fx=out["fx"], fx_base=ref_out["fx"], fx_gt=fx_gt)
+        r.update(depth_errors(d_s, gt_box, max_depth))
+        rows.append(r)
+
+    # half-resolution camera and its 2x zooms
+    hc, wc = h // 2, w // 2
+    cam = zoom.downsample(img, 2)
+    K_cam = zoom.scale_K(K, (h, w), (hc, wc))
+    base_cam = model.predict(cam, K_cam)
+    box_c = zoom.zoom_box(hc, wc, 2.0, *centre)
+    x0, y0, cw, ch = box_c
+    ref = zoom.crop(base_cam["depth"], box_c)
+    K_dig = zoom.zoom_K(K_cam, box_c, (hc, wc))
+    dig = model.predict(zoom.zoom_image(cam, box_c), K_dig)
+    box_full = (2 * x0, 2 * y0, 2 * cw, 2 * ch)
+    opt_img = zoom.crop(img, box_full)
+    if opt_img.shape[:2] != (hc, wc):  # odd image sizes: at most one pixel of resampling
+        opt_img = zoom.resize_image(opt_img, (hc, wc))
+    K_opt = zoom.zoom_K(K, box_full, (hc, wc))
+    opt = model.predict(opt_img, K_opt)
+    gt_box = zoom.crop(gt, box_full)
+    for kind, out in (("optical", opt), ("digital_lr", dig)):
+        d_box = zoom.unzoom_depth(out["depth"], box_c)                      # on the camera's crop grid
+        d_full = zoom.resize_depth(out["depth"], gt_box.shape)              # for the GT errors
+        lr, shape = self_consistency(d_box, ref)
+        r = dict(name=sample["name"], kind=kind, zoom=2.0, cx=centre[0], cy=centre[1], sec=np.nan,
+                 log_ratio_self=lr, shape_err=shape, fx=out["fx"], fx_base=base_cam["fx"], fx_gt=float(K_opt[0, 0]))
+        r.update(depth_errors(d_full, gt_box, max_depth))
+        rows.append(r)
+
+    # interpolation and compression on the full-resolution image
+    base = model.predict(img, K)
+    box = zoom.zoom_box(h, w, 2.0, *centre)
+    Kz = zoom.zoom_K(K, box, (h, w))
+    bil = model.predict(zoom.zoom_image(img, box, mode="bilinear"), Kz)
+    row("bilinear", 2.0, bil, base, zoom.unzoom_depth(bil["depth"], box), zoom.crop(base["depth"], box),
+        zoom.crop(gt, box), float(Kz[0, 0]))
+    jp = model.predict(zoom.jpeg(img, 75), K)
+    row("jpeg", 1.0, jp, base, jp["depth"], base["depth"], gt, float(K[0, 0]))
+    return rows
+
+
 def zoom_rows(model, sample, max_depth, zooms=ZOOMS, center=(0.5, 0.5), stale_K=False, blur=(2.0,)):
     """stale_K: give a 'takes camera' model the unzoomed K (what you get if EXIF is not
     updated after a digital zoom). Ignored by models that do not take K."""
@@ -50,10 +121,11 @@ def zoom_rows(model, sample, max_depth, zooms=ZOOMS, center=(0.5, 0.5), stale_K=
         d_s = zoom.unzoom_depth(out["depth"], box) if s != 1.0 else out["depth"]
         d_1 = zoom.crop(base["depth"], box)
         gt_box = zoom.crop(gt, box)
-        ok = np.isfinite(d_s) & np.isfinite(d_1) & (d_s > 1e-3) & (d_1 > 1e-3)
+        lr, shape = self_consistency(d_s, d_1)
         row = dict(name=sample["name"], kind="zoom", zoom=s, cx=center[0], cy=center[1], sec=sec,
-                   # label-free: how much the depth of the same pixels moved because of zoom
-                   log_ratio_self=float(np.median(np.log(d_s[ok] / d_1[ok]))) if ok.sum() > 50 else np.nan,
+                   # label-free: how much the depth of the same pixels moved because of zoom, and how
+                   # much their relative shape changed once that global factor is removed
+                   log_ratio_self=lr, shape_err=shape,
                    fx=out["fx"], fx_base=base["fx"], fx_gt=float(zoom.zoom_K(K, box, (h, w))[0, 0]))
         row.update(depth_errors(d_s, gt_box, max_depth))
         # the unzoomed prediction scored on exactly the same pixels: the fair reference
@@ -79,7 +151,8 @@ def zoom_rows(model, sample, max_depth, zooms=ZOOMS, center=(0.5, 0.5), stale_K=
     return rows
 
 
-def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), stale_K=False, log_every=10, suffix=""):
+def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), stale_K=False, log_every=10, suffix="",
+        controls_only=False):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     tag = f"{model_name}{'-staleK' if stale_K else ''}__{dataset}{suffix}"
@@ -97,9 +170,12 @@ def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), sta
         sample = load(i)
         todo = [c for c in centers if (sample["name"], c[0], c[1]) not in done]
         for c in todo:
-            # the blur control only needs to run once per image
-            blur = (2.0,) if c == centers[0] else ()
-            rows = zoom_rows(model, sample, datasets.MAX_DEPTH[dataset], zooms, c, stale_K, blur)
+            if controls_only:
+                rows = control_rows(model, sample, datasets.MAX_DEPTH[dataset], c)
+            else:
+                # the blur control only needs to run once per image
+                blur = (2.0,) if c == centers[0] else ()
+                rows = zoom_rows(model, sample, datasets.MAX_DEPTH[dataset], zooms, c, stale_K, blur)
             for r in rows:
                 r.update(model=model_name + ("-staleK" if stale_K else ""), dataset=dataset)
             pd.DataFrame(rows).to_csv(out_csv, mode="a", header=not out_csv.exists(), index=False)

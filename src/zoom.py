@@ -55,9 +55,9 @@ def crop(x, box):
     return x[y0:y0 + ch, x0:x0 + cw]
 
 
-def zoom_image(img, box):
+def zoom_image(img, box, mode="bicubic"):
     """uint8 HxWx3 -> zoomed uint8 image of the same size (bicubic, like a phone's digital zoom)."""
-    out = _resize(crop(img, box).astype(np.float32), img.shape[:2], "bicubic")
+    out = _resize(crop(img, box).astype(np.float32), img.shape[:2], mode)
     return np.clip(out + 0.5, 0, 255).astype(np.uint8)
 
 
@@ -68,6 +68,37 @@ def blur_control(img, s):
     small = _resize(img.astype(np.float32), (int(round(h / s)), int(round(w / s))), "area")
     out = _resize(small, (h, w), "bicubic")
     return np.clip(out + 0.5, 0, 255).astype(np.uint8)
+
+
+def downsample(img, f):
+    """Area-downsample by an integer factor f (a lower-resolution camera with the same field of view)."""
+    h, w = img.shape[:2]
+    out = _resize(img.astype(np.float32), (h // f, w // f), "area")
+    return np.clip(out + 0.5, 0, 255).astype(np.uint8) if img.dtype == np.uint8 else out
+
+
+def scale_K(K, in_hw, out_hw):
+    """Intrinsics after resizing the whole image from in_hw to out_hw."""
+    return zoom_K(K, (0, 0, in_hw[1], in_hw[0]), out_hw)
+
+
+def jpeg(img, quality=75):
+    import io
+
+    from PIL import Image
+
+    buf = io.BytesIO()
+    Image.fromarray(img).save(buf, format="JPEG", quality=quality)
+    return np.array(Image.open(io.BytesIO(buf.getvalue())).convert("RGB"))
+
+
+def resize_image(img, hw):
+    out = _resize(img.astype(np.float32), hw, "bicubic")
+    return np.clip(out + 0.5, 0, 255).astype(np.uint8)
+
+
+def resize_depth(depth, hw):
+    return _resize(depth, hw, "bilinear")
 
 
 def unzoom_depth(depth_zoomed, box):

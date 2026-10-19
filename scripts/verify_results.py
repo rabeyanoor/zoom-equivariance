@@ -36,6 +36,15 @@ images_by_set = {}
 for f in sorted(A.RESULTS.glob("*__*.csv")):
     df = A.repair_cx(pd.read_csv(f))
     tag = f.stem
+    if "__ctrl" in tag:
+        # control runs: one row per control kind and image
+        kinds = df.groupby("name").kind.apply(lambda v: tuple(sorted(v)))
+        expected = ("bilinear", "digital_lr", "jpeg", "optical")
+        check((kinds == expected).all(), f"{tag}: {int((kinds != expected).sum())} images without all four controls")
+        check(df.duplicated(["name", "kind"]).sum() == 0, f"{tag}: duplicated control rows")
+        manifest.append(dict(file=f.name, model=tag.split("__")[0], dataset=tag.split("__")[1],
+                             images=df.name.nunique(), centres=1, rows=len(df)))
+        continue
     z = df[df.kind == "zoom"]
     n_img = df.name.nunique()
     centres = z.groupby("name")[["cx", "cy"]].apply(lambda g: len(g.drop_duplicates()))
@@ -52,7 +61,7 @@ for f in sorted(A.RESULTS.glob("*__*.csv")):
     no_gt = float(z.abs_rel.isna().mean())
     check(no_gt < 0.05, f"{tag}: {100 * no_gt:.1f} % of rows have no GT error")
     model, dataset = tag.split("__")[:2]
-    if "__offc" not in tag:
+    if "__offc" not in tag:  # off-centre runs use a smaller sample
         images_by_set.setdefault((dataset, n_img), {})[model] = frozenset(df.name)
     manifest.append(dict(file=f.name, model=model, dataset=dataset, images=n_img,
                          centres=int(centres.max()), rows=len(df), no_gt_share=round(no_gt, 4),

@@ -30,12 +30,32 @@ the image by $s=2$ and up-samples it again: same detail loss as a $2\times$ zoom
 view. A subset of 50 images per set from KITTI and NYUv2 is also zoomed about the four
 quadrant centres, where the principal point moves out of the image centre.
 
+\paragraph{Optical versus digital zoom.}
+A digital zoom changes the camera \emph{and} loses detail; a real (optical) zoom only changes the
+camera. We separate the two with a resolution trick. Treat a $2\times$ down-sampled copy of each
+image as the camera. Its \emph{optical} $2\times$ zoom is the same field of view cut from the
+full-resolution image, with real detail; its \emph{digital} $2\times$ zoom is a crop of the
+down-sampled image, up-sampled. Both have identical intrinsics and output size and are compared with
+the down-sampled camera's own prediction on the same pixels. We also repeat the $2\times$ zoom with
+bilinear instead of bicubic resampling, and compress the unzoomed image to JPEG quality 75.
+
+\paragraph{Scope of the claim.}
+For a model that does not receive the camera, a crop changes the visible context, and its output may
+legitimately change where the content is ambiguous (\cref{sec:law}). The audit therefore measures how
+far each model is from the law and in which direction; it is not a claim that every image-only
+estimator can or should reach $\alpha=0$ on every image.
+
 \paragraph{Metrics.}
 \textbf{Label-free:} the exponents $\alpha$ and $\beta$ of \cref{eq:exponents}, and the depth
 inconsistency at $2\times$, $\mathrm{DIE}_2=|\operatorname{median}_p \log
 \hat D_2/\hat D_1|$. \textbf{With labels:} AbsRel and $\delta_1$ on the pixels of the crop
 that have ground truth (capped at 80\,m for KITTI, 10\,m for NYUv2, 50\,m and 150\,m for
-DIODE indoor and outdoor). We report medians over images with 95\% bootstrap intervals.
+DIODE indoor and outdoor). We report medians over images with 95\% bootstrap intervals. Frames of one KITTI drive, one
+DIODE scene or one NYUv2 scene are not independent, so the intervals in the main tables resample
+whole scenes (cluster bootstrap); paired comparisons use Wilcoxon signed-rank tests with Holm
+correction. We also report a shape error, the median absolute deviation of
+$\log \hat D_s/\hat D_1$ from its median, which is zero when a zoom changes depth by a single global
+factor.
 
 \paragraph{Sanity check of the pipeline.}
 Projecting random 3D points with $K$, applying the crop-and-resize to the pixel coordinates,

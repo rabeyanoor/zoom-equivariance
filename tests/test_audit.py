@@ -53,3 +53,19 @@ def test_blur_control_row_is_present():
     rows = audit.zoom_rows(Equivariant(), SAMPLE, max_depth=80)
     blur = [r for r in rows if r["kind"] == "blur"]
     assert len(blur) == 1 and abs(blur[0]["log_ratio_self"]) < 1e-9
+
+
+def test_controls_equivariant_model():
+    """A model that knows the camera: the optical and digital zooms keep depth, JPEG changes nothing."""
+    rows = {r["kind"]: r for r in audit.control_rows(Equivariant(), SAMPLE, 80)}
+    assert set(rows) == {"optical", "digital_lr", "bilinear", "jpeg"}
+    for r in rows.values():
+        assert abs(r["log_ratio_self"]) < 1e-6 and r["shape_err"] < 1e-6
+
+
+def test_controls_apparent_size_model():
+    rows = {r["kind"]: r for r in audit.control_rows(ApparentSize(), SAMPLE, 80)}
+    # both 2x zooms (optical and digital) halve the depth of a size-reading model
+    for k in ("optical", "digital_lr", "bilinear"):
+        assert abs(rows[k]["log_ratio_self"] - np.log(0.5)) < 0.02
+    assert abs(rows["jpeg"]["log_ratio_self"]) < 1e-6

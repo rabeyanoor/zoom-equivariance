@@ -52,7 +52,7 @@ def random_box(h, w, rng, s_max=3.0):
 
 class EFT:
     def __init__(self, model, input_hw, lr_head=5e-5, lr_backbone=5e-6, w_anchor=1.0, w_zoom=1.0, w_blur=0.0,
-                 s_max=3.0, seed=0):
+                 s_max=3.0, seed=0, target="teacher"):
         self.student = model.to(DEVICE).train()
         self.teacher = copy.deepcopy(model).eval()
         for p in self.teacher.parameters():
@@ -65,6 +65,10 @@ class EFT:
         # detail (down + up sampling, same field of view). Without it the first EFT run learned
         # "blurry means zoomed" instead of reading the geometry.
         self.w_blur = w_blur
+        # target "student": the zoomed prediction is pulled towards the student's own (stop-gradient)
+        # prediction on the full image, as in the self-consistency loss of Zhong et al. (ICCV 2023);
+        # "teacher" (ours): towards the frozen original model
+        self.target = target
         self.s_max = s_max
         self.rng = np.random.default_rng(seed)
         backbone = [p for n, p in self.student.named_parameters() if "backbone" in n]
@@ -103,10 +107,11 @@ class EFT:
             s_b = log_depth(self.student, torch.cat(bs)).float() if self.w_blur else None
         t, s_x, s_z = t.float(), s_x.float(), s_z.float()
 
+        ref = s_x.detach() if self.target == "student" else t
         l_zoom = 0
         for k, (x0, y0, cw, ch) in enumerate(boxes):
             back = F.interpolate(s_z[k:k + 1], size=(ch, cw), mode="area")
-            l_zoom = l_zoom + (back - t[k:k + 1, :, y0:y0 + ch, x0:x0 + cw]).abs().mean()
+            l_zoom = l_zoom + (back - ref[k:k + 1, :, y0:y0 + ch, x0:x0 + cw]).abs().mean()
         l_zoom = l_zoom / len(boxes)
         l_anchor = (s_x - t).abs().mean()
         loss = self.w_zoom * l_zoom + self.w_anchor * l_anchor

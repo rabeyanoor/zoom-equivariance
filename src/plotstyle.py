@@ -41,6 +41,7 @@ LABEL = {
     "da3-metric-l": "DA3-Metric-L", "da3-l": "DA3-L", "vggt": "VGGT-1B",
     "dav2-s-fixed": "DA-V2-S (frozen)", "dav2-s-anchor": "anchor-only FT", "dav2-s-eft": "EFT",
     "dav2-s-eftb": "EFT+B (ours)", "dav2-s-blur": "blur-only FT", "dav2-s-eftb3": "EFT+B, λ=3",
+    "dav2-s-zhong": "Zhong et al.-style",
 }
 
 
@@ -51,7 +52,8 @@ def family(model):
 def colour(model):
     if model.startswith("dav2-s-"):  # fine-tuned variants of DA-V2-S
         return {"dav2-s-fixed": "#999999", "dav2-s-anchor": "#56B4E9", "dav2-s-eft": "#E69F00",
-                "dav2-s-eftb": "#D55E00", "dav2-s-blur": "#009E73", "dav2-s-eftb3": "#CC79A7"}[model]
+                "dav2-s-eftb": "#D55E00", "dav2-s-blur": "#009E73", "dav2-s-eftb3": "#CC79A7",
+                "dav2-s-zhong": "#0072B2"}[model]
     base = to_rgb(FAMILY_COLOUR.get(family(model), "#333333"))
     size = model.split("-")[1][:1] if "-" in model else "l"
     shade = SIZE_SHADE.get(size, 1.0)

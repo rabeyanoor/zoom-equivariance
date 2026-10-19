@@ -20,6 +20,7 @@ p.add_argument("datasets", nargs="+")
 p.add_argument("--n", type=int, default=100)
 p.add_argument("--stale-k", action="store_true")
 p.add_argument("--off-centre", action="store_true", help="also zoom into the four quadrants")
+p.add_argument("--controls-only", action="store_true", help="optical-vs-digital, bilinear and JPEG controls")
 p.add_argument("--out-tag", default="", help="suffix for the CSV name, e.g. offc")
 p.add_argument("--out", default=str(ROOT / "outputs" / "results"))
 args = p.parse_args()
@@ -30,5 +31,5 @@ if args.off_centre:
 
 for ds in args.datasets:
     out = audit.run(args.model, ds, args.n, args.out, centers=tuple(centres), stale_K=args.stale_k,
-                    suffix=f"__{args.out_tag}" if args.out_tag else "")
+                    suffix=f"__{args.out_tag}" if args.out_tag else "", controls_only=args.controls_only)
     print("wrote", out, flush=True)

@@ -22,9 +22,20 @@ p.add_argument("--n", type=int, default=200)
 p.add_argument("--out", default=str(ROOT / "outputs" / "results"))
 p.add_argument("--figure1", action="store_true", help="also save depth maps for Figure 1")
 p.add_argument("--figure-only", action="store_true")
+p.add_argument("--nyu-scenes", action="store_true", help="only write the scene name of every NYUv2 test image")
 args = p.parse_args()
 out = Path(args.out)
 out.mkdir(parents=True, exist_ok=True)
+
+if args.nyu_scenes:
+    # scene name of each labelled image (MATLAB v7.3 cell array of strings), for scene-level bootstrap
+    nyu = datasets.NYU()
+    refs = nyu.f["scenes"][0]
+    names = {f"nyu/{int(j):04d}": "".join(chr(int(c)) for c in np.array(nyu.f[refs[int(j)]]).ravel())
+             for j in nyu.test}
+    pd.DataFrame(sorted(names.items()), columns=["name", "scene"]).to_csv(out / "nyu_scenes.csv", index=False)
+    print(len(names), "test images in", len(set(names.values())), "scenes", flush=True)
+    sys.exit(0)
 
 rows = []
 for ds in ([] if args.figure_only else ["kitti", "nyu", "diode-in", "diode-out"]):

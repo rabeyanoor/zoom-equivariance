@@ -156,6 +156,40 @@ def blur_control(df):
     return b.groupby(["model", "dataset"])["log_ratio_self"].apply(lambda v: float(np.median(np.abs(v)))).rename("blur2")
 
 
+_NYU_SCENES = None
+
+
+def scene_of(name):
+    """Scene id of an image, for scene-level resampling: frames of one KITTI drive, one
+    DIODE scene, or one NYUv2 scene are not independent samples."""
+    global _NYU_SCENES
+    ds, stem = name.split("/", 1)
+    if ds == "kitti":
+        return "kitti/" + stem.split("_sync")[0]
+    if ds.startswith("diode"):
+        return f"{ds}/{stem.split('_')[0]}"
+    if ds == "nyu":
+        if _NYU_SCENES is None:
+            f = RESULTS / "nyu_scenes.csv"
+            _NYU_SCENES = dict(pd.read_csv(f).values) if f.exists() else {}
+        return "nyu/" + _NYU_SCENES.get(name, stem)
+    return name
+
+
+def boot_median_scene(values, names, n=2000, seed=0):
+    """Median with a 95% CI from a cluster bootstrap: whole scenes are resampled."""
+    d = pd.DataFrame({"v": np.asarray(values, float), "scene": [scene_of(x) for x in names]}).dropna()
+    if d.empty:
+        return np.nan, np.nan, np.nan
+    groups = [g.v.values for _, g in d.groupby("scene")]
+    rng = np.random.default_rng(seed)
+    meds = np.empty(n)
+    for b in range(n):
+        pick = rng.integers(0, len(groups), len(groups))
+        meds[b] = np.median(np.concatenate([groups[i] for i in pick]))
+    return float(np.median(d.v)), float(np.percentile(meds, 2.5)), float(np.percentile(meds, 97.5))
+
+
 def boot_median(v, n=2000, seed=0):
     v = np.asarray(v, float)
     v = v[np.isfinite(v)]
@@ -166,20 +200,23 @@ def boot_median(v, n=2000, seed=0):
     return float(np.median(v)), float(np.percentile(meds, 2.5)), float(np.percentile(meds, 97.5))
 
 
-def summary(pi, by=("model", "dataset")):
+def summary(pi, by=("model", "dataset"), scene_ci=False):
+    """scene_ci: also a cluster-bootstrap CI over scenes (slower; used for the paper tables)."""
     with warnings.catch_warnings():
         # columns that a run does not have (e.g. beta for pixels-only models) are all NaN
         warnings.simplefilter("ignore", RuntimeWarning)
-        return _summary(pi, by)
+        return _summary(pi, by, scene_ci)
 
 
-def _summary(pi, by):
+def _summary(pi, by, scene_ci):
     rows = []
     for key, g in pi.groupby(list(by)):
         key = key if isinstance(key, tuple) else (key,)
         a, alo, ahi = boot_median(g.alpha)
+        _, salo, sahi = boot_median_scene(g.alpha, g.name, n=500) if scene_ci else (np.nan, np.nan, np.nan)
         b, blo, bhi = boot_median(g.beta)
-        rows.append(dict(zip(by, key), n=len(g), alpha=a, alpha_lo=alo, alpha_hi=ahi,
+        rows.append(dict(zip(by, key), n=len(g), n_scenes=g.name.map(scene_of).nunique() if scene_ci else np.nan,
+                         alpha=a, alpha_lo=alo, alpha_hi=ahi, alpha_lo_scene=salo, alpha_hi_scene=sahi,
                          beta=b, beta_lo=blo, beta_hi=bhi, die2=np.nanmedian(g.die2),
                          absrel1=np.nanmean(g.absrel1), absrel2=np.nanmean(g.absrel2), absrel3=np.nanmean(g.absrel3),
                          base2=np.nanmean(g.base2), base3=np.nanmean(g.base3),
