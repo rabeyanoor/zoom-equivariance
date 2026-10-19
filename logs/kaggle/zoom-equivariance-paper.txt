@@ -1,0 +1,65 @@
+[     3.0s OUT] + apt-get -qq update && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-science latexmk > /dev/null
+[     7.9s ERR] W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu noble InRelease' does not seem to provide it (sources.list entry misspelt?)
+[   119.8s OUT] + cd /tmp/paper && latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex > build.log 2>&1
+[   121.1s OUT] + cd /tmp/paper && grep -nE '^!|Warning.*undefined|Overfull|Citation .* undefined|Reference .* undefined' build.log | head -80
+[   121.1s OUT] 105:Package natbib Warning: Citation `bochkovskii2025depthpro' on page 1 undefined 
+[   121.1s OUT] 109:Package natbib Warning: Citation `piccinelli2025unidepthv2' on page 1 undefined
+[   121.1s OUT] 113:Package natbib Warning: Citation `wang2025moge2' on page 1 undefined on input l
+[   121.1s OUT] 117:Package natbib Warning: Citation `hu2024metric3dv2' on page 1 undefined on inpu
+[   121.1s OUT] 121:Package natbib Warning: Citation `yang2024dav2' on page 1 undefined on input li
+[   121.1s OUT] 125:Package natbib Warning: Citation `he2018focal' on page 1 undefined on input lin
+[   121.1s OUT] 129:LaTeX Warning: Reference `sec:law' on page 1 undefined on input line 14.
+[   121.1s OUT] 133:LaTeX Warning: Reference `fig:curves' on page 1 undefined on input line 29.
+[   121.1s OUT] 136:Package natbib Warning: Citation `zhong2023equivariance' on page 1 undefined on
+[   121.1s OUT] 140:LaTeX Warning: Reference `sec:audit' on page 1 undefined on input line 42.
+[   121.1s OUT] 143:LaTeX Warning: Reference `sec:results' on page 1 undefined on input line 45.
+[   121.1s OUT] 146:LaTeX Warning: Reference `sec:law' on page 1 undefined on input line 45.
+[   121.1s OUT] 149:LaTeX Warning: Reference `sec:results' on page 1 undefined on input line 47.
+[   121.1s OUT] 155:LaTeX Warning: Reference `sec:eftresults' on page 1 undefined on input line 50.
+[   121.1s OUT] 159:LaTeX Warning: Reference `sec:eft' on page 1 undefined on input line 50.
+[   121.1s OUT] 163:Package natbib Warning: Citation `he2018focal' on page 2 undefined on input lin
+[   121.1s OUT] 167:Package natbib Warning: Citation `facil2019camconvs' on page 2 undefined on inp
+[   121.1s OUT] 171:Package natbib Warning: Citation `wei2023fsdepth' on page 2 undefined on input 
+[   121.1s OUT] 175:Package natbib Warning: Citation `yin2023metric3d' on page 2 undefined on input
+[   121.1s OUT] 179:Package natbib Warning: Citation `hu2024metric3dv2' on page 2 undefined on inpu
+[   121.1s OUT] 183:Package natbib Warning: Citation `guo2025dac' on page 2 undefined on input line
+[   121.1s OUT] 187:Package natbib Warning: Citation `guizilini2023zerodepth' on page 2 undefined o
+[   121.1s OUT] 191:Package natbib Warning: Citation `bochkovskii2025depthpro' on page 2 undefined 
+[   121.1s OUT] 195:Package natbib Warning: Citation `piccinelli2024unidepth' on page 2 undefined o
+[   121.1s OUT] 199:Package natbib Warning: Citation `piccinelli2025unidepthv2' on page 2 undefined
+[   121.1s OUT] 203:Package natbib Warning: Citation `wang2025moge2' on page 2 undefined on input l
+[   121.1s OUT] 207:Package natbib Warning: Citation `yang2024da' on page 2 undefined on input line
+[   121.1s OUT] 211:Package natbib Warning: Citation `yang2024dav2' on page 2 undefined on input li
+[   121.1s OUT] 215:Package natbib Warning: Citation `bhat2023zoedepth' on page 2 undefined on inpu
+[   121.1s OUT] 219:Package natbib Warning: Citation `ma2026metricanything' on page 2 undefined on 
+[   121.1s OUT] 223:Package natbib Warning: Citation `danier2025depthcues' on page 2 undefined on i
+[   121.1s OUT] 227:Package natbib Warning: Citation `jin2023perspectivefields' on page 2 undefined
+[   121.1s OUT] 231:Package natbib Warning: Citation `zhong2023equivariance' on page 2 undefined on
+[   121.1s OUT] 235:LaTeX Warning: Reference `sec:eft' on page 1 undefined on input line 43.
+[   121.1s OUT] 238:Package natbib Warning: Citation `zhong2023equivariance' on page 2 undefined on
+[   121.1s OUT] 242:Package natbib Warning: Citation `kim2026mismatch' on page 2 undefined on input
+[   121.1s OUT] 246:Package natbib Warning: Citation `wang2023planedepth' on page 2 undefined on in
+[   121.1s OUT] 250:Package natbib Warning: Citation `prakash2024kpe' on page 2 undefined on input 
+[   121.1s OUT] 254:Package natbib Warning: Citation `nie2024multicrop' on page 2 undefined on inpu
+[   121.1s OUT] 258:Package natbib Warning: Citation `zhao2023nero' on page 2 undefined on input li
+[   121.1s OUT] 262:Package natbib Warning: Citation `tang2026roll' on page 2 undefined on input li
+[   121.1s OUT] 266:Package natbib Warning: Citation `youn2026selfgeometry' on page 2 undefined on 
+[   121.1s OUT] 270:Package natbib Warning: Citation `bhattarai2025redepth' on page 2 undefined on 
+[   121.1s OUT] 274:LaTeX Warning: Reference `sec:results' on page 1 undefined on input line 67.
+[   121.1s OUT] 278:! LaTeX Error: Environment psmallmatrix undefined.
+[   121.1s OUT] 286:!  ==> Fatal error occurred, no output PDF file produced!
+[   121.1s OUT] 289:  Citation `bochkovskii2025depthpro' on page 1 undefined on input line 5
+[   121.1s OUT] 290:  Citation `piccinelli2025unidepthv2' on page 1 undefined on input line 5
+[   121.1s OUT] 291:  Citation `wang2025moge2' on page 1 undefined on input line 5
+[   121.1s OUT] 292:  Citation `hu2024metric3dv2' on page 1 undefined on input line 5
+[   121.1s OUT] 293:  Citation `yang2024dav2' on page 1 undefined on input line 5
+[   121.1s OUT] 294:  Citation `he2018focal' on page 1 undefined on input line 7
+[   121.1s OUT] 295:  Reference `sec:law' on page 1 undefined on input line 14
+[   121.1s OUT] + cp /tmp/paper/main.pdf /tmp/paper/build.log /tmp/paper/main.log /kaggle/working/ 2>/dev/null
+[   121.1s OUT] latexmk exit code 12
+[   124.4s ERR] /usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+[   124.4s ERR]   cells[i][c] = re.sub('\\\\\|', '|', cell)
+[   124.9s ERR] /usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+[   124.9s ERR]   text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[   126.9s ERR] [NbConvertApp] Converting notebook __script__.ipynb to html
+[   128.3s ERR] [NbConvertApp] Writing 275800 bytes to __results__.html

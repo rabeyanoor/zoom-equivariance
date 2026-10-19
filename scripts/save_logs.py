@@ -41,7 +41,10 @@ def main():
     (LOGS / "local").mkdir(parents=True, exist_ok=True)
     n = 0
     for log in sorted(ROOT.glob("outputs/kaggle/*/*.log")):
-        text = kaggle_to_text(log)
+        try:
+            text = kaggle_to_text(log)
+        except json.JSONDecodeError:
+            continue  # not a kernel log (e.g. a LaTeX log in the kernel's output)
         stem = log.stem
         if same_as_existing(LOGS / "kaggle", stem, text):
             continue

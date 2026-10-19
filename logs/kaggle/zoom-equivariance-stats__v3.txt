@@ -1,0 +1,47 @@
+[     0.7s OUT] + pip install -q transformers==5.20.1 mmengine einops timm h5py termcolor tabulate trimesh wandb
+[     5.1s OUT]      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.8/46.8 kB 1.5 MB/s eta 0:00:00
+[     5.8s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 64.3 MB/s eta 0:00:00
+[     5.9s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 452.7/452.7 kB 23.0 MB/s eta 0:00:00
+[     6.0s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 750.4/750.4 kB 36.1 MB/s eta 0:00:00
+[     6.0s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 846.4/846.4 kB 41.9 MB/s eta 0:00:00
+[     6.2s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 256.2/256.2 kB 13.9 MB/s eta 0:00:00
+[    19.4s OUT] + pip install -q git+https://github.com/microsoft/MoGe.git
+[    53.0s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 248.0/248.0 MB 7.1 MB/s eta 0:00:00
+[    53.1s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 308.3/308.3 kB 16.0 MB/s eta 0:00:00
+[    53.2s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 53.0/53.0 kB 2.1 MB/s eta 0:00:00
+[    60.3s OUT] + git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniDepth.git /tmp/ze/third_party/UniDepth
+[    62.1s OUT] + pip install -q --no-deps -e /tmp/ze/third_party/UniDepth
+[    67.4s OUT] + git clone -q --depth 1 https://github.com/YvanYin/Metric3D.git /tmp/ze/third_party/Metric3D
+[    70.4s OUT] + git clone -q --depth 1 https://github.com/ByteDance-Seed/Depth-Anything-3.git /tmp/ze/third_party/Depth-Anything-3
+[    72.8s OUT] + pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/Depth-Anything-3
+[    84.3s OUT] + git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniK3D.git /tmp/ze/third_party/UniK3D
+[    91.0s OUT] + pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/UniK3D
+[    96.3s OUT] + git clone -q --depth 1 https://github.com/facebookresearch/vggt.git /tmp/ze/third_party/vggt
+[   100.3s OUT] + pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/vggt
+[   105.9s OUT] + pip install -q omegaconf evo
+[   108.2s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 165.4/165.4 kB 1.6 MB/s eta 0:00:00
+[   108.3s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 150.9/150.9 kB 5.1 MB/s eta 0:00:00
+[   108.3s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 43.3/43.3 kB 2.1 MB/s eta 0:00:00
+[   108.5s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 493.4/493.4 kB 7.4 MB/s eta 0:00:00
+[   108.6s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 20.1 MB/s eta 0:00:00
+[   110.6s ERR] ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+[   110.6s ERR] depth-anything-3 0.0.0 requires e3nn, which is not installed.
+[   110.6s ERR] depth-anything-3 0.0.0 requires open3d, which is not installed.
+[   110.6s ERR] depth-anything-3 0.0.0 requires pillow-heif, which is not installed.
+[   110.6s ERR] depth-anything-3 0.0.0 requires plyfile, which is not installed.
+[   110.6s ERR] depth-anything-3 0.0.0 requires pre-commit, which is not installed.
+[   110.6s ERR] depth-anything-3 0.0.0 requires pycolmap, which is not installed.
+[   110.6s ERR] depth-anything-3 0.0.0 requires xformers, which is not installed.
+[   110.6s ERR] depth-anything-3 0.0.0 requires numpy<2, but you have numpy 2.1.3 which is incompatible.
+[  1715.0s OUT] + cd /tmp/ze/data/raw/kitti && unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' && rm sel.zip
+[  1721.3s OUT] + cd /tmp/ze/data/raw/diode && tar xzf val.tar.gz && rm val.tar.gz
+[  1773.4s OUT] setup done in 29.5 min
+[  1773.4s OUT] + /usr/bin/python3 scripts/scene_stats.py --n 200 --nyu-scenes --out /kaggle/working/results
+[  1776.9s OUT] 654 test images in 215 scenes
+[  1777.1s OUT] all done in 29.6 min
+[  1782.4s ERR] /usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+[  1782.4s ERR]   cells[i][c] = re.sub('\\\\\|', '|', cell)
+[  1782.6s ERR] /usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+[  1782.6s ERR]   text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[  1783.5s ERR] [NbConvertApp] Converting notebook __script__.ipynb to html
+[  1784.4s ERR] [NbConvertApp] Writing 373715 bytes to __results__.html
