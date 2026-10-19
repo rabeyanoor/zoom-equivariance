@@ -1,0 +1,7 @@
+score,target,spearman,lo,hi,pairs
+abs_alpha,absrel2,0.513,0.113,0.781,28
+abs_alpha,absrel3,0.671,0.323,0.904,28
+abs_alpha,absrel1,-0.064,-0.521,0.41,28
+die2,absrel2,0.505,0.101,0.786,28
+die2,absrel3,0.664,0.31,0.899,28
+die2,absrel1,-0.069,-0.533,0.417,28

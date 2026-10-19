@@ -1,0 +1,9 @@
+dataset,target,spearman,models
+diode-in,absrel2,0.893,7
+diode-in,absrel3,0.857,7
+diode-out,absrel2,0.107,7
+diode-out,absrel3,-0.143,7
+kitti,absrel2,0.857,7
+kitti,absrel3,0.964,7
+nyu,absrel2,0.964,7
+nyu,absrel3,0.964,7
