@@ -1,0 +1,8 @@
+# what the unit tests need (no model weights are downloaded in CI)
+numpy
+scipy
+pandas
+h5py
+pillow
+pytest
+ruff

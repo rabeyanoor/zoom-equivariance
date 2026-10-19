@@ -74,8 +74,59 @@ def slope_through_origin(x, y):
     return float((x * y).sum() / (x * x).sum()) if len(x) >= 2 else np.nan
 
 
+KEY = ["model", "dataset", "name", "cx", "cy"]
+
+
+def _slope_by_group(x, y, keys):
+    """Least-squares slope through the origin of y on x within each group, ignoring
+    non-finite pairs; NaN for groups with fewer than two usable points."""
+    ok = np.isfinite(x) & np.isfinite(y)
+    parts = pd.DataFrame({"xy": np.where(ok, x * y, 0.0), "xx": np.where(ok, x * x, 0.0), "n": ok})
+    g = parts.groupby([k.values for k in keys]).sum()
+    return (g.xy / g.xx).where(g.n >= 2)
+
+
 def per_image(df):
-    """One row per (model, dataset, image, centre) with alpha, beta and a few errors."""
+    """One row per (model, dataset, image, centre) with alpha, beta and a few errors.
+
+    Vectorised: the same numbers as fitting each image in a loop (tests/test_analysis.py
+    checks this against per_image_loop), about 100x faster on the full audit.
+    """
+    z = df[df.kind == "zoom"].copy()
+    z["zoom"] = z.zoom.round(4)
+    z["log_s"] = np.log(z.s_true)
+    zz = z[z.zoom > 1]
+    keys = [zz[k] for k in KEY]
+
+    out = pd.DataFrame(index=z.groupby(KEY).size().index)
+    out["alpha"] = -_slope_by_group(zz.log_s.values, zz.log_ratio_self.values, keys)
+    log_f = np.log(zz.fx.astype(float) / zz.fx_base.astype(float)).values
+    has_fx = zz.fx.notna().groupby(keys).all()
+    out["beta"] = _slope_by_group(zz.log_s.values, log_f, keys).where(has_fx)
+
+    def at(s, col):
+        if col not in z:
+            return np.nan
+        return z[z.zoom == s].set_index(KEY)[col].astype(float).groupby(level=list(range(len(KEY)))).first()
+
+    out["die2"] = at(2.0, "log_ratio_self").abs()
+    for s, tag in ((1.0, "1"), (2.0, "2"), (3.0, "3")):
+        out[f"absrel{tag}"] = at(s, "abs_rel")
+        out[f"d1_{tag}"] = at(s, "delta1")
+    # unzoomed prediction on the same crop pixels (NaN for runs before this column)
+    out["base2"], out["base3"] = at(2.0, "abs_rel_base"), at(3.0, "abs_rel_base")
+    out["scale1"], out["scale2"] = at(1.0, "log_ratio_gt"), at(2.0, "log_ratio_gt")
+    all_fx = z.fx.notna().groupby([z[k] for k in KEY]).all()
+    out["fx_err1"] = np.abs(np.log(at(1.0, "fx") / at(1.0, "fx_gt"))).where(all_fx)
+    # training-free correction D * s**e (only in runs that have these columns)
+    for e in (0.25, 0.5, 0.75, 1.0):
+        for s in (2.0, 3.0):
+            out[f"fix{int(s)}_{e}"] = at(s, f"abs_rel_fix{e}")
+    return out.reset_index()
+
+
+def per_image_loop(df):
+    """Reference implementation of per_image (slow); kept for the equivalence test."""
     z = df[(df.kind == "zoom")].copy()
     z["log_s"] = np.log(z["s_true"])
     rows = []
