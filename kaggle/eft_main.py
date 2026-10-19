@@ -55,9 +55,22 @@ def check_no_overlap():
     assert not clash, f"training drives overlap the evaluation drives: {clash}"
 
 
+def reuse_checkpoints():
+    """If an earlier EFT kernel is attached as input, reuse its checkpoints instead of training."""
+    import shutil
+
+    (WORK / "eft").mkdir(parents=True, exist_ok=True)
+    for ck in Path("/kaggle/input").glob("**/dav2-s-*.pt"):
+        print("reusing", ck, flush=True)
+        shutil.copy(ck, WORK / "eft" / ck.name)
+    for log in Path("/kaggle/input").glob("**/train_log_*.csv"):
+        shutil.copy(log, WORK / "eft" / log.name)
+
+
 def main():
     t0 = time.time()
     unpack_project()
+    reuse_checkpoints()
     sh("pip install -q transformers==5.20.1 h5py")
     download()
     check_no_overlap()

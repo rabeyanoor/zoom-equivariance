@@ -14,7 +14,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-RESULTS = Path(__file__).resolve().parents[1] / "outputs" / "results"
+import os
+
+RESULTS = Path(os.environ.get("ZE_RESULTS", Path(__file__).resolve().parents[1] / "outputs" / "results"))
 
 GROUP = {"dav2-s": "pixels only", "dav2-b": "pixels only", "zoedepth": "pixels only",
          "depthpro": "predicts camera", "moge2-s": "predicts camera", "unidepth2-s": "predicts camera",
@@ -29,8 +31,9 @@ DATASETS = ["kitti", "nyu", "diode-in", "diode-out"]
 PRETTY_DS = {"kitti": "KITTI", "nyu": "NYUv2", "diode-in": "DIODE-in", "diode-out": "DIODE-out"}
 
 
-def load(pattern="*.csv", folder=RESULTS):
-    files = [f for f in sorted(Path(folder).glob(pattern)) if "__offc" not in f.name or "offc" in pattern]
+def load(pattern="*__*.csv", folder=None):
+    folder = Path(folder or RESULTS)
+    files = [f for f in sorted(folder.glob(pattern)) if "__offc" not in f.name or "offc" in pattern]
     df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
     first = df[df.kind == "zoom"].groupby(["model", "dataset", "name", "cx", "cy"])["fx_gt"].transform("min")
     df.loc[df.kind == "zoom", "s_true"] = df.loc[df.kind == "zoom", "fx_gt"] / first
@@ -60,6 +63,9 @@ def per_image(df):
                          die2=abs(at(2.0, "log_ratio_self")),
                          absrel1=at(1.0, "abs_rel"), absrel2=at(2.0, "abs_rel"), absrel3=at(3.0, "abs_rel"),
                          d1_1=at(1.0, "delta1"), d1_2=at(2.0, "delta1"), d1_3=at(3.0, "delta1"),
+                         # unzoomed prediction on the same crop pixels (NaN for runs before this column)
+                         base2=at(2.0, "abs_rel_base") if "abs_rel_base" in g else np.nan,
+                         base3=at(3.0, "abs_rel_base") if "abs_rel_base" in g else np.nan,
                          scale1=at(1.0, "log_ratio_gt"), scale2=at(2.0, "log_ratio_gt"),
                          fx_err1=abs(np.log(at(1.0, "fx") / at(1.0, "fx_gt"))) if g.fx.notna().all() else np.nan))
     return pd.DataFrame(rows)
@@ -89,6 +95,7 @@ def summary(pi, by=("model", "dataset")):
         rows.append(dict(zip(by, key), n=len(g), alpha=a, alpha_lo=alo, alpha_hi=ahi,
                          beta=b, beta_lo=blo, beta_hi=bhi, die2=np.nanmedian(g.die2),
                          absrel1=np.nanmean(g.absrel1), absrel2=np.nanmean(g.absrel2), absrel3=np.nanmean(g.absrel3),
+                         base2=np.nanmean(g.base2), base3=np.nanmean(g.base3),
                          d1_1=np.nanmean(g.d1_1), d1_2=np.nanmean(g.d1_2), d1_3=np.nanmean(g.d1_3),
                          fx_err1=np.nanmedian(g.fx_err1)))
     return pd.DataFrame(rows)

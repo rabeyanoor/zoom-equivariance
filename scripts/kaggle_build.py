@@ -24,21 +24,23 @@ if kind == "audit":
     JOBS += [f"{m} kitti nyu --n {2 if SMOKE else 50} --off-centre --out-tag offc"
              for m in ("moge2-s", "unidepth2-s", "depthpro", "dav2-s")]
     # Depth Pro is ~5x slower than the rest, so part b = Depth Pro + off-centre
-    if part == "a":
+    if part in ("a", "a2"):   # a2: rerun of a with the same-pixel reference column
         JOBS = [j for j in JOBS if not j.startswith("depthpro") and "--off-centre" not in j]
     elif part == "b":
         JOBS = [j for j in JOBS if j.startswith("depthpro") or "--off-centre" in j]
     JOBS = ["scripts/run_audit.py " + j for j in JOBS]
 elif kind == "stats":
     # CPU only: per-image scene statistics + Figure 1 depth maps
-    JOBS = [f"scripts/scene_stats.py --n {N} --figure1"]
+    JOBS = [f"scripts/scene_stats.py --n {N} " + ("--figure-only" if part == "fig" else "--figure1")]
 else:
     # eft: the method; eft_baseline (part "baseline"): anchor-only fine-tuning, same data and steps
     steps = 20 if SMOKE else 3000
     res = "/kaggle/working/results"
     kitti = "--images 'data/raw/kitti_raw/*/*/image_02/data/*.png'"
     if part == "baseline":
-        flags, evals = "--w-zoom 0 --tag anchor", ("dav2-s-anchor",)
+        # trains anchor-only, then scores all three with the current audit code
+        # (the EFT checkpoints come from the attached zoom-equivariance-eft output)
+        flags, evals = "--w-zoom 0 --tag anchor", ("dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft")
     else:
         flags, evals = "--tag eft", ("dav2-s-fixed", "dav2-s-eft")
     JOBS = [f"scripts/train_eft.py outdoor --steps {steps} {kitti} {flags} --out /kaggle/working/eft",
@@ -49,7 +51,7 @@ files = {str(p.relative_to(ROOT)): base64.b64encode(p.read_bytes()).decode()
          for p in sorted([*ROOT.glob("src/*.py"), ROOT / "scripts/run_audit.py", ROOT / "scripts/train_eft.py",
                          ROOT / "scripts/scene_stats.py"])}
 
-name = f"zoom-equivariance-{kind}{'-' + part if part else ''}"
+name = f"zoom-equivariance-{kind}{'-' + part if part and kind != 'stats' else ''}"
 out = ROOT / "kaggle" / f"build_{kind}{'_' + part if part else ''}"
 out.mkdir(parents=True, exist_ok=True)
 body = (ROOT / "kaggle" / f"{'eft' if kind == 'eft' else 'audit'}_main.py").read_text()
@@ -63,5 +65,6 @@ body = (ROOT / "kaggle" / f"{'eft' if kind == 'eft' else 'audit'}_main.py").read
     "is_private": True,
     "enable_gpu": kind != "stats",
     "enable_internet": True,
+    **({"kernel_sources": [f"{user}/zoom-equivariance-eft"]} if part == "baseline" else {}),
 }, indent=2))
 print("built", out, len(files), "files,", len(JOBS), "jobs")

@@ -53,6 +53,8 @@ def zoom_rows(model, sample, max_depth, zooms=ZOOMS, center=(0.5, 0.5), stale_K=
                    log_ratio_self=float(np.median(np.log(d_s[ok] / d_1[ok]))) if ok.sum() > 50 else np.nan,
                    fx=out["fx"], fx_base=base["fx"], fx_gt=float(zoom.zoom_K(K, box, (h, w))[0, 0]))
         row.update(depth_errors(d_s, gt_box, max_depth))
+        # the unzoomed prediction scored on exactly the same pixels: the fair reference
+        row.update({f"{k}_base": v for k, v in depth_errors(d_1, gt_box, max_depth).items()})
         rows.append(row)
     # control: same detail loss, no change of field of view
     for s in blur:

@@ -21,12 +21,13 @@ p = argparse.ArgumentParser()
 p.add_argument("--n", type=int, default=200)
 p.add_argument("--out", default=str(ROOT / "outputs" / "results"))
 p.add_argument("--figure1", action="store_true", help="also save depth maps for Figure 1")
+p.add_argument("--figure-only", action="store_true")
 args = p.parse_args()
 out = Path(args.out)
 out.mkdir(parents=True, exist_ok=True)
 
 rows = []
-for ds in ["kitti", "nyu", "diode-in", "diode-out"]:
+for ds in ([] if args.figure_only else ["kitti", "nyu", "diode-in", "diode-out"]):
     load = datasets.Loader(ds)
     for i in datasets.sample_ids(ds, args.n):
         s = load(i)
@@ -36,9 +37,10 @@ for ds in ["kitti", "nyu", "diode-in", "diode-out"]:
         rows.append(dict(dataset=ds, name=s["name"], depth_spread=q75 - q25, median_depth=float(np.exp(q50)),
                          gt_coverage=len(g) / s["depth"].size))
     print(ds, "done", flush=True)
-pd.DataFrame(rows).to_csv(out / "scene_stats.csv", index=False)
+if rows:
+    pd.DataFrame(rows).to_csv(out / "scene_stats.csv", index=False)
 
-if args.figure1:
+if args.figure1 or args.figure_only:
     import models
     import zoom
 

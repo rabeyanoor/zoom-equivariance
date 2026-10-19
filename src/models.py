@@ -70,7 +70,8 @@ class MoGe2:
     def predict(self, img, K=None):
         h, w = img.shape[:2]
         x = torch.from_numpy(img).permute(2, 0, 1).float().to(DEVICE) / 255
-        out = {k: v.cpu() for k, v in self.model.infer(x).items()}
+        # fp16 is MoGe's default and is what we use on the GPU; the CPU has no fp16 kernels
+        out = {k: v.cpu() for k, v in self.model.infer(x, use_fp16=DEVICE.type == "cuda").items()}
         depth = out["depth"].numpy().copy()
         depth[~out["mask"].numpy()] = np.nan
         # MoGe returns intrinsics normalised by image width / height
