@@ -26,7 +26,8 @@ PRETTY = {"dav2-s": "DA-V2-S", "dav2-b": "DA-V2-B", "zoedepth": "ZoeDepth", "dep
           "moge2-s": "MoGe-2-S", "unidepth2-s": "UniDepthV2-S", "metric3d-s": "Metric3D v2-S",
           "metric3d-s-staleK": "Metric3D v2-S (stale K)", "dav2-s-fixed": "DA-V2-S (frozen)",
           "dav2-s-eft": "DA-V2-S + EFT", "dav2-s-anchor": "DA-V2-S + anchor-only FT",
-          "dav2-s-eftb": "DA-V2-S + EFT+B (ours)"}
+          "dav2-s-eftb": "DA-V2-S + EFT+B (ours)", "dav2-s-blur": "DA-V2-S + blur-only FT",
+          "dav2-s-eftb3": "DA-V2-S + EFT+B (anchor x3)"}
 DATASETS = ["kitti", "nyu", "diode-in", "diode-out"]
 PRETTY_DS = {"kitti": "KITTI", "nyu": "NYUv2", "diode-in": "DIODE-in", "diode-out": "DIODE-out"}
 

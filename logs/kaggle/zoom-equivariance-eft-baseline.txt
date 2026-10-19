@@ -1,0 +1,569 @@
+[     0.9s OUT] reusing /kaggle/input/zoom-equivariance-eft/eft/dav2-s-eft-outdoor.pt
+[     2.7s OUT] reusing /kaggle/input/zoom-equivariance-eft/eft/dav2-s-eft-indoor.pt
+[     4.0s OUT] + pip install -q transformers==5.20.1 h5py
+[     8.2s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 106.9 MB/s eta 0:00:00
+[     8.2s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 846.4/846.4 kB 39.8 MB/s eta 0:00:00
+[   181.7s OUT] + cd /tmp/ze/data/raw/kitti && unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' && rm sel.zip
+[   187.6s OUT] + cd /tmp/ze/data/raw/diode && tar xzf val.tar.gz && rm val.tar.gz
+[   259.4s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0001.zip '*/image_02/data/*' && rm 2011_09_26_drive_0001.zip
+[   260.0s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0009.zip '*/image_02/data/*' && rm 2011_09_26_drive_0009.zip
+[   262.3s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0011.zip '*/image_02/data/*' && rm 2011_09_26_drive_0011.zip
+[   263.6s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0018.zip '*/image_02/data/*' && rm 2011_09_26_drive_0018.zip
+[   269.4s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0022.zip '*/image_02/data/*' && rm 2011_09_26_drive_0022.zip
+[   274.1s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0057.zip '*/image_02/data/*' && rm 2011_09_26_drive_0057.zip
+[   278.6s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_30_drive_0020.zip '*/image_02/data/*' && rm 2011_09_30_drive_0020.zip
+[   286.6s OUT] val drives: ['2011_09_26_drive_0002', '2011_09_26_drive_0005', '2011_09_26_drive_0013', '2011_09_26_drive_0020', '2011_09_26_drive_0023', '2011_09_26_drive_0036', '2011_09_26_drive_0079', '2011_09_26_drive_0095', '2011_09_26_drive_0113', '2011_09_28_drive_0037', '2011_09_29_drive_0026', '2011_09_30_drive_0016', '2011_10_03_drive_0047']
+[   286.6s OUT] setup done in 4.8 min
+[   286.6s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py outdoor --steps 3000 --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --w-zoom 0 --tag anchor --out /kaggle/working/eft
+[   300.0s OUT] 3323 unlabeled training images
+[   322.0s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   326.3s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   326.3s ERR] Loading weights:  92%|█████████▏| 263/287 [00:00<00:00, 2625.46it/s]
+[   326.3s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2687.79it/s]
+[   330.2s ERR] /tmp/ze/src/eft.py:122: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+[   330.2s ERR] Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+[   330.2s ERR]   return float(l_zoom), float(l_anchor)
+[   432.6s OUT] step 100: zoom 0.6701  anchor 0.0000  1.8 min
+[   546.5s OUT] step 200: zoom 0.6223  anchor 0.0000  3.7 min
+[   659.6s OUT] step 300: zoom 0.6121  anchor 0.0000  5.5 min
+[   772.7s OUT] step 400: zoom 0.6331  anchor 0.0000  7.4 min
+[   885.8s OUT] step 500: zoom 0.5922  anchor 0.0000  9.3 min
+[   999.1s OUT] step 600: zoom 0.6359  anchor 0.0000  11.2 min
+[  1112.0s OUT] step 700: zoom 0.6294  anchor 0.0000  13.1 min
+[  1225.4s OUT] step 800: zoom 0.6846  anchor 0.0000  15.0 min
+[  1338.7s OUT] step 900: zoom 0.6625  anchor 0.0000  16.9 min
+[  1451.8s OUT] step 1000: zoom 0.6617  anchor 0.0000  18.8 min
+[  1565.1s OUT] step 1100: zoom 0.6816  anchor 0.0000  20.6 min
+[  1678.3s OUT] step 1200: zoom 0.5882  anchor 0.0000  22.5 min
+[  1791.4s OUT] step 1300: zoom 0.6482  anchor 0.0000  24.4 min
+[  1904.6s OUT] step 1400: zoom 0.6526  anchor 0.0000  26.3 min
+[  2017.7s OUT] step 1500: zoom 0.6545  anchor 0.0000  28.2 min
+[  2130.8s OUT] step 1600: zoom 0.6855  anchor 0.0000  30.1 min
+[  2243.9s OUT] step 1700: zoom 0.6805  anchor 0.0000  32.0 min
+[  2357.2s OUT] step 1800: zoom 0.6389  anchor 0.0000  33.8 min
+[  2470.3s OUT] step 1900: zoom 0.5784  anchor 0.0000  35.7 min
+[  2583.4s OUT] step 2000: zoom 0.6584  anchor 0.0000  37.6 min
+[  2696.6s OUT] step 2100: zoom 0.6071  anchor 0.0000  39.5 min
+[  2809.8s OUT] step 2200: zoom 0.6484  anchor 0.0000  41.4 min
+[  2923.0s OUT] step 2300: zoom 0.6223  anchor 0.0000  43.3 min
+[  3036.2s OUT] step 2400: zoom 0.6540  anchor 0.0000  45.2 min
+[  3149.6s OUT] step 2500: zoom 0.6702  anchor 0.0000  47.0 min
+[  3262.7s OUT] step 2600: zoom 0.6398  anchor 0.0000  48.9 min
+[  3375.9s OUT] step 2700: zoom 0.6023  anchor 0.0000  50.8 min
+[  3489.1s OUT] step 2800: zoom 0.6381  anchor 0.0000  52.7 min
+[  3601.9s OUT] step 2900: zoom 0.6411  anchor 0.0000  54.6 min
+[  3715.1s OUT] step 3000: zoom 0.6301  anchor 0.0000  56.5 min
+[  3715.4s OUT] saved /kaggle/working/eft
+[  3720.7s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py indoor --steps 3000 --nyu-train --w-zoom 0 --tag anchor --out /kaggle/working/eft
+[  3732.2s OUT] 795 unlabeled training images
+[  3737.6s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[  3740.2s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[  3740.2s ERR] Loading weights:  88%|████████▊ | 253/287 [00:00<00:00, 2521.15it/s]
+[  3740.2s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2558.39it/s]
+[  3741.9s ERR] /tmp/ze/src/eft.py:122: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+[  3741.9s ERR] Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+[  3741.9s ERR]   return float(l_zoom), float(l_anchor)
+[  3778.7s OUT] step 100: zoom 0.5136  anchor 0.0000  0.6 min
+[  3816.5s OUT] step 200: zoom 0.4873  anchor 0.0000  1.3 min
+[  3853.6s OUT] step 300: zoom 0.4745  anchor 0.0000  1.9 min
+[  3891.1s OUT] step 400: zoom 0.5371  anchor 0.0000  2.5 min
+[  3928.3s OUT] step 500: zoom 0.5091  anchor 0.0000  3.1 min
+[  3965.6s OUT] step 600: zoom 0.4753  anchor 0.0000  3.8 min
+[  4003.0s OUT] step 700: zoom 0.5007  anchor 0.0000  4.4 min
+[  4040.3s OUT] step 800: zoom 0.5166  anchor 0.0000  5.0 min
+[  4077.7s OUT] step 900: zoom 0.5116  anchor 0.0000  5.6 min
+[  4115.1s OUT] step 1000: zoom 0.5190  anchor 0.0000  6.2 min
+[  4152.4s OUT] step 1100: zoom 0.5283  anchor 0.0000  6.9 min
+[  4189.7s OUT] step 1200: zoom 0.4886  anchor 0.0000  7.5 min
+[  4227.1s OUT] step 1300: zoom 0.4850  anchor 0.0000  8.1 min
+[  4264.5s OUT] step 1400: zoom 0.5139  anchor 0.0000  8.7 min
+[  4301.9s OUT] step 1500: zoom 0.4825  anchor 0.0000  9.4 min
+[  4339.2s OUT] step 1600: zoom 0.4943  anchor 0.0000  10.0 min
+[  4376.7s OUT] step 1700: zoom 0.5458  anchor 0.0000  10.6 min
+[  4414.0s OUT] step 1800: zoom 0.5028  anchor 0.0000  11.2 min
+[  4451.4s OUT] step 1900: zoom 0.4735  anchor 0.0000  11.8 min
+[  4488.7s OUT] step 2000: zoom 0.5209  anchor 0.0000  12.5 min
+[  4526.1s OUT] step 2100: zoom 0.5078  anchor 0.0000  13.1 min
+[  4563.4s OUT] step 2200: zoom 0.5105  anchor 0.0000  13.7 min
+[  4600.8s OUT] step 2300: zoom 0.4985  anchor 0.0000  14.3 min
+[  4638.2s OUT] step 2400: zoom 0.5368  anchor 0.0000  15.0 min
+[  4675.6s OUT] step 2500: zoom 0.5218  anchor 0.0000  15.6 min
+[  4713.1s OUT] step 2600: zoom 0.4984  anchor 0.0000  16.2 min
+[  4750.5s OUT] step 2700: zoom 0.4736  anchor 0.0000  16.8 min
+[  4787.9s OUT] step 2800: zoom 0.5121  anchor 0.0000  17.5 min
+[  4825.3s OUT] step 2900: zoom 0.4897  anchor 0.0000  18.1 min
+[  4862.7s OUT] step 3000: zoom 0.5031  anchor 0.0000  18.7 min
+[  4863.0s OUT] saved /kaggle/working/eft
+[  4864.6s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py outdoor --steps 3000 --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --w-blur 1 --tag eftb --out /kaggle/working/eft
+[  4866.9s OUT] 3323 unlabeled training images
+[  4873.3s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[  4873.3s ERR] Loading weights:  87%|████████▋ | 249/287 [00:00<00:00, 2488.96it/s]
+[  4873.3s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2563.14it/s]
+[  4876.1s ERR] /tmp/ze/src/eft.py:122: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+[  4876.1s ERR] Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+[  4876.1s ERR]   return float(l_zoom), float(l_anchor)
+[  5050.5s OUT] step 100: zoom 0.2357  anchor 0.0665  2.9 min
+[  5225.4s OUT] step 200: zoom 0.1414  anchor 0.0594  5.9 min
+[  5400.2s OUT] step 300: zoom 0.1344  anchor 0.0665  8.8 min
+[  5575.2s OUT] step 400: zoom 0.1110  anchor 0.0514  11.7 min
+[  5750.5s OUT] step 500: zoom 0.1099  anchor 0.0549  14.6 min
+[  5925.9s OUT] step 600: zoom 0.1098  anchor 0.0489  17.5 min
+[  6100.7s OUT] step 700: zoom 0.1055  anchor 0.0511  20.5 min
+[  6275.9s OUT] step 800: zoom 0.0972  anchor 0.0477  23.4 min
+[  6451.2s OUT] step 900: zoom 0.0892  anchor 0.0451  26.3 min
+[  6626.1s OUT] step 1000: zoom 0.0865  anchor 0.0429  29.2 min
+[  6801.6s OUT] step 1100: zoom 0.0908  anchor 0.0457  32.1 min
+[  6976.4s OUT] step 1200: zoom 0.0873  anchor 0.0442  35.0 min
+[  7151.3s OUT] step 1300: zoom 0.0876  anchor 0.0466  38.0 min
+[  7326.5s OUT] step 1400: zoom 0.0809  anchor 0.0438  40.9 min
+[  7501.7s OUT] step 1500: zoom 0.0886  anchor 0.0472  43.8 min
+[  7677.1s OUT] step 1600: zoom 0.0836  anchor 0.0447  46.7 min
+[  7852.0s OUT] step 1700: zoom 0.0807  anchor 0.0433  49.6 min
+[  8027.3s OUT] step 1800: zoom 0.0813  anchor 0.0430  52.6 min
+[  8202.9s OUT] step 1900: zoom 0.0876  anchor 0.0473  55.5 min
+[  8377.8s OUT] step 2000: zoom 0.0842  anchor 0.0425  58.4 min
+[  8553.0s OUT] step 2100: zoom 0.0837  anchor 0.0457  61.3 min
+[  8727.9s OUT] step 2200: zoom 0.0805  anchor 0.0406  64.2 min
+[  8902.7s OUT] step 2300: zoom 0.0818  anchor 0.0431  67.1 min
+[  9078.3s OUT] step 2400: zoom 0.0770  anchor 0.0393  70.1 min
+[  9253.9s OUT] step 2500: zoom 0.0781  anchor 0.0411  73.0 min
+[  9429.2s OUT] step 2600: zoom 0.0816  anchor 0.0426  75.9 min
+[  9604.3s OUT] step 2700: zoom 0.0778  anchor 0.0421  78.8 min
+[  9779.4s OUT] step 2800: zoom 0.0760  anchor 0.0426  81.8 min
+[  9954.8s OUT] step 2900: zoom 0.0796  anchor 0.0393  84.7 min
+[ 10129.8s OUT] step 3000: zoom 0.0756  anchor 0.0386  87.6 min
+[ 10130.1s OUT] saved /kaggle/working/eft
+[ 10131.6s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py indoor --steps 3000 --nyu-train --w-blur 1 --tag eftb --out /kaggle/working/eft
+[ 10141.6s OUT] 795 unlabeled training images
+[ 10148.0s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 10148.0s ERR] Loading weights:  87%|████████▋ | 250/287 [00:00<00:00, 2484.68it/s]
+[ 10148.0s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2521.88it/s]
+[ 10149.8s ERR] /tmp/ze/src/eft.py:122: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+[ 10149.8s ERR] Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+[ 10149.8s ERR]   return float(l_zoom), float(l_anchor)
+[ 10205.5s OUT] step 100: zoom 0.2084  anchor 0.0748  1.0 min
+[ 10260.2s OUT] step 200: zoom 0.1399  anchor 0.0717  1.9 min
+[ 10315.5s OUT] step 300: zoom 0.1347  anchor 0.0663  2.8 min
+[ 10370.3s OUT] step 400: zoom 0.1278  anchor 0.0651  3.7 min
+[ 10425.7s OUT] step 500: zoom 0.1261  anchor 0.0620  4.6 min
+[ 10481.1s OUT] step 600: zoom 0.1133  anchor 0.0611  5.5 min
+[ 10536.5s OUT] step 700: zoom 0.1122  anchor 0.0629  6.5 min
+[ 10591.8s OUT] step 800: zoom 0.1155  anchor 0.0598  7.4 min
+[ 10647.1s OUT] step 900: zoom 0.1048  anchor 0.0574  8.3 min
+[ 10702.3s OUT] step 1000: zoom 0.1140  anchor 0.0617  9.2 min
+[ 10757.5s OUT] step 1100: zoom 0.0977  anchor 0.0532  10.2 min
+[ 10812.9s OUT] step 1200: zoom 0.1077  anchor 0.0513  11.1 min
+[ 10868.2s OUT] step 1300: zoom 0.0968  anchor 0.0553  12.0 min
+[ 10923.4s OUT] step 1400: zoom 0.1055  anchor 0.0589  12.9 min
+[ 10978.7s OUT] step 1500: zoom 0.0983  anchor 0.0528  13.8 min
+[ 11033.9s OUT] step 1600: zoom 0.0916  anchor 0.0503  14.8 min
+[ 11089.0s OUT] step 1700: zoom 0.1063  anchor 0.0532  15.7 min
+[ 11144.2s OUT] step 1800: zoom 0.0933  anchor 0.0496  16.6 min
+[ 11199.4s OUT] step 1900: zoom 0.0929  anchor 0.0479  17.5 min
+[ 11254.6s OUT] step 2000: zoom 0.0970  anchor 0.0556  18.4 min
+[ 11309.6s OUT] step 2100: zoom 0.0841  anchor 0.0494  19.4 min
+[ 11364.7s OUT] step 2200: zoom 0.0921  anchor 0.0476  20.3 min
+[ 11420.0s OUT] step 2300: zoom 0.0904  anchor 0.0492  21.2 min
+[ 11475.2s OUT] step 2400: zoom 0.0880  anchor 0.0471  22.1 min
+[ 11530.5s OUT] step 2500: zoom 0.0914  anchor 0.0460  23.0 min
+[ 11585.6s OUT] step 2600: zoom 0.0889  anchor 0.0478  24.0 min
+[ 11640.9s OUT] step 2700: zoom 0.0850  anchor 0.0512  24.9 min
+[ 11696.0s OUT] step 2800: zoom 0.0908  anchor 0.0460  25.8 min
+[ 11751.0s OUT] step 2900: zoom 0.0881  anchor 0.0491  26.7 min
+[ 11806.1s OUT] step 3000: zoom 0.0881  anchor 0.0458  27.6 min
+[ 11806.4s OUT] saved /kaggle/working/eft
+[ 11807.9s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-fixed kitti nyu diode-in diode-out --n 200 --out /kaggle/working/results
+[ 11816.6s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 11816.6s ERR] Loading weights:  93%|█████████▎| 268/287 [00:00<00:00, 2670.14it/s]
+[ 11816.6s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2712.94it/s]
+[ 11826.7s OUT] dav2-s-fixed__kitti: 10/200 images, 0.2 min
+[ 11836.1s OUT] dav2-s-fixed__kitti: 20/200 images, 0.3 min
+[ 11845.7s OUT] dav2-s-fixed__kitti: 30/200 images, 0.5 min
+[ 11855.4s OUT] dav2-s-fixed__kitti: 40/200 images, 0.6 min
+[ 11864.9s OUT] dav2-s-fixed__kitti: 50/200 images, 0.8 min
+[ 11874.2s OUT] dav2-s-fixed__kitti: 60/200 images, 1.0 min
+[ 11883.5s OUT] dav2-s-fixed__kitti: 70/200 images, 1.1 min
+[ 11892.7s OUT] dav2-s-fixed__kitti: 80/200 images, 1.3 min
+[ 11902.1s OUT] dav2-s-fixed__kitti: 90/200 images, 1.4 min
+[ 11911.3s OUT] dav2-s-fixed__kitti: 100/200 images, 1.6 min
+[ 11920.7s OUT] dav2-s-fixed__kitti: 110/200 images, 1.7 min
+[ 11930.1s OUT] dav2-s-fixed__kitti: 120/200 images, 1.9 min
+[ 11939.5s OUT] dav2-s-fixed__kitti: 130/200 images, 2.0 min
+[ 11949.0s OUT] dav2-s-fixed__kitti: 140/200 images, 2.2 min
+[ 11958.3s OUT] dav2-s-fixed__kitti: 150/200 images, 2.4 min
+[ 11967.7s OUT] dav2-s-fixed__kitti: 160/200 images, 2.5 min
+[ 11977.1s OUT] dav2-s-fixed__kitti: 170/200 images, 2.7 min
+[ 11986.5s OUT] dav2-s-fixed__kitti: 180/200 images, 2.8 min
+[ 11996.0s OUT] dav2-s-fixed__kitti: 190/200 images, 3.0 min
+[ 12005.5s OUT] dav2-s-fixed__kitti: 200/200 images, 3.1 min
+[ 12005.5s OUT] wrote /kaggle/working/results/dav2-s-fixed__kitti.csv
+[ 12005.8s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 12005.8s ERR] Loading weights:  87%|████████▋ | 249/287 [00:00<00:00, 2489.44it/s]
+[ 12005.8s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2558.86it/s]
+[ 12009.8s OUT] dav2-s-fixed__nyu: 10/200 images, 0.1 min
+[ 12013.6s OUT] dav2-s-fixed__nyu: 20/200 images, 0.1 min
+[ 12017.3s OUT] dav2-s-fixed__nyu: 30/200 images, 0.2 min
+[ 12021.0s OUT] dav2-s-fixed__nyu: 40/200 images, 0.3 min
+[ 12024.7s OUT] dav2-s-fixed__nyu: 50/200 images, 0.3 min
+[ 12028.4s OUT] dav2-s-fixed__nyu: 60/200 images, 0.4 min
+[ 12032.1s OUT] dav2-s-fixed__nyu: 70/200 images, 0.4 min
+[ 12035.8s OUT] dav2-s-fixed__nyu: 80/200 images, 0.5 min
+[ 12039.4s OUT] dav2-s-fixed__nyu: 90/200 images, 0.6 min
+[ 12043.1s OUT] dav2-s-fixed__nyu: 100/200 images, 0.6 min
+[ 12046.8s OUT] dav2-s-fixed__nyu: 110/200 images, 0.7 min
+[ 12050.5s OUT] dav2-s-fixed__nyu: 120/200 images, 0.7 min
+[ 12054.1s OUT] dav2-s-fixed__nyu: 130/200 images, 0.8 min
+[ 12057.8s OUT] dav2-s-fixed__nyu: 140/200 images, 0.9 min
+[ 12061.6s OUT] dav2-s-fixed__nyu: 150/200 images, 0.9 min
+[ 12065.3s OUT] dav2-s-fixed__nyu: 160/200 images, 1.0 min
+[ 12068.9s OUT] dav2-s-fixed__nyu: 170/200 images, 1.1 min
+[ 12072.6s OUT] dav2-s-fixed__nyu: 180/200 images, 1.1 min
+[ 12076.2s OUT] dav2-s-fixed__nyu: 190/200 images, 1.2 min
+[ 12079.8s OUT] dav2-s-fixed__nyu: 200/200 images, 1.2 min
+[ 12079.8s OUT] wrote /kaggle/working/results/dav2-s-fixed__nyu.csv
+[ 12080.2s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 12080.2s ERR] Loading weights:  87%|████████▋ | 249/287 [00:00<00:00, 2479.87it/s]
+[ 12080.2s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2558.08it/s]
+[ 12087.0s OUT] dav2-s-fixed__diode-in: 10/200 images, 0.1 min
+[ 12094.0s OUT] dav2-s-fixed__diode-in: 20/200 images, 0.2 min
+[ 12100.9s OUT] dav2-s-fixed__diode-in: 30/200 images, 0.3 min
+[ 12107.8s OUT] dav2-s-fixed__diode-in: 40/200 images, 0.5 min
+[ 12114.6s OUT] dav2-s-fixed__diode-in: 50/200 images, 0.6 min
+[ 12121.4s OUT] dav2-s-fixed__diode-in: 60/200 images, 0.7 min
+[ 12128.1s OUT] dav2-s-fixed__diode-in: 70/200 images, 0.8 min
+[ 12134.9s OUT] dav2-s-fixed__diode-in: 80/200 images, 0.9 min
+[ 12141.8s OUT] dav2-s-fixed__diode-in: 90/200 images, 1.0 min
+[ 12148.5s OUT] dav2-s-fixed__diode-in: 100/200 images, 1.1 min
+[ 12155.3s OUT] dav2-s-fixed__diode-in: 110/200 images, 1.3 min
+[ 12162.1s OUT] dav2-s-fixed__diode-in: 120/200 images, 1.4 min
+[ 12169.0s OUT] dav2-s-fixed__diode-in: 130/200 images, 1.5 min
+[ 12175.7s OUT] dav2-s-fixed__diode-in: 140/200 images, 1.6 min
+[ 12182.5s OUT] dav2-s-fixed__diode-in: 150/200 images, 1.7 min
+[ 12189.3s OUT] dav2-s-fixed__diode-in: 160/200 images, 1.8 min
+[ 12196.1s OUT] dav2-s-fixed__diode-in: 170/200 images, 1.9 min
+[ 12202.8s OUT] dav2-s-fixed__diode-in: 180/200 images, 2.0 min
+[ 12209.6s OUT] dav2-s-fixed__diode-in: 190/200 images, 2.2 min
+[ 12216.3s OUT] dav2-s-fixed__diode-in: 200/200 images, 2.3 min
+[ 12216.3s OUT] wrote /kaggle/working/results/dav2-s-fixed__diode-in.csv
+[ 12216.6s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 12216.6s ERR] Loading weights:  89%|████████▉ | 255/287 [00:00<00:00, 2540.85it/s]
+[ 12216.6s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2583.81it/s]
+[ 12223.4s OUT] dav2-s-fixed__diode-out: 10/200 images, 0.1 min
+[ 12230.1s OUT] dav2-s-fixed__diode-out: 20/200 images, 0.2 min
+[ 12236.7s OUT] dav2-s-fixed__diode-out: 30/200 images, 0.3 min
+[ 12243.4s OUT] dav2-s-fixed__diode-out: 40/200 images, 0.4 min
+[ 12250.1s OUT] dav2-s-fixed__diode-out: 50/200 images, 0.6 min
+[ 12256.8s OUT] dav2-s-fixed__diode-out: 60/200 images, 0.7 min
+[ 12263.6s OUT] dav2-s-fixed__diode-out: 70/200 images, 0.8 min
+[ 12270.4s OUT] dav2-s-fixed__diode-out: 80/200 images, 0.9 min
+[ 12277.2s OUT] dav2-s-fixed__diode-out: 90/200 images, 1.0 min
+[ 12283.9s OUT] dav2-s-fixed__diode-out: 100/200 images, 1.1 min
+[ 12290.7s OUT] dav2-s-fixed__diode-out: 110/200 images, 1.2 min
+[ 12297.3s OUT] dav2-s-fixed__diode-out: 120/200 images, 1.3 min
+[ 12303.8s OUT] dav2-s-fixed__diode-out: 130/200 images, 1.5 min
+[ 12310.4s OUT] dav2-s-fixed__diode-out: 140/200 images, 1.6 min
+[ 12317.0s OUT] dav2-s-fixed__diode-out: 150/200 images, 1.7 min
+[ 12323.9s OUT] dav2-s-fixed__diode-out: 160/200 images, 1.8 min
+[ 12330.6s OUT] dav2-s-fixed__diode-out: 170/200 images, 1.9 min
+[ 12337.5s OUT] dav2-s-fixed__diode-out: 180/200 images, 2.0 min
+[ 12344.2s OUT] dav2-s-fixed__diode-out: 190/200 images, 2.1 min
+[ 12350.7s OUT] dav2-s-fixed__diode-out: 200/200 images, 2.2 min
+[ 12350.7s OUT] wrote /kaggle/working/results/dav2-s-fixed__diode-out.csv
+[ 12352.2s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-anchor kitti nyu diode-in diode-out --n 200 --out /kaggle/working/results
+[ 12361.0s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 12361.0s ERR] Loading weights:  76%|███████▌  | 217/287 [00:00<00:00, 2151.68it/s]
+[ 12361.0s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2480.00it/s]
+[ 12371.3s OUT] dav2-s-anchor__kitti: 10/200 images, 0.2 min
+[ 12380.9s OUT] dav2-s-anchor__kitti: 20/200 images, 0.3 min
+[ 12390.8s OUT] dav2-s-anchor__kitti: 30/200 images, 0.5 min
+[ 12400.5s OUT] dav2-s-anchor__kitti: 40/200 images, 0.6 min
+[ 12409.9s OUT] dav2-s-anchor__kitti: 50/200 images, 0.8 min
+[ 12419.3s OUT] dav2-s-anchor__kitti: 60/200 images, 1.0 min
+[ 12428.6s OUT] dav2-s-anchor__kitti: 70/200 images, 1.1 min
+[ 12437.8s OUT] dav2-s-anchor__kitti: 80/200 images, 1.3 min
+[ 12447.2s OUT] dav2-s-anchor__kitti: 90/200 images, 1.4 min
+[ 12456.6s OUT] dav2-s-anchor__kitti: 100/200 images, 1.6 min
+[ 12466.1s OUT] dav2-s-anchor__kitti: 110/200 images, 1.7 min
+[ 12475.5s OUT] dav2-s-anchor__kitti: 120/200 images, 1.9 min
+[ 12484.9s OUT] dav2-s-anchor__kitti: 130/200 images, 2.1 min
+[ 12494.4s OUT] dav2-s-anchor__kitti: 140/200 images, 2.2 min
+[ 12503.8s OUT] dav2-s-anchor__kitti: 150/200 images, 2.4 min
+[ 12513.2s OUT] dav2-s-anchor__kitti: 160/200 images, 2.5 min
+[ 12522.5s OUT] dav2-s-anchor__kitti: 170/200 images, 2.7 min
+[ 12531.9s OUT] dav2-s-anchor__kitti: 180/200 images, 2.8 min
+[ 12541.4s OUT] dav2-s-anchor__kitti: 190/200 images, 3.0 min
+[ 12550.8s OUT] dav2-s-anchor__kitti: 200/200 images, 3.2 min
+[ 12550.8s OUT] wrote /kaggle/working/results/dav2-s-anchor__kitti.csv
+[ 12551.1s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 12551.1s ERR] Loading weights:  90%|████████▉ | 257/287 [00:00<00:00, 2567.18it/s]
+[ 12551.1s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2657.27it/s]
+[ 12555.0s OUT] dav2-s-anchor__nyu: 10/200 images, 0.1 min
+[ 12558.6s OUT] dav2-s-anchor__nyu: 20/200 images, 0.1 min
+[ 12562.2s OUT] dav2-s-anchor__nyu: 30/200 images, 0.2 min
+[ 12565.7s OUT] dav2-s-anchor__nyu: 40/200 images, 0.2 min
+[ 12569.3s OUT] dav2-s-anchor__nyu: 50/200 images, 0.3 min
+[ 12572.9s OUT] dav2-s-anchor__nyu: 60/200 images, 0.4 min
+[ 12576.4s OUT] dav2-s-anchor__nyu: 70/200 images, 0.4 min
+[ 12579.9s OUT] dav2-s-anchor__nyu: 80/200 images, 0.5 min
+[ 12583.5s OUT] dav2-s-anchor__nyu: 90/200 images, 0.5 min
+[ 12587.0s OUT] dav2-s-anchor__nyu: 100/200 images, 0.6 min
+[ 12590.6s OUT] dav2-s-anchor__nyu: 110/200 images, 0.7 min
+[ 12594.2s OUT] dav2-s-anchor__nyu: 120/200 images, 0.7 min
+[ 12597.7s OUT] dav2-s-anchor__nyu: 130/200 images, 0.8 min
+[ 12601.3s OUT] dav2-s-anchor__nyu: 140/200 images, 0.8 min
+[ 12604.9s OUT] dav2-s-anchor__nyu: 150/200 images, 0.9 min
+[ 12608.5s OUT] dav2-s-anchor__nyu: 160/200 images, 1.0 min
+[ 12612.0s OUT] dav2-s-anchor__nyu: 170/200 images, 1.0 min
+[ 12615.6s OUT] dav2-s-anchor__nyu: 180/200 images, 1.1 min
+[ 12619.2s OUT] dav2-s-anchor__nyu: 190/200 images, 1.1 min
+[ 12622.8s OUT] dav2-s-anchor__nyu: 200/200 images, 1.2 min
+[ 12622.8s OUT] wrote /kaggle/working/results/dav2-s-anchor__nyu.csv
+[ 12623.1s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 12623.1s ERR] Loading weights:  91%|█████████▏| 262/287 [00:00<00:00, 2618.64it/s]
+[ 12623.1s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2635.82it/s]
+[ 12628.6s OUT] dav2-s-anchor__diode-in: 10/200 images, 0.1 min
+[ 12634.0s OUT] dav2-s-anchor__diode-in: 20/200 images, 0.2 min
+[ 12639.3s OUT] dav2-s-anchor__diode-in: 30/200 images, 0.3 min
+[ 12644.7s OUT] dav2-s-anchor__diode-in: 40/200 images, 0.4 min
+[ 12650.2s OUT] dav2-s-anchor__diode-in: 50/200 images, 0.4 min
+[ 12655.8s OUT] dav2-s-anchor__diode-in: 60/200 images, 0.5 min
+[ 12661.2s OUT] dav2-s-anchor__diode-in: 70/200 images, 0.6 min
+[ 12666.8s OUT] dav2-s-anchor__diode-in: 80/200 images, 0.7 min
+[ 12672.3s OUT] dav2-s-anchor__diode-in: 90/200 images, 0.8 min
+[ 12677.7s OUT] dav2-s-anchor__diode-in: 100/200 images, 0.9 min
+[ 12683.3s OUT] dav2-s-anchor__diode-in: 110/200 images, 1.0 min
+[ 12688.8s OUT] dav2-s-anchor__diode-in: 120/200 images, 1.1 min
+[ 12694.3s OUT] dav2-s-anchor__diode-in: 130/200 images, 1.2 min
+[ 12699.8s OUT] dav2-s-anchor__diode-in: 140/200 images, 1.3 min
+[ 12705.3s OUT] dav2-s-anchor__diode-in: 150/200 images, 1.4 min
+[ 12710.8s OUT] dav2-s-anchor__diode-in: 160/200 images, 1.5 min
+[ 12716.4s OUT] dav2-s-anchor__diode-in: 170/200 images, 1.6 min
+[ 12721.9s OUT] dav2-s-anchor__diode-in: 180/200 images, 1.6 min
+[ 12727.4s OUT] dav2-s-anchor__diode-in: 190/200 images, 1.7 min
+[ 12732.8s OUT] dav2-s-anchor__diode-in: 200/200 images, 1.8 min
+[ 12732.8s OUT] wrote /kaggle/working/results/dav2-s-anchor__diode-in.csv
+[ 12733.2s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 12733.2s ERR] Loading weights:  90%|████████▉ | 257/287 [00:00<00:00, 2542.75it/s]
+[ 12733.2s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2598.51it/s]
+[ 12738.9s OUT] dav2-s-anchor__diode-out: 10/200 images, 0.1 min
+[ 12744.3s OUT] dav2-s-anchor__diode-out: 20/200 images, 0.2 min
+[ 12749.8s OUT] dav2-s-anchor__diode-out: 30/200 images, 0.3 min
+[ 12755.3s OUT] dav2-s-anchor__diode-out: 40/200 images, 0.4 min
+[ 12760.8s OUT] dav2-s-anchor__diode-out: 50/200 images, 0.5 min
+[ 12766.2s OUT] dav2-s-anchor__diode-out: 60/200 images, 0.5 min
+[ 12771.8s OUT] dav2-s-anchor__diode-out: 70/200 images, 0.6 min
+[ 12777.6s OUT] dav2-s-anchor__diode-out: 80/200 images, 0.7 min
+[ 12783.7s OUT] dav2-s-anchor__diode-out: 90/200 images, 0.8 min
+[ 12789.7s OUT] dav2-s-anchor__diode-out: 100/200 images, 0.9 min
+[ 12795.6s OUT] dav2-s-anchor__diode-out: 110/200 images, 1.0 min
+[ 12801.0s OUT] dav2-s-anchor__diode-out: 120/200 images, 1.1 min
+[ 12806.3s OUT] dav2-s-anchor__diode-out: 130/200 images, 1.2 min
+[ 12811.6s OUT] dav2-s-anchor__diode-out: 140/200 images, 1.3 min
+[ 12817.1s OUT] dav2-s-anchor__diode-out: 150/200 images, 1.4 min
+[ 12823.0s OUT] dav2-s-anchor__diode-out: 160/200 images, 1.5 min
+[ 12828.8s OUT] dav2-s-anchor__diode-out: 170/200 images, 1.6 min
+[ 12834.5s OUT] dav2-s-anchor__diode-out: 180/200 images, 1.7 min
+[ 12839.9s OUT] dav2-s-anchor__diode-out: 190/200 images, 1.8 min
+[ 12845.3s OUT] dav2-s-anchor__diode-out: 200/200 images, 1.9 min
+[ 12845.3s OUT] wrote /kaggle/working/results/dav2-s-anchor__diode-out.csv
+[ 12846.7s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-eft kitti nyu diode-in diode-out --n 200 --out /kaggle/working/results
+[ 12855.6s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 12855.6s ERR] Loading weights:  90%|█████████ | 259/287 [00:00<00:00, 2586.83it/s]
+[ 12855.6s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2662.27it/s]
+[ 12866.0s OUT] dav2-s-eft__kitti: 10/200 images, 0.2 min
+[ 12875.5s OUT] dav2-s-eft__kitti: 20/200 images, 0.3 min
+[ 12885.2s OUT] dav2-s-eft__kitti: 30/200 images, 0.5 min
+[ 12895.0s OUT] dav2-s-eft__kitti: 40/200 images, 0.6 min
+[ 12904.5s OUT] dav2-s-eft__kitti: 50/200 images, 0.8 min
+[ 12913.9s OUT] dav2-s-eft__kitti: 60/200 images, 1.0 min
+[ 12923.3s OUT] dav2-s-eft__kitti: 70/200 images, 1.1 min
+[ 12932.7s OUT] dav2-s-eft__kitti: 80/200 images, 1.3 min
+[ 12941.9s OUT] dav2-s-eft__kitti: 90/200 images, 1.4 min
+[ 12951.3s OUT] dav2-s-eft__kitti: 100/200 images, 1.6 min
+[ 12960.7s OUT] dav2-s-eft__kitti: 110/200 images, 1.7 min
+[ 12970.2s OUT] dav2-s-eft__kitti: 120/200 images, 1.9 min
+[ 12979.7s OUT] dav2-s-eft__kitti: 130/200 images, 2.1 min
+[ 12989.2s OUT] dav2-s-eft__kitti: 140/200 images, 2.2 min
+[ 12998.5s OUT] dav2-s-eft__kitti: 150/200 images, 2.4 min
+[ 13007.9s OUT] dav2-s-eft__kitti: 160/200 images, 2.5 min
+[ 13017.3s OUT] dav2-s-eft__kitti: 170/200 images, 2.7 min
+[ 13026.7s OUT] dav2-s-eft__kitti: 180/200 images, 2.8 min
+[ 13036.2s OUT] dav2-s-eft__kitti: 190/200 images, 3.0 min
+[ 13045.6s OUT] dav2-s-eft__kitti: 200/200 images, 3.2 min
+[ 13045.6s OUT] wrote /kaggle/working/results/dav2-s-eft__kitti.csv
+[ 13045.9s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 13045.9s ERR] Loading weights:  88%|████████▊ | 252/287 [00:00<00:00, 2508.37it/s]
+[ 13045.9s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2651.98it/s]
+[ 13050.0s OUT] dav2-s-eft__nyu: 10/200 images, 0.1 min
+[ 13053.6s OUT] dav2-s-eft__nyu: 20/200 images, 0.1 min
+[ 13057.2s OUT] dav2-s-eft__nyu: 30/200 images, 0.2 min
+[ 13060.8s OUT] dav2-s-eft__nyu: 40/200 images, 0.2 min
+[ 13064.5s OUT] dav2-s-eft__nyu: 50/200 images, 0.3 min
+[ 13068.0s OUT] dav2-s-eft__nyu: 60/200 images, 0.4 min
+[ 13071.6s OUT] dav2-s-eft__nyu: 70/200 images, 0.4 min
+[ 13075.2s OUT] dav2-s-eft__nyu: 80/200 images, 0.5 min
+[ 13078.8s OUT] dav2-s-eft__nyu: 90/200 images, 0.5 min
+[ 13082.4s OUT] dav2-s-eft__nyu: 100/200 images, 0.6 min
+[ 13086.0s OUT] dav2-s-eft__nyu: 110/200 images, 0.7 min
+[ 13089.6s OUT] dav2-s-eft__nyu: 120/200 images, 0.7 min
+[ 13093.2s OUT] dav2-s-eft__nyu: 130/200 images, 0.8 min
+[ 13096.8s OUT] dav2-s-eft__nyu: 140/200 images, 0.8 min
+[ 13100.4s OUT] dav2-s-eft__nyu: 150/200 images, 0.9 min
+[ 13104.0s OUT] dav2-s-eft__nyu: 160/200 images, 1.0 min
+[ 13107.6s OUT] dav2-s-eft__nyu: 170/200 images, 1.0 min
+[ 13111.2s OUT] dav2-s-eft__nyu: 180/200 images, 1.1 min
+[ 13114.9s OUT] dav2-s-eft__nyu: 190/200 images, 1.1 min
+[ 13118.5s OUT] dav2-s-eft__nyu: 200/200 images, 1.2 min
+[ 13118.5s OUT] wrote /kaggle/working/results/dav2-s-eft__nyu.csv
+[ 13118.8s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 13118.8s ERR] Loading weights:  87%|████████▋ | 251/287 [00:00<00:00, 2498.07it/s]
+[ 13118.8s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2533.17it/s]
+[ 13125.9s OUT] dav2-s-eft__diode-in: 10/200 images, 0.1 min
+[ 13132.6s OUT] dav2-s-eft__diode-in: 20/200 images, 0.2 min
+[ 13139.4s OUT] dav2-s-eft__diode-in: 30/200 images, 0.3 min
+[ 13146.3s OUT] dav2-s-eft__diode-in: 40/200 images, 0.5 min
+[ 13153.1s OUT] dav2-s-eft__diode-in: 50/200 images, 0.6 min
+[ 13159.9s OUT] dav2-s-eft__diode-in: 60/200 images, 0.7 min
+[ 13166.7s OUT] dav2-s-eft__diode-in: 70/200 images, 0.8 min
+[ 13173.4s OUT] dav2-s-eft__diode-in: 80/200 images, 0.9 min
+[ 13180.2s OUT] dav2-s-eft__diode-in: 90/200 images, 1.0 min
+[ 13186.9s OUT] dav2-s-eft__diode-in: 100/200 images, 1.1 min
+[ 13193.7s OUT] dav2-s-eft__diode-in: 110/200 images, 1.2 min
+[ 13200.5s OUT] dav2-s-eft__diode-in: 120/200 images, 1.4 min
+[ 13207.3s OUT] dav2-s-eft__diode-in: 130/200 images, 1.5 min
+[ 13214.0s OUT] dav2-s-eft__diode-in: 140/200 images, 1.6 min
+[ 13220.8s OUT] dav2-s-eft__diode-in: 150/200 images, 1.7 min
+[ 13227.5s OUT] dav2-s-eft__diode-in: 160/200 images, 1.8 min
+[ 13234.3s OUT] dav2-s-eft__diode-in: 170/200 images, 1.9 min
+[ 13241.0s OUT] dav2-s-eft__diode-in: 180/200 images, 2.0 min
+[ 13247.8s OUT] dav2-s-eft__diode-in: 190/200 images, 2.1 min
+[ 13254.7s OUT] dav2-s-eft__diode-in: 200/200 images, 2.3 min
+[ 13254.7s OUT] wrote /kaggle/working/results/dav2-s-eft__diode-in.csv
+[ 13255.0s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 13255.0s ERR] Loading weights:  86%|████████▌ | 247/287 [00:00<00:00, 2467.11it/s]
+[ 13255.0s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2518.14it/s]
+[ 13262.1s OUT] dav2-s-eft__diode-out: 10/200 images, 0.1 min
+[ 13268.8s OUT] dav2-s-eft__diode-out: 20/200 images, 0.2 min
+[ 13275.5s OUT] dav2-s-eft__diode-out: 30/200 images, 0.3 min
+[ 13282.2s OUT] dav2-s-eft__diode-out: 40/200 images, 0.5 min
+[ 13289.0s OUT] dav2-s-eft__diode-out: 50/200 images, 0.6 min
+[ 13295.7s OUT] dav2-s-eft__diode-out: 60/200 images, 0.7 min
+[ 13302.6s OUT] dav2-s-eft__diode-out: 70/200 images, 0.8 min
+[ 13309.4s OUT] dav2-s-eft__diode-out: 80/200 images, 0.9 min
+[ 13316.3s OUT] dav2-s-eft__diode-out: 90/200 images, 1.0 min
+[ 13323.2s OUT] dav2-s-eft__diode-out: 100/200 images, 1.1 min
+[ 13330.0s OUT] dav2-s-eft__diode-out: 110/200 images, 1.2 min
+[ 13336.8s OUT] dav2-s-eft__diode-out: 120/200 images, 1.4 min
+[ 13343.4s OUT] dav2-s-eft__diode-out: 130/200 images, 1.5 min
+[ 13350.1s OUT] dav2-s-eft__diode-out: 140/200 images, 1.6 min
+[ 13356.8s OUT] dav2-s-eft__diode-out: 150/200 images, 1.7 min
+[ 13363.7s OUT] dav2-s-eft__diode-out: 160/200 images, 1.8 min
+[ 13370.4s OUT] dav2-s-eft__diode-out: 170/200 images, 1.9 min
+[ 13377.3s OUT] dav2-s-eft__diode-out: 180/200 images, 2.0 min
+[ 13384.1s OUT] dav2-s-eft__diode-out: 190/200 images, 2.1 min
+[ 13390.7s OUT] dav2-s-eft__diode-out: 200/200 images, 2.3 min
+[ 13390.7s OUT] wrote /kaggle/working/results/dav2-s-eft__diode-out.csv
+[ 13392.2s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-eftb kitti nyu diode-in diode-out --n 200 --out /kaggle/working/results
+[ 13400.9s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 13400.9s ERR] Loading weights:  88%|████████▊ | 253/287 [00:00<00:00, 2528.46it/s]
+[ 13400.9s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2749.53it/s]
+[ 13411.2s OUT] dav2-s-eftb__kitti: 10/200 images, 0.2 min
+[ 13420.9s OUT] dav2-s-eftb__kitti: 20/200 images, 0.3 min
+[ 13430.7s OUT] dav2-s-eftb__kitti: 30/200 images, 0.5 min
+[ 13440.4s OUT] dav2-s-eftb__kitti: 40/200 images, 0.6 min
+[ 13449.9s OUT] dav2-s-eftb__kitti: 50/200 images, 0.8 min
+[ 13459.3s OUT] dav2-s-eftb__kitti: 60/200 images, 1.0 min
+[ 13468.7s OUT] dav2-s-eftb__kitti: 70/200 images, 1.1 min
+[ 13478.1s OUT] dav2-s-eftb__kitti: 80/200 images, 1.3 min
+[ 13487.5s OUT] dav2-s-eftb__kitti: 90/200 images, 1.4 min
+[ 13497.0s OUT] dav2-s-eftb__kitti: 100/200 images, 1.6 min
+[ 13506.5s OUT] dav2-s-eftb__kitti: 110/200 images, 1.8 min
+[ 13516.1s OUT] dav2-s-eftb__kitti: 120/200 images, 1.9 min
+[ 13525.7s OUT] dav2-s-eftb__kitti: 130/200 images, 2.1 min
+[ 13535.2s OUT] dav2-s-eftb__kitti: 140/200 images, 2.2 min
+[ 13544.6s OUT] dav2-s-eftb__kitti: 150/200 images, 2.4 min
+[ 13554.0s OUT] dav2-s-eftb__kitti: 160/200 images, 2.5 min
+[ 13563.5s OUT] dav2-s-eftb__kitti: 170/200 images, 2.7 min
+[ 13572.9s OUT] dav2-s-eftb__kitti: 180/200 images, 2.9 min
+[ 13582.4s OUT] dav2-s-eftb__kitti: 190/200 images, 3.0 min
+[ 13592.0s OUT] dav2-s-eftb__kitti: 200/200 images, 3.2 min
+[ 13592.0s OUT] wrote /kaggle/working/results/dav2-s-eftb__kitti.csv
+[ 13592.3s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 13592.3s ERR] Loading weights:  85%|████████▍ | 243/287 [00:00<00:00, 2426.63it/s]
+[ 13592.3s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2464.75it/s]
+[ 13596.2s OUT] dav2-s-eftb__nyu: 10/200 images, 0.1 min
+[ 13599.9s OUT] dav2-s-eftb__nyu: 20/200 images, 0.1 min
+[ 13603.5s OUT] dav2-s-eftb__nyu: 30/200 images, 0.2 min
+[ 13607.1s OUT] dav2-s-eftb__nyu: 40/200 images, 0.2 min
+[ 13610.8s OUT] dav2-s-eftb__nyu: 50/200 images, 0.3 min
+[ 13614.5s OUT] dav2-s-eftb__nyu: 60/200 images, 0.4 min
+[ 13618.1s OUT] dav2-s-eftb__nyu: 70/200 images, 0.4 min
+[ 13621.8s OUT] dav2-s-eftb__nyu: 80/200 images, 0.5 min
+[ 13625.4s OUT] dav2-s-eftb__nyu: 90/200 images, 0.5 min
+[ 13628.9s OUT] dav2-s-eftb__nyu: 100/200 images, 0.6 min
+[ 13632.5s OUT] dav2-s-eftb__nyu: 110/200 images, 0.7 min
+[ 13636.1s OUT] dav2-s-eftb__nyu: 120/200 images, 0.7 min
+[ 13639.7s OUT] dav2-s-eftb__nyu: 130/200 images, 0.8 min
+[ 13643.3s OUT] dav2-s-eftb__nyu: 140/200 images, 0.8 min
+[ 13647.0s OUT] dav2-s-eftb__nyu: 150/200 images, 0.9 min
+[ 13650.7s OUT] dav2-s-eftb__nyu: 160/200 images, 1.0 min
+[ 13654.3s OUT] dav2-s-eftb__nyu: 170/200 images, 1.0 min
+[ 13657.9s OUT] dav2-s-eftb__nyu: 180/200 images, 1.1 min
+[ 13661.6s OUT] dav2-s-eftb__nyu: 190/200 images, 1.2 min
+[ 13665.2s OUT] dav2-s-eftb__nyu: 200/200 images, 1.2 min
+[ 13665.2s OUT] wrote /kaggle/working/results/dav2-s-eftb__nyu.csv
+[ 13665.6s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 13665.6s ERR] Loading weights:  90%|████████▉ | 258/287 [00:00<00:00, 2562.79it/s]
+[ 13665.6s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2590.39it/s]
+[ 13672.6s OUT] dav2-s-eftb__diode-in: 10/200 images, 0.1 min
+[ 13679.5s OUT] dav2-s-eftb__diode-in: 20/200 images, 0.2 min
+[ 13686.3s OUT] dav2-s-eftb__diode-in: 30/200 images, 0.3 min
+[ 13693.2s OUT] dav2-s-eftb__diode-in: 40/200 images, 0.5 min
+[ 13700.1s OUT] dav2-s-eftb__diode-in: 50/200 images, 0.6 min
+[ 13706.9s OUT] dav2-s-eftb__diode-in: 60/200 images, 0.7 min
+[ 13713.7s OUT] dav2-s-eftb__diode-in: 70/200 images, 0.8 min
+[ 13720.5s OUT] dav2-s-eftb__diode-in: 80/200 images, 0.9 min
+[ 13727.3s OUT] dav2-s-eftb__diode-in: 90/200 images, 1.0 min
+[ 13734.1s OUT] dav2-s-eftb__diode-in: 100/200 images, 1.1 min
+[ 13740.9s OUT] dav2-s-eftb__diode-in: 110/200 images, 1.3 min
+[ 13747.8s OUT] dav2-s-eftb__diode-in: 120/200 images, 1.4 min
+[ 13754.7s OUT] dav2-s-eftb__diode-in: 130/200 images, 1.5 min
+[ 13761.6s OUT] dav2-s-eftb__diode-in: 140/200 images, 1.6 min
+[ 13768.4s OUT] dav2-s-eftb__diode-in: 150/200 images, 1.7 min
+[ 13775.1s OUT] dav2-s-eftb__diode-in: 160/200 images, 1.8 min
+[ 13781.9s OUT] dav2-s-eftb__diode-in: 170/200 images, 1.9 min
+[ 13788.7s OUT] dav2-s-eftb__diode-in: 180/200 images, 2.0 min
+[ 13795.5s OUT] dav2-s-eftb__diode-in: 190/200 images, 2.2 min
+[ 13802.3s OUT] dav2-s-eftb__diode-in: 200/200 images, 2.3 min
+[ 13802.3s OUT] wrote /kaggle/working/results/dav2-s-eftb__diode-in.csv
+[ 13802.6s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[ 13802.6s ERR] Loading weights:  87%|████████▋ | 251/287 [00:00<00:00, 2505.84it/s]
+[ 13802.6s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2616.20it/s]
+[ 13809.6s OUT] dav2-s-eftb__diode-out: 10/200 images, 0.1 min
+[ 13816.3s OUT] dav2-s-eftb__diode-out: 20/200 images, 0.2 min
+[ 13823.0s OUT] dav2-s-eftb__diode-out: 30/200 images, 0.3 min
+[ 13829.7s OUT] dav2-s-eftb__diode-out: 40/200 images, 0.4 min
+[ 13836.4s OUT] dav2-s-eftb__diode-out: 50/200 images, 0.6 min
+[ 13843.2s OUT] dav2-s-eftb__diode-out: 60/200 images, 0.7 min
+[ 13849.9s OUT] dav2-s-eftb__diode-out: 70/200 images, 0.8 min
+[ 13856.7s OUT] dav2-s-eftb__diode-out: 80/200 images, 0.9 min
+[ 13863.5s OUT] dav2-s-eftb__diode-out: 90/200 images, 1.0 min
+[ 13870.3s OUT] dav2-s-eftb__diode-out: 100/200 images, 1.1 min
+[ 13877.0s OUT] dav2-s-eftb__diode-out: 110/200 images, 1.2 min
+[ 13883.8s OUT] dav2-s-eftb__diode-out: 120/200 images, 1.3 min
+[ 13890.2s OUT] dav2-s-eftb__diode-out: 130/200 images, 1.5 min
+[ 13896.9s OUT] dav2-s-eftb__diode-out: 140/200 images, 1.6 min
+[ 13903.6s OUT] dav2-s-eftb__diode-out: 150/200 images, 1.7 min
+[ 13910.4s OUT] dav2-s-eftb__diode-out: 160/200 images, 1.8 min
+[ 13917.3s OUT] dav2-s-eftb__diode-out: 170/200 images, 1.9 min
+[ 13924.2s OUT] dav2-s-eftb__diode-out: 180/200 images, 2.0 min
+[ 13931.0s OUT] dav2-s-eftb__diode-out: 190/200 images, 2.1 min
+[ 13937.5s OUT] dav2-s-eftb__diode-out: 200/200 images, 2.2 min
+[ 13937.5s OUT] wrote /kaggle/working/results/dav2-s-eftb__diode-out.csv
+[ 13938.9s OUT] all done in 232.3 min
+[ 13941.0s ERR] /usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+[ 13941.0s ERR]   cells[i][c] = re.sub('\\\\\|', '|', cell)
+[ 13941.3s ERR] /usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+[ 13941.3s ERR]   text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[ 13942.1s ERR] [NbConvertApp] Converting notebook __script__.ipynb to html
+[ 13943.2s ERR] [NbConvertApp] Writing 343413 bytes to __results__.html

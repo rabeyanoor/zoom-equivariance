@@ -60,6 +60,11 @@ else:
         # (the EFT checkpoints come from the attached zoom-equivariance-eft output)
         runs = ["--w-zoom 0 --tag anchor", "--w-blur 1 --tag eftb"]
         evals = ("dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft", "dav2-s-eftb")
+    elif part == "ablate":
+        # anchor-only turned out to be the frozen model (student == teacher at step 0, so the
+        # loss and its gradient are exactly zero); the blur-only run is the real baseline
+        runs = ["--w-zoom 0 --w-blur 1 --tag blur", "--w-blur 1 --w-anchor 3 --tag eftb3"]
+        evals = ("dav2-s-blur", "dav2-s-eftb3")
     else:
         runs, evals = ["--tag eft"], ("dav2-s-fixed", "dav2-s-eft")
     JOBS = []

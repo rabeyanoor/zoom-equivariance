@@ -281,6 +281,9 @@ REGISTRY = {
     "dav2-s-eft": ("pixels only (EFT)", lambda dom: _dav2_fixed(dom, "eft")),
     "dav2-s-anchor": ("pixels only (anchor-only FT)", lambda dom: _dav2_fixed(dom, "anchor")),
     "dav2-s-eftb": ("pixels only (EFT + blur invariance)", lambda dom: _dav2_fixed(dom, "eftb")),
+    # ablations: blur term without the zoom term, and EFT+B with a 3x stronger anchor
+    "dav2-s-blur": ("pixels only (blur-only FT)", lambda dom: _dav2_fixed(dom, "blur")),
+    "dav2-s-eftb3": ("pixels only (EFT+B, anchor x3)", lambda dom: _dav2_fixed(dom, "eftb3")),
 }
 
 
