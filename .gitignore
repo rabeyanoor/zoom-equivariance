@@ -1,0 +1,10 @@
+.venv/
+data/
+third_party/
+kaggle/build*/
+outputs/kaggle_*/
+outputs/eft/*.pt
+__pycache__/
+.ipynb_checkpoints/
+*.zip
+*.tar.gz
