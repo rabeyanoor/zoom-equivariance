@@ -258,6 +258,34 @@ def zoomfix(pi, s=3):
     return pd.DataFrame(rows)
 
 
+def zoomfix_crossfit(df, s=3.0, seed=0):
+    """ZoomFix with a label-free exponent from the *same* domain: split each dataset's images in
+    two halves; on one half measure alpha (no labels), round it to the nearest exponent that was
+    evaluated, and score D * s**alpha on the other half; then swap. Uses the rows of a run made with
+    --fine-fix (columns abs_rel_fix<e>)."""
+    z = df[(df.kind == "zoom") & np.isclose(df.zoom, s)]
+    fix_cols = sorted([c for c in z.columns if c.startswith("abs_rel_fix") and z[c].notna().any()],
+                      key=lambda c: float(c[len("abs_rel_fix"):]))
+    if not fix_cols:
+        return pd.DataFrame()
+    col_of = {float(c[len("abs_rel_fix"):]): c for c in fix_cols}
+    grid = np.array(sorted(col_of))
+    pi = per_image(df).set_index(KEY[:3])
+    rows = []
+    rng = np.random.default_rng(seed)
+    for (model, dataset), g in z.groupby(["model", "dataset"]):
+        names = g.name.unique()
+        half = set(rng.permutation(names)[: len(names) // 2])
+        for fit, test in ((half, set(names) - half), (set(names) - half, half)):
+            a = pi.loc[[(model, dataset, n) for n in fit if (model, dataset, n) in pi.index], "alpha"].median()
+            e = grid[np.argmin(np.abs(grid - a))]
+            t = g[g.name.isin(test)]
+            rows.append(dict(model=model, dataset=dataset, alpha_fit=a, exponent=e,
+                             absrel_zoomed=t.abs_rel.mean(), absrel_fixed=t[col_of[e]].mean(),
+                             absrel_unzoomed_same_pixels=t.abs_rel_base.mean()))
+    return pd.DataFrame(rows).groupby(["model", "dataset"]).mean(numeric_only=True).reset_index()
+
+
 def principal_point(df):
     """Off-centre zooms: where the model puts the principal point vs where the law puts it,
     in units of the zoomed image width. Models that assume a centred principal point show

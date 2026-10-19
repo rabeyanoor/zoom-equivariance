@@ -16,6 +16,8 @@ ZOOMS = (1.0, 1.25, 1.5, 2.0, 3.0)
 # exponents for the training-free correction D * s**e (used when the zoom factor is known,
 # e.g. from the EXIF DigitalZoomRatio tag); e is chosen on other datasets in the analysis
 CORRECTION_EXPONENTS = (0.25, 0.5, 0.75, 1.0)
+# finer grid (used by the dedicated ZoomFix run): alpha can exceed 1 (DA-V2-S on KITTI)
+FINE_EXPONENTS = tuple(round(0.125 * k, 3) for k in range(1, 13))
 
 
 def depth_errors(pred, gt, max_depth):
@@ -102,7 +104,8 @@ def control_rows(model, sample, max_depth, centre=(0.5, 0.5)):
     return rows
 
 
-def zoom_rows(model, sample, max_depth, zooms=ZOOMS, center=(0.5, 0.5), stale_K=False, blur=(2.0,)):
+def zoom_rows(model, sample, max_depth, zooms=ZOOMS, center=(0.5, 0.5), stale_K=False, blur=(2.0,),
+              exponents=CORRECTION_EXPONENTS):
     """stale_K: give a 'takes camera' model the unzoomed K (what you get if EXIF is not
     updated after a digital zoom). Ignored by models that do not take K."""
     img, gt, K = sample["img"], sample["depth"], sample["K"]
@@ -136,7 +139,7 @@ def zoom_rows(model, sample, max_depth, zooms=ZOOMS, center=(0.5, 0.5), stale_K=
                    pp_x_gt=float(Kz_true[0, 2]), pp_x_gt_base=float(K[0, 2]))
         if s != 1.0:
             s_true = Kz_true[0, 0] / K[0, 0]
-            for e in CORRECTION_EXPONENTS:
+            for e in exponents:
                 row[f"abs_rel_fix{e}"] = depth_errors(d_s * s_true ** e, gt_box, max_depth)["abs_rel"]
         rows.append(row)
     # control: same detail loss, no change of field of view
@@ -152,7 +155,7 @@ def zoom_rows(model, sample, max_depth, zooms=ZOOMS, center=(0.5, 0.5), stale_K=
 
 
 def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), stale_K=False, log_every=10, suffix="",
-        controls_only=False):
+        controls_only=False, fine_fix=False):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     tag = f"{model_name}{'-staleK' if stale_K else ''}__{dataset}{suffix}"
@@ -175,7 +178,8 @@ def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), sta
             else:
                 # the blur control only needs to run once per image
                 blur = (2.0,) if c == centers[0] else ()
-                rows = zoom_rows(model, sample, datasets.MAX_DEPTH[dataset], zooms, c, stale_K, blur)
+                rows = zoom_rows(model, sample, datasets.MAX_DEPTH[dataset], zooms, c, stale_K, blur,
+                                 FINE_EXPONENTS if fine_fix else CORRECTION_EXPONENTS)
             for r in rows:
                 r.update(model=model_name + ("-staleK" if stale_K else ""), dataset=dataset)
             pd.DataFrame(rows).to_csv(out_csv, mode="a", header=not out_csv.exists(), index=False)

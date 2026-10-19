@@ -68,3 +68,17 @@ def test_principal_point_error_is_zero_for_equivariant_model():
     pp = analysis.principal_point(toy_frame())
     eq = pp[pp.model == "eq"]
     assert np.allclose(eq.model_error, 0, atol=1e-9)
+
+
+def test_zoomfix_crossfit_recovers_apparent_size_exponent():
+    rows = []
+    for i in range(6):
+        sample = dict(SAMPLE, name=f"size{i}")
+        for r in audit.zoom_rows(ApparentSize(), sample, 80, exponents=audit.FINE_EXPONENTS):
+            r.update(model="size", dataset="toy")
+            rows.append(r)
+    df = pd.DataFrame(rows)
+    first = df[df.kind == "zoom"].groupby("name").fx_gt.transform("min")
+    df.loc[df.kind == "zoom", "s_true"] = df.loc[df.kind == "zoom", "fx_gt"] / first
+    fix = analysis.zoomfix_crossfit(df)
+    assert np.isclose(fix.exponent.iloc[0], 1.0) and fix.absrel_fixed.iloc[0] < 0.01

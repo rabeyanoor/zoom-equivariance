@@ -5,11 +5,12 @@
 
 \begin{figure*}[t]
   \centering
-  \IfFileExists{fig/teaser.pdf}{\includegraphics[width=0.78\linewidth]{fig/teaser.pdf}}{\fbox{teaser pending}}
-  \caption{The same KITTI and NYUv2 images at $1\times$, $2\times$ and $3\times$ digital zoom. All depth
-  panels of a scene share one colour scale (metres); the number is the median depth of the pixels inside
-  the $3\times$ crop, i.e. the same physical points in every column. Depth Anything V2 moves the scene
-  closer as we zoom in; MoGe-2, which predicts its camera, moves it less; the ground truth does not move.}
+  \IfFileExists{fig/teaser.pdf}{\includegraphics[width=\linewidth]{fig/teaser.pdf}}{\fbox{teaser pending}}
+  \caption{A KITTI image at $1\times$, $2\times$ and $3\times$ digital zoom. All depth panels share one
+  colour scale (metres); the number is the median depth of the pixels inside the $3\times$ crop, i.e. the
+  same physical points in every column. Depth Anything V2 moves the scene closer as we zoom in (28.5\,m to
+  7.8\,m); MoGe-2, which predicts its camera, moves it less; the LiDAR ground truth does not move.
+  An NYUv2 example is in the supplement.}
   \label{fig:teaser}
 \end{figure*}
 
@@ -50,7 +51,7 @@ MoGe-2. The ambiguity explains the direction of the failure, not which images es
 
 \begin{figure}[t]
   \centering
-  \maybefig{fig3_alpha_beta_plane}
+  \IfFileExists{fig/fig3_alpha_beta_plane.pdf}{\includegraphics[width=0.78\linewidth]{fig/fig3_alpha_beta_plane.pdf}}{\fbox{pending}}
   \caption{Camera-predicting models in the $(\beta,\alpha)$ plane. Dashed: $\alpha+\beta=1$, where
   lateral sizes are preserved (apparent-size reasoning). The ideal model is at $(1,0)$.}
   \label{fig:abplane}
@@ -76,8 +77,8 @@ compression change it by \DavTwoSBilinear{} and \DavTwoSJpeg.
 
 \paragraph{Crop position and principal point.}
 Zooming into the four image quadrants instead of the centre leaves $\alpha$ of the same order (supplement).
-MoGe-2, Depth Anything~3 and VGGT place the principal point at the image centre whatever the crop, so
-off-centre crops are outside what their camera model can express.
+MoGe-2 places the principal point at the image centre whatever the crop, so off-centre crops are
+outside what its camera model can express.
 % TODO(results): numbers from principal_point() once audit-a2 is in.
 
 \paragraph{When does the label-free score predict error?}

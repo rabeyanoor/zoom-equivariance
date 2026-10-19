@@ -5,12 +5,12 @@
 \begin{tabular}{llccccccc}\toprule
 & & & & & & \multicolumn{3}{c}{AbsRel} \\ \cmidrule(lr){7-9}
 Model & Group & $\alpha$ & $\beta$ & $\alpha+\beta$ & Blur & $1\times$ & $3\times$ same px & $3\times$ zoomed \\ \midrule
-DA-V2-S & pixels only & 0.95 [0.83, 1.12] & -- & -- & 1.3\% & 0.317 & -- & 0.652 \\
-DA-V2-B & pixels only & 0.85 [0.76, 0.94] & -- & -- & 0.8\% & 0.313 & -- & 0.599 \\
-ZoeDepth & pixels only & 0.61 [0.52, 0.75] & -- & -- & 0.7\% & 0.310 & -- & 0.539 \\
-Depth Pro & predicts camera & 0.31 [0.20, 0.40] & 0.65 & 0.97 & 2.8\% & 0.310 & 0.293 & 0.459 \\
-MoGe-2-S & predicts camera & 0.36 [0.30, 0.40] & 0.56 & 0.95 & 3.1\% & 0.274 & -- & 0.465 \\
-UniDepthV2-S & predicts camera & 0.34 [0.23, 0.50] & 0.45 & 0.87 & 4.1\% & 0.824 & -- & 0.792 \\
-Metric3D v2-S & takes camera (true K) & -0.07 [-0.11, -0.05] & -- & -- & 1.6\% & 0.142 & -- & 0.358 \\
-Metric3D v2-S (stale K) & takes camera (stale K) & 0.93 [0.89, 0.95] & -- & -- & 1.6\% & 0.142 & -- & 0.628 \\
+DA-V2-S & pixels only & 0.95 [0.83, 1.12] & -- & -- & 1.3\% & 0.317 & 0.336 & 0.652 \\
+DA-V2-B & pixels only & 0.85 [0.76, 0.94] & -- & -- & 0.8\% & 0.313 & 0.335 & 0.599 \\
+ZoeDepth & pixels only & 0.61 [0.53, 0.75] & -- & -- & 0.7\% & 0.310 & 0.302 & 0.539 \\
+Depth Pro & predicts camera & 0.31 [0.20, 0.41] & 0.65 & 0.97 & 2.8\% & 0.310 & 0.293 & 0.459 \\
+MoGe-2-S & predicts camera & 0.36 [0.30, 0.40] & 0.56 & 0.95 & 3.1\% & 0.274 & 0.277 & 0.465 \\
+UniDepthV2-S & predicts camera & 0.34 [0.23, 0.51] & 0.45 & 0.87 & 4.1\% & 0.824 & 0.785 & 0.792 \\
+Metric3D v2-S & takes camera (true K) & -0.07 [-0.11, -0.05] & -- & -- & 1.6\% & 0.142 & 0.148 & 0.358 \\
+Metric3D v2-S (stale K) & takes camera (stale K) & 0.93 [0.89, 0.95] & -- & -- & 1.6\% & 0.142 & 0.148 & 0.628 \\
 \bottomrule\end{tabular}\end{table*}

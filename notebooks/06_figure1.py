@@ -71,5 +71,52 @@ for ax in axes.ravel():
     ax.set_xticks([])
     ax.set_yticks([])
 plt.savefig(FIG / "06_figure1.png", dpi=120, bbox_inches="tight")
-plt.savefig(ROOT / "paper/fig/teaser.pdf", bbox_inches="tight")
+# (the paper versions are made at the end of this notebook)
 plt.show()
+
+# %% [markdown]
+# ## Paper versions
+# The teaser shows only KITTI (wide panels keep it to a third of a page); the NYUv2 example goes
+# to the supplement with the same layout.
+
+# %%
+import sys
+
+sys.path.insert(0, str(ROOT / "src"))
+import plotstyle as ps
+
+ps.use()
+
+
+def panel_figure(ds, width):
+    h, w = maps[f"img|{ds}|1.0"].shape[:2]
+    fig, axes = plt.subplots(4, 3, figsize=(width, width / 3 * h / w * 4 * 1.12), gridspec_kw={"hspace": 0.08, "wspace": 0.02})
+    vals = np.concatenate([maps[f"{m}|{ds}|{s}"].astype(np.float32).ravel() for m, _ in MODELS[:2] for s in ZOOMS])
+    vmin, vmax = np.nanpercentile(vals[vals > 0], [2, 98])
+    for k, s in enumerate(ZOOMS):
+        axes[0, k].imshow(maps[f"img|{ds}|{s}"])
+        axes[0, k].set_title(f"zoom {s:.0f}×", fontsize=8, pad=2)
+        for j, (m, label) in enumerate(MODELS):
+            d = maps[f"{m}|{ds}|{s}"].astype(np.float32)
+            if m == "gt":
+                d = np.where(d > 0, d, np.nan)
+            axes[1 + j, k].imshow(d, cmap="turbo_r", vmin=vmin, vmax=vmax, interpolation="nearest")
+            axes[1 + j, k].text(0.015, 0.8, f"{median_in_core(d, s):.1f} m", transform=axes[1 + j, k].transAxes,
+                                color="w", fontsize=6.5, bbox=dict(facecolor="k", alpha=0.55, pad=1, lw=0))
+            if k == 0:
+                axes[1 + j, k].set_ylabel(label, fontsize=7)
+    for ax in axes.ravel():
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.grid(False)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
+    return fig
+
+
+fig = panel_figure("kitti", 7.0)
+fig.savefig(ROOT / "paper/fig/teaser.pdf", bbox_inches="tight")
+fig.savefig(FIG / "teaser_kitti.png", bbox_inches="tight")
+plt.show()
+fig = panel_figure("nyu", 4.5)
+ps.save(fig, "figS_teaser_nyu")

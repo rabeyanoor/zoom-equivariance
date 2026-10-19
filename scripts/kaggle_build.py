@@ -44,6 +44,8 @@ if kind == "audit":
     elif part == "d":
         # confounder controls (optical vs digital zoom, interpolation, JPEG) for one model per group
         JOBS = [f"{m} {SETS} --n 100 --controls-only --out-tag ctrl" for m in ("dav2-s", "depthpro", "moge2-s", "metric3d-s")]
+        # ZoomFix with a finer exponent grid (alpha can exceed 1), same 100 images
+        JOBS += [f"{m} {SETS} --n 100 --fine-fix --out-tag fix" for m in ("dav2-s", "depthpro", "moge2-s")]
     elif part == "csmoke":
         # CPU kernel (no GPU slot needed); Metric3D has hard-coded .cuda() calls
         JOBS = [f"{m} kitti --n 1" for m in LADDER if m != "metric3d-l"]

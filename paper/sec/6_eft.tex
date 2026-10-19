@@ -1,19 +1,21 @@
 \section{Equivariance fine-tuning}
 \label{sec:eft}
 
+\input{gen/table2}
+
 The law in \cref{eq:law} is not only a test; it is free supervision. Following the
 self-consistency idea of Zhong \etal~\cite{zhong2023equivariance}, but with a metric target and a
 frozen teacher, for a pixels-only
 model $\hat D_\theta$ we keep a frozen copy $\hat D_0$ (the teacher) and minimise, on
 unlabeled images $I$,
 \begin{equation}
-  \mathcal{L} =
-  \underbrace{\big\| \mathcal{U}_b \log \hat D_\theta(\mathcal{Z}_b I) - \log \hat D_0(I)\big|_b \big\|_1}_{\text{zoom}}
-  + \lambda\,
-  \underbrace{\big\| \log \hat D_\theta(I) - \log \hat D_0(I)\big\|_1}_{\text{anchor}},
+\begin{aligned}
+  \mathcal{L} = {} & \big\| \mathcal{U}_b \log \hat D_\theta(\mathcal{Z}_b I) - \log \hat D_0(I)\big|_b \big\|_1 \\
+  & + \lambda\, \big\| \log \hat D_\theta(I) - \log \hat D_0(I)\big\|_1 ,
+\end{aligned}
   \label{eq:eft}
 \end{equation}
-where $b$ is a random box with zoom factor $s\sim\operatorname{LogUniform}[1,3]$ and random
+with a zoom term (first) and an anchor (second), where $b$ is a random box with zoom factor $s\sim\operatorname{LogUniform}[1,3]$ and random
 centre, $\mathcal{U}_b$ resamples the zoomed prediction onto the crop grid, and
 $\cdot|_b$ crops. The teacher's prediction on the \emph{unzoomed} image is the target for
 the zoomed one, so the student has to discover from the pixels that a zoom happened and
