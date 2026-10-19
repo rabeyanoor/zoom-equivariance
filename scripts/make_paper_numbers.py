@@ -137,7 +137,7 @@ if len(ft):
         rows.append(A.PRETTY_DS[ds] + (" (unseen)" if ds.startswith("diode") else "") + " & " + " & ".join(cells) + r" \\")
     (GEN / "table2.tex").write_text("\n".join([
         r"\begin{table*}[t]\centering\small",
-        r"\caption{Fine-tuning DA-V2-S on unlabeled images. Same preprocessing for all three. "
+        r"\caption{Fine-tuning DA-V2-S on unlabeled images. Same preprocessing for all four. "
         r"Anchor-only: same data and steps, no zoom loss. DIODE is not used in training.}\label{tab:eft}",
         r"\begin{tabular}{l ccc ccc ccc ccc}\toprule",
         r"& \multicolumn{3}{c}{Frozen} & \multicolumn{3}{c}{Anchor-only FT} & \multicolumn{3}{c}{EFT} & \multicolumn{3}{c}{EFT+B} \\",
