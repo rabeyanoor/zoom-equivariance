@@ -67,11 +67,12 @@ The squashed scene has the same lateral sizes, so every object has a plausible w
 extent \emph{in depth} is wrong (a 4.5\,m car becomes 2.25\,m long at $s=2$), and so are the
 angles between surfaces. Telling the two apart needs priors on 3D shape (aspect ratios in
 depth, right angles, the rate at which parallel lines converge), not priors on size.
-Two consequences follow, and we test both:
-(i) for a fronto-parallel plane the squash changes nothing, so \emph{no} estimator can be
-equivariant on such scenes without being told the camera;
-(ii) equivariance should improve with the depth range of the scene, where the squash is most
-visible.
+One consequence is a hard limit: for a fronto-parallel plane the squash changes nothing, so
+\emph{no} estimator can be equivariant on such scenes without being told the camera.
+A softer reading would be that equivariance improves with the depth range of the scene, where the
+squash should be more visible. We tested this and did not find it (\cref{sec:results}): the
+ambiguity explains the failure mode, but scene depth range is not what decides how much of it a
+model overcomes.
 The ambiguity also explains why the third invariant is the natural failure mode: believing the
 squashed scene means $\alpha=1$ with $\beta=0$, a point on the line $\alpha+\beta=1$.
 Note that the line only guarantees lateral consistency; along it, depth and shape are wrong
@@ -81,5 +82,9 @@ unless $\beta=1$.
 Models such as Metric3D~\cite{yin2023metric3d,hu2024metric3dv2} receive $K$ and predict depth in a
 canonical camera. With the correct $K'$ from \cref{eq:law} they are equivariant by design.
 In practice the zoom often happens after capture (a crop in a gallery app, a screenshot,
-a detection crop) and the metadata still describes the original camera. We call this the
-\emph{stale-$K$} setting and evaluate it explicitly.
+a detection crop) and the metadata still describes the original camera~\cite{kim2026mismatch}.
+In this \emph{stale-$K$} setting the network sees the same pixels and only the final
+de-canonical scale $f/1000$ differs by the factor $s$, so $\alpha_{\text{stale}}=\alpha_{\text{true}}+1$
+exactly, up to the model's output clipping. Our runs confirm this (mean difference over 800 images
+0.999), so a camera-conditioned model with stale metadata behaves like a pixels-only model that
+reads apparent size.
