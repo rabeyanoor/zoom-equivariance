@@ -31,6 +31,7 @@ MAIN = ["dav2-s", "dav2-b", "zoedepth", "depthpro", "moge2-s", "unidepth2-s", "m
 
 df = A.load()
 df = df[df.model.isin(MAIN)]
+MAIN = [m for m in MAIN if m in set(df.model)]  # models whose runs are in
 print(df.groupby(["model", "dataset"]).name.nunique().unstack())
 
 # %%
