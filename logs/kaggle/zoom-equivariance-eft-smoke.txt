@@ -1,0 +1,79 @@
+[     0.6s OUT] + pip install -q transformers==5.20.1 h5py
+[     4.2s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 95.8 MB/s eta 0:00:00
+[     4.3s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 846.4/846.4 kB 35.3 MB/s eta 0:00:00
+[   152.0s OUT] + cd /tmp/ze/data/raw/kitti && unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' && rm sel.zip
+[   157.9s OUT] + cd /tmp/ze/data/raw/diode && tar xzf val.tar.gz && rm val.tar.gz
+[   231.7s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0001.zip '*/image_02/data/*' && rm 2011_09_26_drive_0001.zip
+[   232.2s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0009.zip '*/image_02/data/*' && rm 2011_09_26_drive_0009.zip
+[   234.6s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0011.zip '*/image_02/data/*' && rm 2011_09_26_drive_0011.zip
+[   235.8s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0018.zip '*/image_02/data/*' && rm 2011_09_26_drive_0018.zip
+[   237.0s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0022.zip '*/image_02/data/*' && rm 2011_09_26_drive_0022.zip
+[   243.3s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0057.zip '*/image_02/data/*' && rm 2011_09_26_drive_0057.zip
+[   244.9s OUT] + cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_30_drive_0020.zip '*/image_02/data/*' && rm 2011_09_30_drive_0020.zip
+[   255.6s OUT] val drives: ['2011_09_26_drive_0002', '2011_09_26_drive_0005', '2011_09_26_drive_0013', '2011_09_26_drive_0020', '2011_09_26_drive_0023', '2011_09_26_drive_0036', '2011_09_26_drive_0079', '2011_09_26_drive_0095', '2011_09_26_drive_0113', '2011_09_28_drive_0037', '2011_09_29_drive_0026', '2011_09_30_drive_0016', '2011_10_03_drive_0047']
+[   255.6s OUT] setup done in 4.3 min
+[   255.6s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py outdoor --steps 20 --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --out /kaggle/working/eft
+[   269.5s OUT] 3323 unlabeled training images
+[   284.8s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   288.3s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   288.3s ERR] Loading weights:  92%|█████████▏| 265/287 [00:00<00:00, 2640.43it/s]
+[   288.3s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2711.68it/s]
+[   293.4s ERR] /tmp/ze/src/eft.py:100: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+[   293.4s ERR] Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+[   293.4s ERR]   return float(l_zoom), float(l_anchor)
+[   359.0s OUT] saved /kaggle/working/eft
+[   362.5s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py indoor --steps 20 --nyu-train --out /kaggle/working/eft
+[   373.4s OUT] 795 unlabeled training images
+[   378.6s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   380.9s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   380.9s ERR] Loading weights:  86%|████████▌ | 247/287 [00:00<00:00, 2467.50it/s]
+[   380.9s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2483.49it/s]
+[   382.8s ERR] /tmp/ze/src/eft.py:100: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+[   382.8s ERR] Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+[   382.8s ERR]   return float(l_zoom), float(l_anchor)
+[   401.0s OUT] saved /kaggle/working/eft
+[   402.4s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-fixed kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results
+[   410.9s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   410.9s ERR] Loading weights:  78%|███████▊  | 223/287 [00:00<00:00, 2199.59it/s]
+[   410.9s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2674.23it/s]
+[   411.3s ERR] Traceback (most recent call last):
+[   411.3s ERR]   File "/tmp/ze/scripts/run_audit.py", line 32, in <module>
+[   411.3s ERR]     out = audit.run(args.model, ds, args.n, args.out, centers=tuple(centres), stale_K=args.stale_k,
+[   411.3s ERR]                     suffix=f"__{args.out_tag}" if args.out_tag else "")
+[   411.3s ERR]   File "/tmp/ze/src/audit.py", line 84, in run
+[   411.3s ERR]     sample = load(i)
+[   411.3s ERR]   File "/tmp/ze/src/datasets.py", line 112, in __call__
+[   411.3s ERR]     return kitti_load(self.items[i])
+[   411.3s ERR]   File "/tmp/ze/src/datasets.py", line 34, in kitti_load
+[   411.3s ERR]     depth = np.array(Image.open(gt_path), dtype=np.float32) / 256.0
+[   411.3s ERR]                      ~~~~~~~~~~^^^^^^^^^
+[   411.3s ERR]   File "/usr/local/lib/python3.13/dist-packages/PIL/Image.py", line 3639, in open
+[   411.3s ERR]     fp = builtins.open(filename, "rb")
+[   411.3s ERR] FileNotFoundError: [Errno 2] No such file or directory: '/tmp/ze/data/raw/kitti/depth_selection/val_selection_cropped/groundtruth_depth/2011_09_26_drive_0079_sync_groundtruth_depth_0000000065_groundtruth_depth_03.png'
+[   412.6s OUT] FAILED: scripts/run_audit.py dav2-s-fixed kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results Command 'cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-fixed kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results' returned non-zero exit status 1.
+[   412.6s OUT] + cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-eft kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results
+[   421.2s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   421.2s ERR] Loading weights:  75%|███████▌  | 216/287 [00:00<00:00, 2159.52it/s]
+[   421.2s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2741.69it/s]
+[   421.7s ERR] Traceback (most recent call last):
+[   421.7s ERR]   File "/tmp/ze/scripts/run_audit.py", line 32, in <module>
+[   421.7s ERR]     out = audit.run(args.model, ds, args.n, args.out, centers=tuple(centres), stale_K=args.stale_k,
+[   421.7s ERR]                     suffix=f"__{args.out_tag}" if args.out_tag else "")
+[   421.7s ERR]   File "/tmp/ze/src/audit.py", line 84, in run
+[   421.7s ERR]     sample = load(i)
+[   421.7s ERR]   File "/tmp/ze/src/datasets.py", line 112, in __call__
+[   421.7s ERR]     return kitti_load(self.items[i])
+[   421.7s ERR]   File "/tmp/ze/src/datasets.py", line 34, in kitti_load
+[   421.7s ERR]     depth = np.array(Image.open(gt_path), dtype=np.float32) / 256.0
+[   421.7s ERR]                      ~~~~~~~~~~^^^^^^^^^
+[   421.7s ERR]   File "/usr/local/lib/python3.13/dist-packages/PIL/Image.py", line 3639, in open
+[   421.7s ERR]     fp = builtins.open(filename, "rb")
+[   421.7s ERR] FileNotFoundError: [Errno 2] No such file or directory: '/tmp/ze/data/raw/kitti/depth_selection/val_selection_cropped/groundtruth_depth/2011_09_26_drive_0079_sync_groundtruth_depth_0000000065_groundtruth_depth_03.png'
+[   423.0s OUT] FAILED: scripts/run_audit.py dav2-s-eft kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results Command 'cd /tmp/ze && EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-eft kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results' returned non-zero exit status 1.
+[   423.0s OUT] all done in 7.0 min
+[   424.9s ERR] /usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+[   424.9s ERR]   cells[i][c] = re.sub('\\\\\|', '|', cell)
+[   425.1s ERR] /usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+[   425.1s ERR]   text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[   425.9s ERR] [NbConvertApp] Converting notebook __script__.ipynb to html
+[   426.8s ERR] [NbConvertApp] Writing 324856 bytes to __results__.html

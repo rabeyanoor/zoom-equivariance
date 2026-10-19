@@ -1,0 +1,40 @@
+[     0.9s OUT] + pip install -q transformers==5.20.1 mmengine einops timm h5py termcolor tabulate trimesh wandb
+[     6.1s OUT]      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.8/46.8 kB 1.9 MB/s eta 0:00:00
+[     6.7s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 88.1 MB/s eta 0:00:00
+[     6.7s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 452.7/452.7 kB 20.1 MB/s eta 0:00:00
+[     6.8s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 750.4/750.4 kB 27.0 MB/s eta 0:00:00
+[     6.8s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 846.4/846.4 kB 24.4 MB/s eta 0:00:00
+[     6.9s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 256.2/256.2 kB 8.5 MB/s eta 0:00:00
+[    27.0s OUT] + pip install -q git+https://github.com/microsoft/MoGe.git
+[    63.3s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 248.0/248.0 MB 6.0 MB/s eta 0:00:00
+[    63.4s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 308.3/308.3 kB 10.4 MB/s eta 0:00:00
+[    63.4s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 53.0/53.0 kB 1.9 MB/s eta 0:00:00
+[    74.4s OUT] + git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniDepth.git /tmp/ze/third_party/UniDepth
+[    76.0s OUT] + pip install -q --no-deps -e /tmp/ze/third_party/UniDepth
+[    83.6s OUT] + git clone -q --depth 1 https://github.com/YvanYin/Metric3D.git /tmp/ze/third_party/Metric3D
+[   152.7s OUT] + cd /tmp/ze/data/raw/kitti && unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' && rm sel.zip
+[   162.6s OUT] + cd /tmp/ze/data/raw/diode && tar xzf val.tar.gz && rm val.tar.gz
+[   223.1s OUT] setup done in 3.7 min
+[   223.1s OUT] + /usr/bin/python3 scripts/scene_stats.py --n 200 --figure-only --out /kaggle/working/results
+[   258.4s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   263.5s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   263.5s ERR] Loading weights:  93%|█████████▎| 267/287 [00:00<00:00, 2664.65it/s]
+[   263.5s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2718.24it/s]
+[   285.6s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   285.6s ERR] Loading weights:  80%|████████  | 231/287 [00:00<00:00, 2308.27it/s]
+[   285.6s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2331.29it/s]
+[   292.5s OUT] dav2-s figure maps done
+[   305.2s ERR] /usr/local/lib/python3.13/dist-packages/moge/model/modules/conv_stack.py:170: UserWarning: In CPU autocast, but the target dtype is not supported. Disabling autocast.
+[   305.2s ERR] CPU Autocast only supports dtypes of torch.bfloat16, torch.float16 currently.
+[   305.2s ERR]   torch.autocast(device_type=x.device.type, dtype=torch.float32, enabled=True)
+[   314.1s ERR] /usr/local/lib/python3.13/dist-packages/moge/model/v2.py:284: UserWarning: In CPU autocast, but the target dtype is not supported. Disabling autocast.
+[   314.1s ERR] CPU Autocast only supports dtypes of torch.bfloat16, torch.float16 currently.
+[   314.1s ERR]   with torch.autocast(device_type=self.device.type, dtype=torch.float32):
+[   383.8s OUT] moge2-s figure maps done
+[   386.5s OUT] all done in 6.4 min
+[   389.0s ERR] /usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+[   389.0s ERR]   cells[i][c] = re.sub('\\\\\|', '|', cell)
+[   389.3s ERR] /usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+[   389.3s ERR]   text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[   390.3s ERR] [NbConvertApp] Converting notebook __script__.ipynb to html
+[   391.6s ERR] [NbConvertApp] Writing 336938 bytes to __results__.html

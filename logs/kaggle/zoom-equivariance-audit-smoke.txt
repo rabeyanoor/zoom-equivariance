@@ -1,0 +1,230 @@
+[     1.5s OUT] + pip install -q transformers==5.20.1 mmengine einops timm h5py termcolor tabulate trimesh wandb
+[     8.3s OUT]      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.8/46.8 kB 1.7 MB/s eta 0:00:00
+[     8.8s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 114.1 MB/s eta 0:00:00
+[     8.9s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 452.7/452.7 kB 24.5 MB/s eta 0:00:00
+[     8.9s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 750.4/750.4 kB 26.8 MB/s eta 0:00:00
+[     8.9s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 846.4/846.4 kB 24.9 MB/s eta 0:00:00
+[     9.0s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 256.2/256.2 kB 13.8 MB/s eta 0:00:00
+[    27.4s OUT] + pip install -q git+https://github.com/microsoft/MoGe.git
+[    56.7s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 308.3/308.3 kB 7.1 MB/s eta 0:00:00
+[    56.8s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 53.0/53.0 kB 2.5 MB/s eta 0:00:00
+[    61.1s OUT] + git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniDepth.git /tmp/ze/third_party/UniDepth
+[    62.7s OUT] + pip install -q --no-deps -e /tmp/ze/third_party/UniDepth
+[    69.2s OUT] + git clone -q --depth 1 https://github.com/YvanYin/Metric3D.git /tmp/ze/third_party/Metric3D
+[   276.8s OUT] + cd /tmp/ze/data/raw/kitti && unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' && rm sel.zip
+[   282.7s OUT] + cd /tmp/ze/data/raw/diode && tar xzf val.tar.gz && rm val.tar.gz
+[   333.5s OUT] setup done in 5.5 min
+[   333.5s OUT] + /usr/bin/python3 scripts/run_audit.py dav2-s kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results
+[   380.7s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   383.8s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   383.8s ERR] Loading weights:  91%|█████████▏| 262/287 [00:00<00:00, 2614.33it/s]
+[   383.8s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2736.81it/s]
+[   390.8s OUT] wrote /kaggle/working/results/dav2-s__kitti.csv
+[   393.6s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   393.6s ERR] Loading weights:  91%|█████████▏| 262/287 [00:00<00:00, 2618.67it/s]
+[   393.6s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2684.07it/s]
+[   395.3s OUT] wrote /kaggle/working/results/dav2-s__nyu.csv
+[   395.7s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   395.7s ERR] Loading weights:  92%|█████████▏| 264/287 [00:00<00:00, 2636.28it/s]
+[   395.7s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2658.05it/s]
+[   397.6s OUT] wrote /kaggle/working/results/dav2-s__diode-in.csv
+[   398.1s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   398.1s ERR] Loading weights:  91%|█████████▏| 262/287 [00:00<00:00, 2605.08it/s]
+[   398.1s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2712.06it/s]
+[   400.0s OUT] wrote /kaggle/working/results/dav2-s__diode-out.csv
+[   406.8s OUT] + /usr/bin/python3 scripts/run_audit.py dav2-b kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results
+[   415.2s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   419.8s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   419.8s ERR] Loading weights:  99%|█████████▉| 284/287 [00:00<00:00, 2835.20it/s]
+[   419.8s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2850.01it/s]
+[   432.0s OUT] wrote /kaggle/working/results/dav2-b__kitti.csv
+[   436.3s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   436.3s ERR] Loading weights:  92%|█████████▏| 263/287 [00:00<00:00, 2626.56it/s]
+[   436.3s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2650.95it/s]
+[   440.0s OUT] wrote /kaggle/working/results/dav2-b__nyu.csv
+[   440.4s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   440.4s ERR] Loading weights:  90%|████████▉ | 258/287 [00:00<00:00, 2577.30it/s]
+[   440.4s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2602.83it/s]
+[   444.6s OUT] wrote /kaggle/working/results/dav2-b__diode-in.csv
+[   445.0s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   445.0s ERR] Loading weights:  87%|████████▋ | 249/287 [00:00<00:00, 2485.83it/s]
+[   445.0s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2541.37it/s]
+[   449.2s OUT] wrote /kaggle/working/results/dav2-b__diode-out.csv
+[   450.5s OUT] + /usr/bin/python3 scripts/run_audit.py zoedepth kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results
+[   458.9s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   469.0s ERR] Loading weights:   0%|          | 0/647 [00:00<?, ?it/s]
+[   469.0s ERR] Loading weights:  42%|████▏     | 271/647 [00:00<00:00, 2694.58it/s]
+[   469.0s ERR] Loading weights:  84%|████████▎ | 541/647 [00:00<00:00, 2639.54it/s]
+[   469.0s ERR] Loading weights: 100%|██████████| 647/647 [00:00<00:00, 2654.04it/s]
+[   472.8s ERR] Traceback (most recent call last):
+[   472.8s ERR]   File "/tmp/ze/scripts/run_audit.py", line 32, in <module>
+[   472.8s ERR]     out = audit.run(args.model, ds, args.n, args.out, centers=tuple(centres), stale_K=args.stale_k,
+[   472.8s ERR]                     suffix=f"__{args.out_tag}" if args.out_tag else "")
+[   472.8s ERR]   File "/tmp/ze/src/audit.py", line 89, in run
+[   472.8s ERR]     rows = zoom_rows(model, sample, datasets.MAX_DEPTH[dataset], zooms, c, stale_K, blur)
+[   472.8s ERR]   File "/tmp/ze/src/audit.py", line 36, in zoom_rows
+[   472.8s ERR]     base = model.predict(img, K)
+[   472.8s ERR]   File "/usr/local/lib/python3.13/dist-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+[   472.8s ERR]     return func(*args, **kwargs)
+[   472.8s ERR]   File "/tmp/ze/src/models.py", line 55, in predict
+[   472.8s ERR]     post = self.proc.post_process_depth_estimation(out, target_sizes=[(h, w)])[0]
+[   472.8s ERR]            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[   472.8s ERR]   File "/usr/local/lib/python3.13/dist-packages/transformers/models/zoedepth/image_processing_zoedepth.py", line 272, in post_process_depth_estimation
+[   472.8s ERR]     raise ValueError(
+[   472.8s ERR]         "Either `source_sizes` should be passed in, or `do_remove_padding` should be set to False"
+[   472.8s ERR]     )
+[   472.8s ERR] ValueError: Either `source_sizes` should be passed in, or `do_remove_padding` should be set to False
+[   474.1s OUT] FAILED: zoedepth kitti nyu diode-in diode-out --n 3 Command '/usr/bin/python3 scripts/run_audit.py zoedepth kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results' returned non-zero exit status 1.
+[   474.1s OUT] + /usr/bin/python3 scripts/run_audit.py moge2-s kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results
+[   478.1s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   486.3s OUT] wrote /kaggle/working/results/moge2-s__kitti.csv
+[   490.5s OUT] wrote /kaggle/working/results/moge2-s__nyu.csv
+[   495.2s OUT] wrote /kaggle/working/results/moge2-s__diode-in.csv
+[   499.9s OUT] wrote /kaggle/working/results/moge2-s__diode-out.csv
+[   500.8s OUT] + /usr/bin/python3 scripts/run_audit.py unidepth2-s kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results
+[   507.8s ERR] /usr/local/lib/python3.13/dist-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+[   507.8s ERR]   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[   508.3s ERR] /tmp/ze/third_party/UniDepth/unidepth/utils/chamfer_distance.py:9: UserWarning: !! To run evaluation you need KNN. Please compile KNN: `cd unidepth/ops/knn with && bash compile.sh`.
+[   508.3s ERR]   warnings.warn(
+[   509.3s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   509.3s ERR] xFormers not available
+[   509.3s ERR] xFormers not available
+[   512.3s ERR] /tmp/ze/third_party/UniDepth/unidepth/models/unidepthv2/unidepthv2.py:262: UserWarning: !! self.resolution_level not set, using default bounds !!
+[   512.3s ERR]   warnings.warn("!! self.resolution_level not set, using default bounds !!")
+[   515.3s OUT] Cannot import NystromAttention, you can not run original UniDepth. UniDepthV2 is available.
+[   515.3s OUT] Not loading pretrained weights for backbone
+[   515.3s OUT] EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches && bash compile.sh`
+[   515.3s OUT] wrote /kaggle/working/results/unidepth2-s__kitti.csv
+[   517.4s OUT] Not loading pretrained weights for backbone
+[   517.4s OUT] EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches && bash compile.sh`
+[   517.4s OUT] wrote /kaggle/working/results/unidepth2-s__nyu.csv
+[   520.7s OUT] Not loading pretrained weights for backbone
+[   520.7s OUT] EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches && bash compile.sh`
+[   520.7s OUT] wrote /kaggle/working/results/unidepth2-s__diode-in.csv
+[   524.0s OUT] Not loading pretrained weights for backbone
+[   524.0s OUT] EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches && bash compile.sh`
+[   524.0s OUT] wrote /kaggle/working/results/unidepth2-s__diode-out.csv
+[   525.3s OUT] + /usr/bin/python3 scripts/run_audit.py metric3d-s kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results
+[   530.2s ERR] /usr/local/lib/python3.13/dist-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+[   530.2s ERR]   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[   530.2s ERR] /usr/local/lib/python3.13/dist-packages/timm/models/registry.py:4: FutureWarning: Importing from timm.models.registry is deprecated, please import via timm.models
+[   530.2s ERR]   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.models", FutureWarning)
+[   530.3s ERR] xFormers not available
+[   530.3s ERR] xFormers not available
+[   530.3s ERR] xFormers not available
+[   530.3s ERR] xFormers not available
+[   530.9s OUT] Downloading: "https://huggingface.co/JUGGHM/Metric3D/resolve/main/metric_depth_vit_small_800k.pth" to /root/.cache/torch/hub/checkpoints/metric_depth_vit_small_800k.pth
+[   532.6s ERR]   0%|          | 0.00/143M [00:00<?, ?B/s]
+[   532.6s ERR]   0%|          | 128k/143M [00:01<19:38, 127kB/s]
+[   532.6s ERR]  15%|█▍        | 21.2M/143M [00:01<00:04, 27.1MB/s]
+[   532.6s ERR]  30%|██▉       | 42.5M/143M [00:01<00:01, 56.0MB/s]
+[   532.6s ERR]  45%|████▍     | 63.9M/143M [00:01<00:00, 85.2MB/s]
+[   532.6s ERR]  60%|█████▉    | 85.9M/143M [00:01<00:00, 114MB/s] 
+[   532.6s ERR]  74%|███████▎  | 106M/143M [00:01<00:00, 133MB/s] 
+[   532.6s ERR]  88%|████████▊ | 126M/143M [00:01<00:00, 151MB/s]
+[   532.6s ERR] 100%|██████████| 143M/143M [00:01<00:00, 87.1MB/s]
+[   539.5s OUT] wrote /kaggle/working/results/metric3d-s__kitti.csv
+[   546.0s OUT] wrote /kaggle/working/results/metric3d-s__nyu.csv
+[   553.0s OUT] wrote /kaggle/working/results/metric3d-s__diode-in.csv
+[   560.1s OUT] wrote /kaggle/working/results/metric3d-s__diode-out.csv
+[   561.3s OUT] + /usr/bin/python3 scripts/run_audit.py depthpro kitti nyu diode-in diode-out --n 3 --out /kaggle/working/results
+[   569.7s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   583.9s ERR] Loading weights:   0%|          | 0/1407 [00:00<?, ?it/s]
+[   583.9s ERR] Loading weights:  19%|█▉        | 267/1407 [00:00<00:00, 2666.70it/s]
+[   583.9s ERR] Loading weights:  38%|███▊      | 534/1407 [00:00<00:00, 2530.83it/s]
+[   583.9s ERR] Loading weights:  56%|█████▌    | 788/1407 [00:00<00:00, 2525.61it/s]
+[   583.9s ERR] Loading weights:  74%|███████▍  | 1041/1407 [00:00<00:00, 2504.16it/s]
+[   583.9s ERR] Loading weights:  92%|█████████▏| 1292/1407 [00:00<00:00, 2502.41it/s]
+[   583.9s ERR] Loading weights: 100%|██████████| 1407/1407 [00:00<00:00, 2532.34it/s]
+[   609.9s OUT] wrote /kaggle/working/results/depthpro__kitti.csv
+[   611.1s ERR] Loading weights:   0%|          | 0/1407 [00:00<?, ?it/s]
+[   611.1s ERR] Loading weights:  19%|█▉        | 265/1407 [00:00<00:00, 2648.63it/s]
+[   611.1s ERR] Loading weights:  38%|███▊      | 530/1407 [00:00<00:00, 2515.72it/s]
+[   611.1s ERR] Loading weights:  56%|█████▌    | 783/1407 [00:00<00:00, 2515.20it/s]
+[   611.1s ERR] Loading weights:  74%|███████▎  | 1036/1407 [00:00<00:00, 2519.57it/s]
+[   611.1s ERR] Loading weights:  92%|█████████▏| 1289/1407 [00:00<00:00, 2504.03it/s]
+[   611.1s ERR] Loading weights: 100%|██████████| 1407/1407 [00:00<00:00, 2532.33it/s]
+[   637.5s OUT] wrote /kaggle/working/results/depthpro__nyu.csv
+[   639.0s ERR] Loading weights:   0%|          | 0/1407 [00:00<?, ?it/s]
+[   639.0s ERR] Loading weights:  19%|█▉        | 270/1407 [00:00<00:00, 2685.02it/s]
+[   639.0s ERR] Loading weights:  38%|███▊      | 539/1407 [00:00<00:00, 2560.39it/s]
+[   639.0s ERR] Loading weights:  57%|█████▋    | 796/1407 [00:00<00:00, 2533.81it/s]
+[   639.0s ERR] Loading weights:  75%|███████▍  | 1050/1407 [00:00<00:00, 2513.55it/s]
+[   639.0s ERR] Loading weights:  93%|█████████▎| 1302/1407 [00:00<00:00, 2492.96it/s]
+[   639.0s ERR] Loading weights: 100%|██████████| 1407/1407 [00:00<00:00, 2537.71it/s]
+[   664.4s OUT] wrote /kaggle/working/results/depthpro__diode-in.csv
+[   665.7s ERR] Loading weights:   0%|          | 0/1407 [00:00<?, ?it/s]
+[   665.7s ERR] Loading weights:  19%|█▉        | 265/1407 [00:00<00:00, 2645.81it/s]
+[   665.7s ERR] Loading weights:  38%|███▊      | 530/1407 [00:00<00:00, 2545.13it/s]
+[   665.7s ERR] Loading weights:  56%|█████▌    | 785/1407 [00:00<00:00, 2492.14it/s]
+[   665.7s ERR] Loading weights:  74%|███████▎  | 1035/1407 [00:00<00:00, 2493.71it/s]
+[   665.7s ERR] Loading weights:  92%|█████████▏| 1293/1407 [00:00<00:00, 2520.88it/s]
+[   665.7s ERR] Loading weights: 100%|██████████| 1407/1407 [00:00<00:00, 2534.16it/s]
+[   691.6s OUT] wrote /kaggle/working/results/depthpro__diode-out.csv
+[   692.9s OUT] + /usr/bin/python3 scripts/run_audit.py metric3d-s kitti nyu diode-in diode-out --n 3 --stale-k --out /kaggle/working/results
+[   697.8s ERR] /usr/local/lib/python3.13/dist-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+[   697.8s ERR]   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[   697.8s ERR] /usr/local/lib/python3.13/dist-packages/timm/models/registry.py:4: FutureWarning: Importing from timm.models.registry is deprecated, please import via timm.models
+[   697.8s ERR]   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.models", FutureWarning)
+[   697.8s ERR] xFormers not available
+[   697.8s ERR] xFormers not available
+[   697.8s ERR] xFormers not available
+[   697.8s ERR] xFormers not available
+[   705.4s OUT] wrote /kaggle/working/results/metric3d-s-staleK__kitti.csv
+[   712.3s OUT] wrote /kaggle/working/results/metric3d-s-staleK__nyu.csv
+[   719.8s OUT] wrote /kaggle/working/results/metric3d-s-staleK__diode-in.csv
+[   727.2s OUT] wrote /kaggle/working/results/metric3d-s-staleK__diode-out.csv
+[   728.4s OUT] + /usr/bin/python3 scripts/run_audit.py moge2-s kitti nyu --n 2 --off-centre --out-tag offc --out /kaggle/working/results
+[   744.6s OUT] wrote /kaggle/working/results/moge2-s__kitti__offc.csv
+[   744.8s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   756.2s OUT] wrote /kaggle/working/results/moge2-s__nyu__offc.csv
+[   757.1s OUT] + /usr/bin/python3 scripts/run_audit.py unidepth2-s kitti nyu --n 2 --off-centre --out-tag offc --out /kaggle/working/results
+[   761.5s ERR] /usr/local/lib/python3.13/dist-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+[   761.5s ERR]   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[   762.0s ERR] /tmp/ze/third_party/UniDepth/unidepth/utils/chamfer_distance.py:9: UserWarning: !! To run evaluation you need KNN. Please compile KNN: `cd unidepth/ops/knn with && bash compile.sh`.
+[   762.0s ERR]   warnings.warn(
+[   762.7s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   762.7s ERR] xFormers not available
+[   762.7s ERR] xFormers not available
+[   763.7s ERR] /tmp/ze/third_party/UniDepth/unidepth/models/unidepthv2/unidepthv2.py:262: UserWarning: !! self.resolution_level not set, using default bounds !!
+[   763.7s ERR]   warnings.warn("!! self.resolution_level not set, using default bounds !!")
+[   770.3s OUT] Cannot import NystromAttention, you can not run original UniDepth. UniDepthV2 is available.
+[   770.3s OUT] Not loading pretrained weights for backbone
+[   770.3s OUT] EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches && bash compile.sh`
+[   770.3s OUT] wrote /kaggle/working/results/unidepth2-s__kitti__offc.csv
+[   774.3s OUT] Not loading pretrained weights for backbone
+[   774.3s OUT] EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches && bash compile.sh`
+[   774.3s OUT] wrote /kaggle/working/results/unidepth2-s__nyu__offc.csv
+[   775.7s OUT] + /usr/bin/python3 scripts/run_audit.py depthpro kitti nyu --n 2 --off-centre --out-tag offc --out /kaggle/working/results
+[   785.1s ERR] Loading weights:   0%|          | 0/1407 [00:00<?, ?it/s]
+[   785.1s ERR] Loading weights:  20%|██        | 284/1407 [00:00<00:00, 2838.41it/s]
+[   785.1s ERR] Loading weights:  40%|████      | 568/1407 [00:00<00:00, 2670.62it/s]
+[   785.1s ERR] Loading weights:  59%|█████▉    | 836/1407 [00:00<00:00, 2644.59it/s]
+[   785.1s ERR] Loading weights:  78%|███████▊  | 1101/1407 [00:00<00:00, 2634.24it/s]
+[   785.1s ERR] Loading weights:  97%|█████████▋| 1365/1407 [00:00<00:00, 2633.11it/s]
+[   785.1s ERR] Loading weights: 100%|██████████| 1407/1407 [00:00<00:00, 2665.28it/s]
+[   858.9s OUT] wrote /kaggle/working/results/depthpro__kitti__offc.csv
+[   860.1s ERR] Loading weights:   0%|          | 0/1407 [00:00<?, ?it/s]
+[   860.1s ERR] Loading weights:  19%|█▉        | 268/1407 [00:00<00:00, 2654.39it/s]
+[   860.1s ERR] Loading weights:  38%|███▊      | 534/1407 [00:00<00:00, 2580.31it/s]
+[   860.1s ERR] Loading weights:  56%|█████▋    | 793/1407 [00:00<00:00, 2530.85it/s]
+[   860.1s ERR] Loading weights:  74%|███████▍  | 1047/1407 [00:00<00:00, 2521.74it/s]
+[   860.1s ERR] Loading weights:  93%|█████████▎| 1303/1407 [00:00<00:00, 2527.67it/s]
+[   860.1s ERR] Loading weights: 100%|██████████| 1407/1407 [00:00<00:00, 2562.08it/s]
+[   932.6s OUT] wrote /kaggle/working/results/depthpro__nyu__offc.csv
+[   933.9s OUT] + /usr/bin/python3 scripts/run_audit.py dav2-s kitti nyu --n 2 --off-centre --out-tag offc --out /kaggle/working/results
+[   942.5s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   942.5s ERR] Loading weights:  94%|█████████▎| 269/287 [00:00<00:00, 2679.83it/s]
+[   942.5s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2732.75it/s]
+[   958.4s OUT] wrote /kaggle/working/results/dav2-s__kitti__offc.csv
+[   958.9s ERR] Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]
+[   958.9s ERR] Loading weights:  90%|████████▉ | 257/287 [00:00<00:00, 2567.18it/s]
+[   958.9s ERR] Loading weights: 100%|██████████| 287/287 [00:00<00:00, 2638.96it/s]
+[   963.4s OUT] wrote /kaggle/working/results/dav2-s__nyu__offc.csv
+[   964.7s OUT] all done in 16.1 min
+[   966.9s ERR] /usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+[   966.9s ERR]   cells[i][c] = re.sub('\\\\\|', '|', cell)
+[   967.3s ERR] /usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+[   967.3s ERR]   text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[   968.1s ERR] [NbConvertApp] Converting notebook __script__.ipynb to html
+[   969.4s ERR] [NbConvertApp] Writing 332228 bytes to __results__.html
