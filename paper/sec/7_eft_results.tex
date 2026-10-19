@@ -18,9 +18,20 @@ model learns part of what a zoom looks like in general.
 Equivariance is not free here. AbsRel on unzoomed KITTI images rises from \DavTwoSFixedKittiAbsrelOne{}
 to \DavTwoSEftbKittiAbsrelOne{}, and on DIODE-outdoor from \DavTwoSFixedDiodeOutAbsrelOne{} to
 \DavTwoSEftbDiodeOutAbsrelOne{}, while NYUv2 improves (\DavTwoSFixedNyuAbsrelOne{} to
-\DavTwoSEftbNyuAbsrelOne). A stronger anchor ($\lambda=3$) and the Zhong \etal-style target are reported
-in the same table.
-% TODO(results): finish once eft-ablate is in; state whether lambda=3 keeps 1x accuracy.
+\DavTwoSEftbNyuAbsrelOne). A three times stronger anchor does not buy the KITTI accuracy back
+(\DavTwoSEftbThreeKittiAbsrelOne) and costs NYUv2 (\DavTwoSEftbThreeNyuAbsrelOne), at the same $\alpha$
+(\DavTwoSEftbThreeKittiAlpha, \DavTwoSEftbThreeNyuAlpha); the trade-off is not a matter of tuning the
+weight.
+
+\paragraph{What does the work.}
+Two controls isolate the ingredients. Blur augmentation alone, without the zoom term, leaves most of the
+effect in place ($\alpha$ \DavTwoSBlurKittiAlpha{} on KITTI, \DavTwoSBlurNyuAlpha{} on NYUv2): seeing
+low-detail images is not what teaches the model the camera. Replacing the frozen teacher with the
+student's own stop-gradient prediction, as in Zhong \etal~\cite{zhong2023equivariance}, reaches a
+similar $\alpha$ (\DavTwoSZhongKittiAlpha, \DavTwoSZhongNyuAlpha) but drifts: the blur shortcut returns
+(\DavTwoSZhongKittiBlur\% on KITTI) and unzoomed AbsRel degrades most of all variants
+(\DavTwoSZhongKittiAbsrelOne{} on KITTI, \DavTwoSZhongNyuAbsrelOne{} on NYUv2). The frozen teacher, the
+zoom term and the blur term are each needed.
 
 \begin{figure}[t]
   \centering

@@ -1,5 +1,5 @@
-dataset,dav2-s-eft,dav2-s-eftb,dav2-s-fixed
-diode-in,0.006,0.004,0.01
-diode-out,0.015,0.004,0.006
-kitti,0.296,0.049,0.011
-nyu,0.042,0.004,0.007
+dataset,dav2-s-blur,dav2-s-eft,dav2-s-eftb,dav2-s-eftb3,dav2-s-fixed
+diode-in,0.003,0.006,0.004,0.004,0.01
+diode-out,0.002,0.015,0.004,0.004,0.006
+kitti,0.002,0.296,0.049,0.067,0.011
+nyu,0.002,0.042,0.004,0.003,0.007

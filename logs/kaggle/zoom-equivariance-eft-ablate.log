@@ -1,0 +1,513 @@
+[{"stream_name":"stdout","time":0.504979129,"data":"+ pip install -q transformers==5.20.1 h5py\n"}
+,{"stream_name":"stdout","time":3.759665445,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 108.7 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":3.7909194729999998,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 846.4/846.4 kB 38.8 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":151.157468001,"data":"+ cd /tmp/ze/data/raw/kitti \u0026\u0026 unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' \u0026\u0026 rm sel.zip\n"}
+,{"stream_name":"stdout","time":158.389298512,"data":"+ cd /tmp/ze/data/raw/diode \u0026\u0026 tar xzf val.tar.gz \u0026\u0026 rm val.tar.gz\n"}
+,{"stream_name":"stdout","time":223.468423898,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0001.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0001.zip\n"}
+,{"stream_name":"stdout","time":224.032332286,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0009.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0009.zip\n"}
+,{"stream_name":"stdout","time":230.959756983,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0011.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0011.zip\n"}
+,{"stream_name":"stdout","time":232.085337724,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0018.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0018.zip\n"}
+,{"stream_name":"stdout","time":233.440702974,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0022.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0022.zip\n"}
+,{"stream_name":"stdout","time":238.465588617,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0057.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0057.zip\n"}
+,{"stream_name":"stdout","time":239.863456914,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_30_drive_0020.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_30_drive_0020.zip\n"}
+,{"stream_name":"stdout","time":253.837244998,"data":"val drives: ['2011_09_26_drive_0002', '2011_09_26_drive_0005', '2011_09_26_drive_0013', '2011_09_26_drive_0020', '2011_09_26_drive_0023', '2011_09_26_drive_0036', '2011_09_26_drive_0079', '2011_09_26_drive_0095', '2011_09_26_drive_0113', '2011_09_28_drive_0037', '2011_09_29_drive_0026', '2011_09_30_drive_0016', '2011_10_03_drive_0047']\n"}
+,{"stream_name":"stdout","time":253.837273841,"data":"setup done in 4.2 min\n"}
+,{"stream_name":"stdout","time":253.837279387,"data":"+ cd /tmp/ze \u0026\u0026 EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py outdoor --steps 3000 --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --target student --tag zhong --out /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":265.344508555,"data":"3323 unlabeled training images\n"}
+,{"stream_name":"stderr","time":280.507317797,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":284.789116758,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  91%|█████████ | 261/287 [00:00\u003c00:00, 2606.83it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2674.02it/s]\n"}
+,{"stream_name":"stderr","time":287.841969217,"data":"/tmp/ze/src/eft.py:127: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\n"}
+,{"stream_name":"stderr","time":287.842012933,"data":"Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)\n"}
+,{"stream_name":"stderr","time":287.842043189,"data":"  return float(l_zoom), float(l_anchor)\n"}
+,{"stream_name":"stdout","time":394.530068646,"data":"step 100: zoom 0.1732  anchor 0.1826  1.8 min\n"}
+,{"stream_name":"stdout","time":508.489301411,"data":"step 200: zoom 0.1031  anchor 0.1030  3.7 min\n"}
+,{"stream_name":"stdout","time":621.980429651,"data":"step 300: zoom 0.0876  anchor 0.1111  5.6 min\n"}
+,{"stream_name":"stdout","time":735.584293424,"data":"step 400: zoom 0.0904  anchor 0.1221  7.5 min\n"}
+,{"stream_name":"stdout","time":849.25703847,"data":"step 500: zoom 0.0766  anchor 0.0883  9.4 min\n"}
+,{"stream_name":"stdout","time":962.855244348,"data":"step 600: zoom 0.0748  anchor 0.0743  11.3 min\n"}
+,{"stream_name":"stdout","time":1076.487130904,"data":"step 700: zoom 0.0704  anchor 0.0965  13.2 min\n"}
+,{"stream_name":"stdout","time":1190.125379359,"data":"step 800: zoom 0.0755  anchor 0.0882  15.1 min\n"}
+,{"stream_name":"stdout","time":1303.743980716,"data":"step 900: zoom 0.0758  anchor 0.0926  17.0 min\n"}
+,{"stream_name":"stdout","time":1417.218382031,"data":"step 1000: zoom 0.0708  anchor 0.0899  18.9 min\n"}
+,{"stream_name":"stdout","time":1530.699210868,"data":"step 1100: zoom 0.0676  anchor 0.0749  20.8 min\n"}
+,{"stream_name":"stdout","time":1644.44222465,"data":"step 1200: zoom 0.0643  anchor 0.0770  22.7 min\n"}
+,{"stream_name":"stdout","time":1758.148286243,"data":"step 1300: zoom 0.0677  anchor 0.0700  24.5 min\n"}
+,{"stream_name":"stdout","time":1871.764324343,"data":"step 1400: zoom 0.0656  anchor 0.0747  26.4 min\n"}
+,{"stream_name":"stdout","time":1985.316383637,"data":"step 1500: zoom 0.0658  anchor 0.0710  28.3 min\n"}
+,{"stream_name":"stdout","time":2098.940489761,"data":"step 1600: zoom 0.0695  anchor 0.1043  30.2 min\n"}
+,{"stream_name":"stdout","time":2212.392015003,"data":"step 1700: zoom 0.0683  anchor 0.0955  32.1 min\n"}
+,{"stream_name":"stdout","time":2325.969903412,"data":"step 1800: zoom 0.0596  anchor 0.0647  34.0 min\n"}
+,{"stream_name":"stdout","time":2439.406141617,"data":"step 1900: zoom 0.0611  anchor 0.0812  35.9 min\n"}
+,{"stream_name":"stdout","time":2553.025088965,"data":"step 2000: zoom 0.0681  anchor 0.1200  37.8 min\n"}
+,{"stream_name":"stdout","time":2666.801394157,"data":"step 2100: zoom 0.0640  anchor 0.0834  39.7 min\n"}
+,{"stream_name":"stdout","time":2780.348670009,"data":"step 2200: zoom 0.0645  anchor 0.0800  41.6 min\n"}
+,{"stream_name":"stdout","time":2894.008420318,"data":"step 2300: zoom 0.0598  anchor 0.0633  43.5 min\n"}
+,{"stream_name":"stdout","time":3007.587874221,"data":"step 2400: zoom 0.0597  anchor 0.0608  45.4 min\n"}
+,{"stream_name":"stdout","time":3121.176218901,"data":"step 2500: zoom 0.0590  anchor 0.0660  47.3 min\n"}
+,{"stream_name":"stdout","time":3234.765742203,"data":"step 2600: zoom 0.0571  anchor 0.0669  49.2 min\n"}
+,{"stream_name":"stdout","time":3348.299094289,"data":"step 2700: zoom 0.0564  anchor 0.0876  51.1 min\n"}
+,{"stream_name":"stdout","time":3461.871640544,"data":"step 2800: zoom 0.0585  anchor 0.0660  52.9 min\n"}
+,{"stream_name":"stdout","time":3575.346353555,"data":"step 2900: zoom 0.0579  anchor 0.0702  54.8 min\n"}
+,{"stream_name":"stdout","time":3688.915702246,"data":"step 3000: zoom 0.0569  anchor 0.0550  56.7 min\n"}
+,{"stream_name":"stdout","time":3689.205854826,"data":"saved /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":3692.505627626,"data":"+ cd /tmp/ze \u0026\u0026 EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py indoor --steps 3000 --nyu-train --target student --tag zhong --out /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":3703.386380446,"data":"795 unlabeled training images\n"}
+,{"stream_name":"stderr","time":3708.741982679,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":3711.675790824,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  93%|█████████▎| 267/287 [00:00\u003c00:00, 2669.69it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2739.47it/s]\n"}
+,{"stream_name":"stderr","time":3713.268170255,"data":"/tmp/ze/src/eft.py:127: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\n"}
+,{"stream_name":"stderr","time":3713.268206755,"data":"Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)\n"}
+,{"stream_name":"stderr","time":3713.26821115,"data":"  return float(l_zoom), float(l_anchor)\n"}
+,{"stream_name":"stdout","time":3750.482654862,"data":"step 100: zoom 0.1590  anchor 0.1582  0.6 min\n"}
+,{"stream_name":"stdout","time":3788.753421366,"data":"step 200: zoom 0.1149  anchor 0.1004  1.3 min\n"}
+,{"stream_name":"stdout","time":3826.458746912,"data":"step 300: zoom 0.0984  anchor 0.1466  1.9 min\n"}
+,{"stream_name":"stdout","time":3864.35870228,"data":"step 400: zoom 0.0948  anchor 0.0974  2.5 min\n"}
+,{"stream_name":"stdout","time":3902.154372114,"data":"step 500: zoom 0.1010  anchor 0.0998  3.2 min\n"}
+,{"stream_name":"stdout","time":3940.047979262,"data":"step 600: zoom 0.0950  anchor 0.0743  3.8 min\n"}
+,{"stream_name":"stdout","time":3977.872189727,"data":"step 700: zoom 0.0869  anchor 0.0744  4.4 min\n"}
+,{"stream_name":"stdout","time":4015.755313178,"data":"step 800: zoom 0.0933  anchor 0.0995  5.1 min\n"}
+,{"stream_name":"stdout","time":4053.639111611,"data":"step 900: zoom 0.0926  anchor 0.0843  5.7 min\n"}
+,{"stream_name":"stdout","time":4091.45973163,"data":"step 1000: zoom 0.0864  anchor 0.1033  6.3 min\n"}
+,{"stream_name":"stdout","time":4129.232820091,"data":"step 1100: zoom 0.0905  anchor 0.0834  7.0 min\n"}
+,{"stream_name":"stdout","time":4167.124849975,"data":"step 1200: zoom 0.0833  anchor 0.0657  7.6 min\n"}
+,{"stream_name":"stdout","time":4204.937978288,"data":"step 1300: zoom 0.0761  anchor 0.0719  8.2 min\n"}
+,{"stream_name":"stdout","time":4242.775672218,"data":"step 1400: zoom 0.0797  anchor 0.0747  8.8 min\n"}
+,{"stream_name":"stdout","time":4280.638416332,"data":"step 1500: zoom 0.0799  anchor 0.0711  9.5 min\n"}
+,{"stream_name":"stdout","time":4318.439525099,"data":"step 1600: zoom 0.0758  anchor 0.0875  10.1 min\n"}
+,{"stream_name":"stdout","time":4356.28333944,"data":"step 1700: zoom 0.0829  anchor 0.0753  10.7 min\n"}
+,{"stream_name":"stdout","time":4394.117452576,"data":"step 1800: zoom 0.0710  anchor 0.0780  11.4 min\n"}
+,{"stream_name":"stdout","time":4431.937697373,"data":"step 1900: zoom 0.0718  anchor 0.0665  12.0 min\n"}
+,{"stream_name":"stdout","time":4469.810310536,"data":"step 2000: zoom 0.0722  anchor 0.0741  12.6 min\n"}
+,{"stream_name":"stdout","time":4507.694828568,"data":"step 2100: zoom 0.0705  anchor 0.0860  13.3 min\n"}
+,{"stream_name":"stdout","time":4545.544818994,"data":"step 2200: zoom 0.0747  anchor 0.0708  13.9 min\n"}
+,{"stream_name":"stdout","time":4583.460681549,"data":"step 2300: zoom 0.0734  anchor 0.0737  14.5 min\n"}
+,{"stream_name":"stdout","time":4621.334665163,"data":"step 2400: zoom 0.0774  anchor 0.0720  15.2 min\n"}
+,{"stream_name":"stdout","time":4659.169057605,"data":"step 2500: zoom 0.0765  anchor 0.0666  15.8 min\n"}
+,{"stream_name":"stdout","time":4697.05647243,"data":"step 2600: zoom 0.0742  anchor 0.0620  16.4 min\n"}
+,{"stream_name":"stdout","time":4734.92934559,"data":"step 2700: zoom 0.0690  anchor 0.0661  17.0 min\n"}
+,{"stream_name":"stdout","time":4772.771905033,"data":"step 2800: zoom 0.0679  anchor 0.0647  17.7 min\n"}
+,{"stream_name":"stdout","time":4810.636432823,"data":"step 2900: zoom 0.0689  anchor 0.0736  18.3 min\n"}
+,{"stream_name":"stdout","time":4848.517504155,"data":"step 3000: zoom 0.0723  anchor 0.0606  18.9 min\n"}
+,{"stream_name":"stdout","time":4848.816765833,"data":"saved /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":4850.232930839,"data":"+ cd /tmp/ze \u0026\u0026 EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py outdoor --steps 3000 --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --w-zoom 0 --w-blur 1 --tag blur --out /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":4852.412540777,"data":"3323 unlabeled training images\n"}
+,{"stream_name":"stderr","time":4858.720967492,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  96%|█████████▌| 276/287 [00:00\u003c00:00, 2707.13it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2776.01it/s]\n"}
+,{"stream_name":"stderr","time":4861.322778773,"data":"/tmp/ze/src/eft.py:127: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\n"}
+,{"stream_name":"stderr","time":4861.322817645,"data":"Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)\n"}
+,{"stream_name":"stderr","time":4861.32282205,"data":"  return float(l_zoom), float(l_anchor)\n"}
+,{"stream_name":"stdout","time":5019.076195286,"data":"step 100: zoom 0.5143  anchor 0.0608  2.7 min\n"}
+,{"stream_name":"stdout","time":5177.981393479,"data":"step 200: zoom 0.4710  anchor 0.0466  5.3 min\n"}
+,{"stream_name":"stdout","time":5337.0316692,"data":"step 300: zoom 0.4793  anchor 0.0522  8.0 min\n"}
+,{"stream_name":"stdout","time":5496.178325569,"data":"step 400: zoom 0.4666  anchor 0.0440  10.6 min\n"}
+,{"stream_name":"stdout","time":5655.298196106,"data":"step 500: zoom 0.4738  anchor 0.0430  13.3 min\n"}
+,{"stream_name":"stdout","time":5814.413179442,"data":"step 600: zoom 0.4675  anchor 0.0465  15.9 min\n"}
+,{"stream_name":"stdout","time":5973.589239088,"data":"step 700: zoom 0.4532  anchor 0.0453  18.6 min\n"}
+,{"stream_name":"stdout","time":6132.51922009,"data":"step 800: zoom 0.4731  anchor 0.0416  21.2 min\n"}
+,{"stream_name":"stdout","time":6291.474566983,"data":"step 900: zoom 0.4257  anchor 0.0412  23.9 min\n"}
+,{"stream_name":"stdout","time":6450.330362785,"data":"step 1000: zoom 0.4638  anchor 0.0383  26.5 min\n"}
+,{"stream_name":"stdout","time":6609.446999935,"data":"step 1100: zoom 0.4607  anchor 0.0383  29.2 min\n"}
+,{"stream_name":"stdout","time":6768.548672989,"data":"step 1200: zoom 0.4522  anchor 0.0385  31.8 min\n"}
+,{"stream_name":"stdout","time":6927.669992761,"data":"step 1300: zoom 0.4417  anchor 0.0404  34.5 min\n"}
+,{"stream_name":"stdout","time":7086.76048331,"data":"step 1400: zoom 0.4269  anchor 0.0372  37.1 min\n"}
+,{"stream_name":"stdout","time":7246.037480062,"data":"step 1500: zoom 0.4362  anchor 0.0376  39.8 min\n"}
+,{"stream_name":"stdout","time":7405.314720421,"data":"step 1600: zoom 0.4241  anchor 0.0402  42.4 min\n"}
+,{"stream_name":"stdout","time":7564.597684393,"data":"step 1700: zoom 0.4257  anchor 0.0386  45.1 min\n"}
+,{"stream_name":"stdout","time":7723.757203264,"data":"step 1800: zoom 0.4444  anchor 0.0372  47.7 min\n"}
+,{"stream_name":"stdout","time":7882.987142571,"data":"step 1900: zoom 0.4431  anchor 0.0372  50.4 min\n"}
+,{"stream_name":"stdout","time":8042.147753164,"data":"step 2000: zoom 0.4337  anchor 0.0335  53.1 min\n"}
+,{"stream_name":"stdout","time":8201.267368188,"data":"step 2100: zoom 0.4493  anchor 0.0371  55.7 min\n"}
+,{"stream_name":"stdout","time":8360.311066317,"data":"step 2200: zoom 0.4608  anchor 0.0330  58.4 min\n"}
+,{"stream_name":"stdout","time":8519.307735782,"data":"step 2300: zoom 0.4594  anchor 0.0370  61.0 min\n"}
+,{"stream_name":"stdout","time":8678.483786627,"data":"step 2400: zoom 0.4462  anchor 0.0398  63.7 min\n"}
+,{"stream_name":"stdout","time":8837.466440916,"data":"step 2500: zoom 0.4348  anchor 0.0373  66.3 min\n"}
+,{"stream_name":"stdout","time":8996.616872821,"data":"step 2600: zoom 0.4347  anchor 0.0349  69.0 min\n"}
+,{"stream_name":"stdout","time":9155.893692059,"data":"step 2700: zoom 0.4418  anchor 0.0348  71.6 min\n"}
+,{"stream_name":"stdout","time":9314.970565155,"data":"step 2800: zoom 0.4119  anchor 0.0387  74.3 min\n"}
+,{"stream_name":"stdout","time":9474.003762729,"data":"step 2900: zoom 0.4579  anchor 0.0356  76.9 min\n"}
+,{"stream_name":"stdout","time":9632.967518557,"data":"step 3000: zoom 0.4248  anchor 0.0421  79.6 min\n"}
+,{"stream_name":"stdout","time":9633.265729912,"data":"saved /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":9634.593990121,"data":"+ cd /tmp/ze \u0026\u0026 EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py indoor --steps 3000 --nyu-train --w-zoom 0 --w-blur 1 --tag blur --out /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":9644.37223922,"data":"795 unlabeled training images\n"}
+,{"stream_name":"stderr","time":9650.586577275,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  93%|█████████▎| 267/287 [00:00\u003c00:00, 2664.62it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2770.02it/s]\n"}
+,{"stream_name":"stderr","time":9652.209700346,"data":"/tmp/ze/src/eft.py:127: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\n"}
+,{"stream_name":"stderr","time":9652.20973814,"data":"Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)\n"}
+,{"stream_name":"stderr","time":9652.209750436,"data":"  return float(l_zoom), float(l_anchor)\n"}
+,{"stream_name":"stdout","time":9703.78836636,"data":"step 100: zoom 0.4453  anchor 0.0623  0.9 min\n"}
+,{"stream_name":"stdout","time":9755.501927895,"data":"step 200: zoom 0.4068  anchor 0.0607  1.7 min\n"}
+,{"stream_name":"stdout","time":9807.441888631,"data":"step 300: zoom 0.3815  anchor 0.0698  2.6 min\n"}
+,{"stream_name":"stdout","time":9859.299525616,"data":"step 400: zoom 0.3641  anchor 0.0674  3.5 min\n"}
+,{"stream_name":"stdout","time":9911.103790745,"data":"step 500: zoom 0.3943  anchor 0.0626  4.3 min\n"}
+,{"stream_name":"stdout","time":9962.979683177,"data":"step 600: zoom 0.3830  anchor 0.0637  5.2 min\n"}
+,{"stream_name":"stdout","time":10014.812411315,"data":"step 700: zoom 0.3733  anchor 0.0581  6.1 min\n"}
+,{"stream_name":"stdout","time":10066.676334204,"data":"step 800: zoom 0.3682  anchor 0.0649  6.9 min\n"}
+,{"stream_name":"stdout","time":10118.507580271,"data":"step 900: zoom 0.3443  anchor 0.0604  7.8 min\n"}
+,{"stream_name":"stdout","time":10170.348380044,"data":"step 1000: zoom 0.3766  anchor 0.0612  8.7 min\n"}
+,{"stream_name":"stdout","time":10222.105655376,"data":"step 1100: zoom 0.3342  anchor 0.0592  9.5 min\n"}
+,{"stream_name":"stdout","time":10273.917191863,"data":"step 1200: zoom 0.3583  anchor 0.0559  10.4 min\n"}
+,{"stream_name":"stdout","time":10325.633786552,"data":"step 1300: zoom 0.3206  anchor 0.0565  11.2 min\n"}
+,{"stream_name":"stdout","time":10377.54277545,"data":"step 1400: zoom 0.3467  anchor 0.0575  12.1 min\n"}
+,{"stream_name":"stdout","time":10429.262395183,"data":"step 1500: zoom 0.3274  anchor 0.0571  13.0 min\n"}
+,{"stream_name":"stdout","time":10481.066227001,"data":"step 1600: zoom 0.3515  anchor 0.0529  13.8 min\n"}
+,{"stream_name":"stdout","time":10532.8694494,"data":"step 1700: zoom 0.3604  anchor 0.0486  14.7 min\n"}
+,{"stream_name":"stdout","time":10584.675201725,"data":"step 1800: zoom 0.3597  anchor 0.0542  15.6 min\n"}
+,{"stream_name":"stdout","time":10636.52084421,"data":"step 1900: zoom 0.3544  anchor 0.0518  16.4 min\n"}
+,{"stream_name":"stdout","time":10688.366046605,"data":"step 2000: zoom 0.3339  anchor 0.0476  17.3 min\n"}
+,{"stream_name":"stdout","time":10740.125483235,"data":"step 2100: zoom 0.3397  anchor 0.0469  18.2 min\n"}
+,{"stream_name":"stdout","time":10791.95905722,"data":"step 2200: zoom 0.3471  anchor 0.0534  19.0 min\n"}
+,{"stream_name":"stdout","time":10843.758373044,"data":"step 2300: zoom 0.3296  anchor 0.0462  19.9 min\n"}
+,{"stream_name":"stdout","time":10895.588094444,"data":"step 2400: zoom 0.3317  anchor 0.0505  20.7 min\n"}
+,{"stream_name":"stdout","time":10947.464344144,"data":"step 2500: zoom 0.3370  anchor 0.0452  21.6 min\n"}
+,{"stream_name":"stdout","time":10999.288372931,"data":"step 2600: zoom 0.3296  anchor 0.0503  22.5 min\n"}
+,{"stream_name":"stdout","time":11051.129567896,"data":"step 2700: zoom 0.3230  anchor 0.0468  23.3 min\n"}
+,{"stream_name":"stdout","time":11102.925403105,"data":"step 2800: zoom 0.3290  anchor 0.0493  24.2 min\n"}
+,{"stream_name":"stdout","time":11154.767502857,"data":"step 2900: zoom 0.3097  anchor 0.0494  25.1 min\n"}
+,{"stream_name":"stdout","time":11206.559620663,"data":"step 3000: zoom 0.3191  anchor 0.0446  25.9 min\n"}
+,{"stream_name":"stdout","time":11206.8645952,"data":"saved /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":11208.258487905,"data":"+ cd /tmp/ze \u0026\u0026 EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py outdoor --steps 3000 --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --w-blur 1 --w-anchor 3 --tag eftb3 --out /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":11210.482917853,"data":"3323 unlabeled training images\n"}
+,{"stream_name":"stderr","time":11216.864849902,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  89%|████████▉ | 255/287 [00:00\u003c00:00, 2540.62it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2586.02it/s]\n"}
+,{"stream_name":"stderr","time":11219.520043791,"data":"/tmp/ze/src/eft.py:127: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\n"}
+,{"stream_name":"stderr","time":11219.520088278,"data":"Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)\n"}
+,{"stream_name":"stderr","time":11219.52009295,"data":"  return float(l_zoom), float(l_anchor)\n"}
+,{"stream_name":"stdout","time":11380.395654138,"data":"step 100: zoom 0.2638  anchor 0.0682  2.7 min\n"}
+,{"stream_name":"stdout","time":11542.906673126,"data":"step 200: zoom 0.1715  anchor 0.0540  5.4 min\n"}
+,{"stream_name":"stdout","time":11705.427362206,"data":"step 300: zoom 0.1505  anchor 0.0550  8.1 min\n"}
+,{"stream_name":"stdout","time":11868.041513811,"data":"step 400: zoom 0.1265  anchor 0.0509  10.8 min\n"}
+,{"stream_name":"stdout","time":12030.574741851,"data":"step 500: zoom 0.1204  anchor 0.0528  13.6 min\n"}
+,{"stream_name":"stdout","time":12193.196541842,"data":"step 600: zoom 0.1163  anchor 0.0430  16.3 min\n"}
+,{"stream_name":"stdout","time":12355.879290791,"data":"step 700: zoom 0.1124  anchor 0.0448  19.0 min\n"}
+,{"stream_name":"stdout","time":12518.303103435,"data":"step 800: zoom 0.1016  anchor 0.0407  21.7 min\n"}
+,{"stream_name":"stdout","time":12680.841985705,"data":"step 900: zoom 0.0976  anchor 0.0417  24.4 min\n"}
+,{"stream_name":"stdout","time":12843.367719691,"data":"step 1000: zoom 0.0946  anchor 0.0424  27.1 min\n"}
+,{"stream_name":"stdout","time":13005.842192391,"data":"step 1100: zoom 0.0967  anchor 0.0427  29.8 min\n"}
+,{"stream_name":"stdout","time":13168.460225402,"data":"step 1200: zoom 0.0925  anchor 0.0407  32.5 min\n"}
+,{"stream_name":"stdout","time":13331.059188955,"data":"step 1300: zoom 0.0949  anchor 0.0437  35.2 min\n"}
+,{"stream_name":"stdout","time":13493.611764047,"data":"step 1400: zoom 0.0864  anchor 0.0415  37.9 min\n"}
+,{"stream_name":"stdout","time":13656.193755371,"data":"step 1500: zoom 0.0911  anchor 0.0414  40.6 min\n"}
+,{"stream_name":"stdout","time":13818.948123579,"data":"step 1600: zoom 0.0849  anchor 0.0389  43.4 min\n"}
+,{"stream_name":"stdout","time":13981.256911385,"data":"step 1700: zoom 0.0853  anchor 0.0392  46.1 min\n"}
+,{"stream_name":"stdout","time":14143.80964744,"data":"step 1800: zoom 0.0844  anchor 0.0380  48.8 min\n"}
+,{"stream_name":"stdout","time":14306.536740872,"data":"step 1900: zoom 0.0891  anchor 0.0408  51.5 min\n"}
+,{"stream_name":"stdout","time":14469.139034626,"data":"step 2000: zoom 0.0857  anchor 0.0390  54.2 min\n"}
+,{"stream_name":"stdout","time":14631.867814124,"data":"step 2100: zoom 0.0863  anchor 0.0415  56.9 min\n"}
+,{"stream_name":"stdout","time":14794.265997899,"data":"step 2200: zoom 0.0843  anchor 0.0361  59.6 min\n"}
+,{"stream_name":"stdout","time":14956.819578474,"data":"step 2300: zoom 0.0826  anchor 0.0397  62.3 min\n"}
+,{"stream_name":"stdout","time":15119.377338988,"data":"step 2400: zoom 0.0853  anchor 0.0400  65.0 min\n"}
+,{"stream_name":"stdout","time":15281.957293099,"data":"step 2500: zoom 0.0817  anchor 0.0368  67.7 min\n"}
+,{"stream_name":"stdout","time":15444.489455983,"data":"step 2600: zoom 0.0855  anchor 0.0415  70.5 min\n"}
+,{"stream_name":"stdout","time":15606.830207724,"data":"step 2700: zoom 0.0774  anchor 0.0364  73.2 min\n"}
+,{"stream_name":"stdout","time":15769.284928348,"data":"step 2800: zoom 0.0775  anchor 0.0347  75.9 min\n"}
+,{"stream_name":"stdout","time":15931.812527254,"data":"step 2900: zoom 0.0848  anchor 0.0354  78.6 min\n"}
+,{"stream_name":"stdout","time":16094.565214509,"data":"step 3000: zoom 0.0807  anchor 0.0367  81.3 min\n"}
+,{"stream_name":"stdout","time":16094.860584469,"data":"saved /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":16096.203988579,"data":"+ cd /tmp/ze \u0026\u0026 EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/train_eft.py indoor --steps 3000 --nyu-train --w-blur 1 --w-anchor 3 --tag eftb3 --out /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":16105.947669147,"data":"795 unlabeled training images\n"}
+,{"stream_name":"stderr","time":16112.186184883,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  90%|████████▉ | 258/287 [00:00\u003c00:00, 2579.11it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2639.96it/s]\n"}
+,{"stream_name":"stderr","time":16113.887107405,"data":"/tmp/ze/src/eft.py:127: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\n"}
+,{"stream_name":"stderr","time":16113.887154895,"data":"Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)\n"}
+,{"stream_name":"stderr","time":16113.887181281,"data":"  return float(l_zoom), float(l_anchor)\n"}
+,{"stream_name":"stdout","time":16166.231377307,"data":"step 100: zoom 0.2395  anchor 0.0657  0.9 min\n"}
+,{"stream_name":"stdout","time":16218.746882531,"data":"step 200: zoom 0.1532  anchor 0.0679  1.8 min\n"}
+,{"stream_name":"stdout","time":16271.4760332,"data":"step 300: zoom 0.1456  anchor 0.0739  2.6 min\n"}
+,{"stream_name":"stdout","time":16324.20051424,"data":"step 400: zoom 0.1298  anchor 0.0648  3.5 min\n"}
+,{"stream_name":"stdout","time":16376.952574565,"data":"step 500: zoom 0.1248  anchor 0.0586  4.4 min\n"}
+,{"stream_name":"stdout","time":16429.68042483,"data":"step 600: zoom 0.1282  anchor 0.0656  5.3 min\n"}
+,{"stream_name":"stdout","time":16482.359222868,"data":"step 700: zoom 0.1194  anchor 0.0637  6.2 min\n"}
+,{"stream_name":"stdout","time":16535.102783488,"data":"step 800: zoom 0.1241  anchor 0.0589  7.0 min\n"}
+,{"stream_name":"stdout","time":16587.825543798,"data":"step 900: zoom 0.1090  anchor 0.0598  7.9 min\n"}
+,{"stream_name":"stdout","time":16640.534802275,"data":"step 1000: zoom 0.1133  anchor 0.0531  8.8 min\n"}
+,{"stream_name":"stdout","time":16693.277082264,"data":"step 1100: zoom 0.1096  anchor 0.0612  9.7 min\n"}
+,{"stream_name":"stdout","time":16746.021738902,"data":"step 1200: zoom 0.1181  anchor 0.0647  10.6 min\n"}
+,{"stream_name":"stdout","time":16798.706582235,"data":"step 1300: zoom 0.1001  anchor 0.0554  11.4 min\n"}
+,{"stream_name":"stdout","time":16851.428809057,"data":"step 1400: zoom 0.1042  anchor 0.0509  12.3 min\n"}
+,{"stream_name":"stdout","time":16904.160505225,"data":"step 1500: zoom 0.1002  anchor 0.0510  13.2 min\n"}
+,{"stream_name":"stdout","time":16956.877355148,"data":"step 1600: zoom 0.0996  anchor 0.0527  14.1 min\n"}
+,{"stream_name":"stdout","time":17009.633358325,"data":"step 1700: zoom 0.1036  anchor 0.0496  15.0 min\n"}
+,{"stream_name":"stdout","time":17062.334376039,"data":"step 1800: zoom 0.0949  anchor 0.0491  15.8 min\n"}
+,{"stream_name":"stdout","time":17115.060414489,"data":"step 1900: zoom 0.0943  anchor 0.0453  16.7 min\n"}
+,{"stream_name":"stdout","time":17167.768995331,"data":"step 2000: zoom 0.1008  anchor 0.0512  17.6 min\n"}
+,{"stream_name":"stdout","time":17220.477703591,"data":"step 2100: zoom 0.0928  anchor 0.0525  18.5 min\n"}
+,{"stream_name":"stdout","time":17273.17102967,"data":"step 2200: zoom 0.0953  anchor 0.0467  19.3 min\n"}
+,{"stream_name":"stdout","time":17325.909567419,"data":"step 2300: zoom 0.0968  anchor 0.0477  20.2 min\n"}
+,{"stream_name":"stdout","time":17378.650839442,"data":"step 2400: zoom 0.0901  anchor 0.0446  21.1 min\n"}
+,{"stream_name":"stdout","time":17431.356832114,"data":"step 2500: zoom 0.0966  anchor 0.0496  22.0 min\n"}
+,{"stream_name":"stdout","time":17484.049370938,"data":"step 2600: zoom 0.0917  anchor 0.0473  22.9 min\n"}
+,{"stream_name":"stdout","time":17536.750739579,"data":"step 2700: zoom 0.0894  anchor 0.0441  23.7 min\n"}
+,{"stream_name":"stdout","time":17589.460077668,"data":"step 2800: zoom 0.0903  anchor 0.0446  24.6 min\n"}
+,{"stream_name":"stdout","time":17642.214944012,"data":"step 2900: zoom 0.0930  anchor 0.0457  25.5 min\n"}
+,{"stream_name":"stdout","time":17694.901103335,"data":"step 3000: zoom 0.0964  anchor 0.0480  26.4 min\n"}
+,{"stream_name":"stdout","time":17695.219275318,"data":"saved /kaggle/working/eft\n"}
+,{"stream_name":"stdout","time":17696.631788146,"data":"+ cd /tmp/ze \u0026\u0026 EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-zhong kitti nyu diode-in diode-out --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stderr","time":17705.239401013,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  92%|█████████▏| 263/287 [00:00\u003c00:00, 2600.84it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2664.75it/s]\n"}
+,{"stream_name":"stdout","time":17715.746041904,"data":"dav2-s-zhong__kitti: 10/200 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":17725.288958887,"data":"dav2-s-zhong__kitti: 20/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":17734.95856915,"data":"dav2-s-zhong__kitti: 30/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":17744.693062478,"data":"dav2-s-zhong__kitti: 40/200 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":17754.307334651,"data":"dav2-s-zhong__kitti: 50/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":17763.842542786,"data":"dav2-s-zhong__kitti: 60/200 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":17773.285996911,"data":"dav2-s-zhong__kitti: 70/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":17782.793232372,"data":"dav2-s-zhong__kitti: 80/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":17792.383616378,"data":"dav2-s-zhong__kitti: 90/200 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":17801.895110495,"data":"dav2-s-zhong__kitti: 100/200 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":17811.478980873,"data":"dav2-s-zhong__kitti: 110/200 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":17820.903616829,"data":"dav2-s-zhong__kitti: 120/200 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":17830.457461981,"data":"dav2-s-zhong__kitti: 130/200 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":17840.098389202,"data":"dav2-s-zhong__kitti: 140/200 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":17849.539767566,"data":"dav2-s-zhong__kitti: 150/200 images, 2.4 min\n"}
+,{"stream_name":"stdout","time":17859.096801563,"data":"dav2-s-zhong__kitti: 160/200 images, 2.6 min\n"}
+,{"stream_name":"stdout","time":17868.666176865,"data":"dav2-s-zhong__kitti: 170/200 images, 2.7 min\n"}
+,{"stream_name":"stdout","time":17878.236897572,"data":"dav2-s-zhong__kitti: 180/200 images, 2.9 min\n"}
+,{"stream_name":"stdout","time":17887.845441632,"data":"dav2-s-zhong__kitti: 190/200 images, 3.0 min\n"}
+,{"stream_name":"stdout","time":17897.491924983,"data":"dav2-s-zhong__kitti: 200/200 images, 3.2 min\n"}
+,{"stream_name":"stdout","time":17897.494040865,"data":"wrote /kaggle/working/results/dav2-s-zhong__kitti.csv\n"}
+,{"stream_name":"stderr","time":17897.829541234,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  92%|█████████▏| 265/287 [00:00\u003c00:00, 2643.30it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2725.76it/s]\n"}
+,{"stream_name":"stdout","time":17902.163235268,"data":"dav2-s-zhong__nyu: 10/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":17906.211365084,"data":"dav2-s-zhong__nyu: 20/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":17910.265982417,"data":"dav2-s-zhong__nyu: 30/200 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":17914.271599632,"data":"dav2-s-zhong__nyu: 40/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":17918.280942344,"data":"dav2-s-zhong__nyu: 50/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":17922.267071039,"data":"dav2-s-zhong__nyu: 60/200 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":17926.261820174,"data":"dav2-s-zhong__nyu: 70/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":17930.278825482,"data":"dav2-s-zhong__nyu: 80/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":17934.232560968,"data":"dav2-s-zhong__nyu: 90/200 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":17938.24954646,"data":"dav2-s-zhong__nyu: 100/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":17942.19018769,"data":"dav2-s-zhong__nyu: 110/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":17946.129201125,"data":"dav2-s-zhong__nyu: 120/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":17950.08663239,"data":"dav2-s-zhong__nyu: 130/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":17954.020689458,"data":"dav2-s-zhong__nyu: 140/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":17957.997581875,"data":"dav2-s-zhong__nyu: 150/200 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":17961.938038766,"data":"dav2-s-zhong__nyu: 160/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":17965.88120509,"data":"dav2-s-zhong__nyu: 170/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":17969.870839095,"data":"dav2-s-zhong__nyu: 180/200 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":17973.834598262,"data":"dav2-s-zhong__nyu: 190/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":17977.796432781,"data":"dav2-s-zhong__nyu: 200/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":17977.798097372,"data":"wrote /kaggle/working/results/dav2-s-zhong__nyu.csv\n"}
+,{"stream_name":"stderr","time":17978.138468089,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  93%|█████████▎| 267/287 [00:00\u003c00:00, 2666.26it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2691.72it/s]\n"}
+,{"stream_name":"stdout","time":17985.230129206,"data":"dav2-s-zhong__diode-in: 10/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":17992.151936573,"data":"dav2-s-zhong__diode-in: 20/200 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":17999.168031551,"data":"dav2-s-zhong__diode-in: 30/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":18006.359632164,"data":"dav2-s-zhong__diode-in: 40/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":18013.459352284,"data":"dav2-s-zhong__diode-in: 50/200 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":18020.495170876,"data":"dav2-s-zhong__diode-in: 60/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":18027.449218448,"data":"dav2-s-zhong__diode-in: 70/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":18034.516691248,"data":"dav2-s-zhong__diode-in: 80/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":18041.616924451,"data":"dav2-s-zhong__diode-in: 90/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":18048.714846705,"data":"dav2-s-zhong__diode-in: 100/200 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":18055.883363293,"data":"dav2-s-zhong__diode-in: 110/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":18062.995401203,"data":"dav2-s-zhong__diode-in: 120/200 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":18070.144383625,"data":"dav2-s-zhong__diode-in: 130/200 images, 1.5 min\n"}
+,{"stream_name":"stdout","time":18077.22119506,"data":"dav2-s-zhong__diode-in: 140/200 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":18084.299776826,"data":"dav2-s-zhong__diode-in: 150/200 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":18091.356688895,"data":"dav2-s-zhong__diode-in: 160/200 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":18098.340906393,"data":"dav2-s-zhong__diode-in: 170/200 images, 2.0 min\n"}
+,{"stream_name":"stdout","time":18105.308737255,"data":"dav2-s-zhong__diode-in: 180/200 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":18112.295669476,"data":"dav2-s-zhong__diode-in: 190/200 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":18119.352739886,"data":"dav2-s-zhong__diode-in: 200/200 images, 2.3 min\n"}
+,{"stream_name":"stdout","time":18119.35458941,"data":"wrote /kaggle/working/results/dav2-s-zhong__diode-in.csv\n"}
+,{"stream_name":"stderr","time":18119.69833439,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  91%|█████████▏| 262/287 [00:00\u003c00:00, 2616.25it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2660.61it/s]\n"}
+,{"stream_name":"stdout","time":18127.862182759,"data":"dav2-s-zhong__diode-out: 10/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":18135.772188235,"data":"dav2-s-zhong__diode-out: 20/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":18143.549773085,"data":"dav2-s-zhong__diode-out: 30/200 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":18151.414846319,"data":"dav2-s-zhong__diode-out: 40/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":18159.378279451,"data":"dav2-s-zhong__diode-out: 50/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":18167.193007229,"data":"dav2-s-zhong__diode-out: 60/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":18175.169459222,"data":"dav2-s-zhong__diode-out: 70/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":18183.329711554,"data":"dav2-s-zhong__diode-out: 80/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":18191.41829737,"data":"dav2-s-zhong__diode-out: 90/200 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":18199.425546796,"data":"dav2-s-zhong__diode-out: 100/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":18207.665805541,"data":"dav2-s-zhong__diode-out: 110/200 images, 1.5 min\n"}
+,{"stream_name":"stdout","time":18215.443808,"data":"dav2-s-zhong__diode-out: 120/200 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":18222.785748277,"data":"dav2-s-zhong__diode-out: 130/200 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":18230.634615867,"data":"dav2-s-zhong__diode-out: 140/200 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":18238.431784859,"data":"dav2-s-zhong__diode-out: 150/200 images, 2.0 min\n"}
+,{"stream_name":"stdout","time":18246.517056123,"data":"dav2-s-zhong__diode-out: 160/200 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":18254.540135282,"data":"dav2-s-zhong__diode-out: 170/200 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":18262.585865198,"data":"dav2-s-zhong__diode-out: 180/200 images, 2.4 min\n"}
+,{"stream_name":"stdout","time":18270.42000225,"data":"dav2-s-zhong__diode-out: 190/200 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":18278.00378594,"data":"dav2-s-zhong__diode-out: 200/200 images, 2.6 min\n"}
+,{"stream_name":"stdout","time":18278.007003877,"data":"wrote /kaggle/working/results/dav2-s-zhong__diode-out.csv\n"}
+,{"stream_name":"stdout","time":18279.303935232,"data":"+ cd /tmp/ze \u0026\u0026 EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-blur kitti nyu diode-in diode-out --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stderr","time":18287.847618439,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  95%|█████████▌| 274/287 [00:00\u003c00:00, 2719.89it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2742.26it/s]\n"}
+,{"stream_name":"stdout","time":18298.321874294,"data":"dav2-s-blur__kitti: 10/200 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":18307.920858399,"data":"dav2-s-blur__kitti: 20/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":18317.596676922,"data":"dav2-s-blur__kitti: 30/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":18327.251600312,"data":"dav2-s-blur__kitti: 40/200 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":18336.741078872,"data":"dav2-s-blur__kitti: 50/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":18346.248903725,"data":"dav2-s-blur__kitti: 60/200 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":18355.697187249,"data":"dav2-s-blur__kitti: 70/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":18365.289374852,"data":"dav2-s-blur__kitti: 80/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":18374.920078201,"data":"dav2-s-blur__kitti: 90/200 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":18384.462568175,"data":"dav2-s-blur__kitti: 100/200 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":18394.131047054,"data":"dav2-s-blur__kitti: 110/200 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":18403.647646308,"data":"dav2-s-blur__kitti: 120/200 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":18413.225436121,"data":"dav2-s-blur__kitti: 130/200 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":18422.856533968,"data":"dav2-s-blur__kitti: 140/200 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":18432.360541665,"data":"dav2-s-blur__kitti: 150/200 images, 2.4 min\n"}
+,{"stream_name":"stdout","time":18441.90750469,"data":"dav2-s-blur__kitti: 160/200 images, 2.6 min\n"}
+,{"stream_name":"stdout","time":18451.525550959,"data":"dav2-s-blur__kitti: 170/200 images, 2.7 min\n"}
+,{"stream_name":"stdout","time":18461.199222469,"data":"dav2-s-blur__kitti: 180/200 images, 2.9 min\n"}
+,{"stream_name":"stdout","time":18470.862821835,"data":"dav2-s-blur__kitti: 190/200 images, 3.0 min\n"}
+,{"stream_name":"stdout","time":18480.564553866,"data":"dav2-s-blur__kitti: 200/200 images, 3.2 min\n"}
+,{"stream_name":"stdout","time":18480.566677311,"data":"wrote /kaggle/working/results/dav2-s-blur__kitti.csv\n"}
+,{"stream_name":"stderr","time":18480.901509617,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  91%|█████████ | 261/287 [00:00\u003c00:00, 2594.70it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2701.51it/s]\n"}
+,{"stream_name":"stdout","time":18485.157076501,"data":"dav2-s-blur__nyu: 10/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":18489.093588462,"data":"dav2-s-blur__nyu: 20/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":18493.029784369,"data":"dav2-s-blur__nyu: 30/200 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":18497.023541306,"data":"dav2-s-blur__nyu: 40/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":18500.993719479,"data":"dav2-s-blur__nyu: 50/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":18504.991615863,"data":"dav2-s-blur__nyu: 60/200 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":18508.994967018,"data":"dav2-s-blur__nyu: 70/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":18512.974606874,"data":"dav2-s-blur__nyu: 80/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":18516.982597191,"data":"dav2-s-blur__nyu: 90/200 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":18521.002662077,"data":"dav2-s-blur__nyu: 100/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":18524.884091881,"data":"dav2-s-blur__nyu: 110/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":18528.839393568,"data":"dav2-s-blur__nyu: 120/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":18532.792487584,"data":"dav2-s-blur__nyu: 130/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":18536.786682438,"data":"dav2-s-blur__nyu: 140/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":18540.811049411,"data":"dav2-s-blur__nyu: 150/200 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":18544.729644361,"data":"dav2-s-blur__nyu: 160/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":18548.670219371,"data":"dav2-s-blur__nyu: 170/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":18552.588300593,"data":"dav2-s-blur__nyu: 180/200 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":18556.533731935,"data":"dav2-s-blur__nyu: 190/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":18560.541596645,"data":"dav2-s-blur__nyu: 200/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":18560.545105498,"data":"wrote /kaggle/working/results/dav2-s-blur__nyu.csv\n"}
+,{"stream_name":"stderr","time":18560.884946614,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  91%|█████████ | 260/287 [00:00\u003c00:00, 2598.05it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2657.49it/s]\n"}
+,{"stream_name":"stdout","time":18569.479883857,"data":"dav2-s-blur__diode-in: 10/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":18577.802124764,"data":"dav2-s-blur__diode-in: 20/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":18586.131731417,"data":"dav2-s-blur__diode-in: 30/200 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":18594.487363068,"data":"dav2-s-blur__diode-in: 40/200 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":18602.878389833,"data":"dav2-s-blur__diode-in: 50/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":18611.152397967,"data":"dav2-s-blur__diode-in: 60/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":18619.413831162,"data":"dav2-s-blur__diode-in: 70/200 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":18627.784730002,"data":"dav2-s-blur__diode-in: 80/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":18636.079644232,"data":"dav2-s-blur__diode-in: 90/200 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":18644.380879073,"data":"dav2-s-blur__diode-in: 100/200 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":18652.721601657,"data":"dav2-s-blur__diode-in: 110/200 images, 1.5 min\n"}
+,{"stream_name":"stdout","time":18661.081551903,"data":"dav2-s-blur__diode-in: 120/200 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":18669.470950302,"data":"dav2-s-blur__diode-in: 130/200 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":18677.806207187,"data":"dav2-s-blur__diode-in: 140/200 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":18686.024726904,"data":"dav2-s-blur__diode-in: 150/200 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":18694.293501103,"data":"dav2-s-blur__diode-in: 160/200 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":18702.537199351,"data":"dav2-s-blur__diode-in: 170/200 images, 2.4 min\n"}
+,{"stream_name":"stdout","time":18710.81582406,"data":"dav2-s-blur__diode-in: 180/200 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":18719.119545602,"data":"dav2-s-blur__diode-in: 190/200 images, 2.6 min\n"}
+,{"stream_name":"stdout","time":18727.462759188,"data":"dav2-s-blur__diode-in: 200/200 images, 2.8 min\n"}
+,{"stream_name":"stdout","time":18727.46640277,"data":"wrote /kaggle/working/results/dav2-s-blur__diode-in.csv\n"}
+,{"stream_name":"stderr","time":18727.807818599,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  91%|█████████ | 260/287 [00:00\u003c00:00, 2598.58it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2654.52it/s]\n"}
+,{"stream_name":"stdout","time":18735.970404106,"data":"dav2-s-blur__diode-out: 10/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":18743.872219859,"data":"dav2-s-blur__diode-out: 20/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":18751.686853754,"data":"dav2-s-blur__diode-out: 30/200 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":18759.458236715,"data":"dav2-s-blur__diode-out: 40/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":18767.38680105,"data":"dav2-s-blur__diode-out: 50/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":18775.114474665,"data":"dav2-s-blur__diode-out: 60/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":18783.100571621,"data":"dav2-s-blur__diode-out: 70/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":18791.311261447,"data":"dav2-s-blur__diode-out: 80/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":18799.380227738,"data":"dav2-s-blur__diode-out: 90/200 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":18807.309995986,"data":"dav2-s-blur__diode-out: 100/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":18815.546673269,"data":"dav2-s-blur__diode-out: 110/200 images, 1.5 min\n"}
+,{"stream_name":"stdout","time":18823.304528623,"data":"dav2-s-blur__diode-out: 120/200 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":18830.636968773,"data":"dav2-s-blur__diode-out: 130/200 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":18838.501021824,"data":"dav2-s-blur__diode-out: 140/200 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":18846.264644413,"data":"dav2-s-blur__diode-out: 150/200 images, 2.0 min\n"}
+,{"stream_name":"stdout","time":18854.3106455,"data":"dav2-s-blur__diode-out: 160/200 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":18862.39594082,"data":"dav2-s-blur__diode-out: 170/200 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":18870.437551891,"data":"dav2-s-blur__diode-out: 180/200 images, 2.4 min\n"}
+,{"stream_name":"stdout","time":18878.224250455,"data":"dav2-s-blur__diode-out: 190/200 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":18885.771869897,"data":"dav2-s-blur__diode-out: 200/200 images, 2.6 min\n"}
+,{"stream_name":"stdout","time":18885.774032019,"data":"wrote /kaggle/working/results/dav2-s-blur__diode-out.csv\n"}
+,{"stream_name":"stdout","time":18887.123835023,"data":"+ cd /tmp/ze \u0026\u0026 EFT_DIR=/kaggle/working/eft /usr/bin/python3 scripts/run_audit.py dav2-s-eftb3 kitti nyu diode-in diode-out --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stderr","time":18895.602595818,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  92%|█████████▏| 263/287 [00:00\u003c00:00, 2586.05it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2755.11it/s]\n"}
+,{"stream_name":"stdout","time":18906.126491249,"data":"dav2-s-eftb3__kitti: 10/200 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":18915.78317927,"data":"dav2-s-eftb3__kitti: 20/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":18925.488906408,"data":"dav2-s-eftb3__kitti: 30/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":18935.125842734,"data":"dav2-s-eftb3__kitti: 40/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":18944.618683624,"data":"dav2-s-eftb3__kitti: 50/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":18954.168329609,"data":"dav2-s-eftb3__kitti: 60/200 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":18963.658237598,"data":"dav2-s-eftb3__kitti: 70/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":18973.231409084,"data":"dav2-s-eftb3__kitti: 80/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":18982.923590926,"data":"dav2-s-eftb3__kitti: 90/200 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":18992.5778495,"data":"dav2-s-eftb3__kitti: 100/200 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":19002.267476634,"data":"dav2-s-eftb3__kitti: 110/200 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":19011.788015444,"data":"dav2-s-eftb3__kitti: 120/200 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":19021.364314369,"data":"dav2-s-eftb3__kitti: 130/200 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":19031.079775823,"data":"dav2-s-eftb3__kitti: 140/200 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":19040.59183499,"data":"dav2-s-eftb3__kitti: 150/200 images, 2.4 min\n"}
+,{"stream_name":"stdout","time":19050.200213432,"data":"dav2-s-eftb3__kitti: 160/200 images, 2.6 min\n"}
+,{"stream_name":"stdout","time":19059.855085317,"data":"dav2-s-eftb3__kitti: 170/200 images, 2.7 min\n"}
+,{"stream_name":"stdout","time":19069.539941967,"data":"dav2-s-eftb3__kitti: 180/200 images, 2.9 min\n"}
+,{"stream_name":"stdout","time":19079.166065613,"data":"dav2-s-eftb3__kitti: 190/200 images, 3.1 min\n"}
+,{"stream_name":"stdout","time":19088.842289331,"data":"dav2-s-eftb3__kitti: 200/200 images, 3.2 min\n"}
+,{"stream_name":"stdout","time":19088.844477823,"data":"wrote /kaggle/working/results/dav2-s-eftb3__kitti.csv\n"}
+,{"stream_name":"stderr","time":19089.177572098,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  93%|█████████▎| 266/287 [00:00\u003c00:00, 2652.79it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2694.89it/s]\n"}
+,{"stream_name":"stdout","time":19093.403026386,"data":"dav2-s-eftb3__nyu: 10/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":19097.323556072,"data":"dav2-s-eftb3__nyu: 20/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":19101.230243634,"data":"dav2-s-eftb3__nyu: 30/200 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":19105.173193093,"data":"dav2-s-eftb3__nyu: 40/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":19109.107649685,"data":"dav2-s-eftb3__nyu: 50/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":19113.022480693,"data":"dav2-s-eftb3__nyu: 60/200 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":19116.9722747,"data":"dav2-s-eftb3__nyu: 70/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":19120.887757183,"data":"dav2-s-eftb3__nyu: 80/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":19124.8233731,"data":"dav2-s-eftb3__nyu: 90/200 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":19128.774533142,"data":"dav2-s-eftb3__nyu: 100/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":19132.68451389,"data":"dav2-s-eftb3__nyu: 110/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":19136.591947385,"data":"dav2-s-eftb3__nyu: 120/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":19140.508311465,"data":"dav2-s-eftb3__nyu: 130/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":19144.427796744,"data":"dav2-s-eftb3__nyu: 140/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":19148.350855791,"data":"dav2-s-eftb3__nyu: 150/200 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":19152.276338502,"data":"dav2-s-eftb3__nyu: 160/200 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":19156.214233243,"data":"dav2-s-eftb3__nyu: 170/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":19160.16119688,"data":"dav2-s-eftb3__nyu: 180/200 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":19164.053389239,"data":"dav2-s-eftb3__nyu: 190/200 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":19168.005611237,"data":"dav2-s-eftb3__nyu: 200/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":19168.007371868,"data":"wrote /kaggle/working/results/dav2-s-eftb3__nyu.csv\n"}
+,{"stream_name":"stderr","time":19168.337172983,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  92%|█████████▏| 264/287 [00:00\u003c00:00, 2630.09it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2688.59it/s]\n"}
+,{"stream_name":"stdout","time":19175.354387598,"data":"dav2-s-eftb3__diode-in: 10/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":19182.245515258,"data":"dav2-s-eftb3__diode-in: 20/200 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":19189.488239046,"data":"dav2-s-eftb3__diode-in: 30/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":19196.681953961,"data":"dav2-s-eftb3__diode-in: 40/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":19203.773920644,"data":"dav2-s-eftb3__diode-in: 50/200 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":19210.797040574,"data":"dav2-s-eftb3__diode-in: 60/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":19217.788124087,"data":"dav2-s-eftb3__diode-in: 70/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":19224.822694976,"data":"dav2-s-eftb3__diode-in: 80/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":19231.933245578,"data":"dav2-s-eftb3__diode-in: 90/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":19238.907808992,"data":"dav2-s-eftb3__diode-in: 100/200 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":19246.000770682,"data":"dav2-s-eftb3__diode-in: 110/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":19253.075898519,"data":"dav2-s-eftb3__diode-in: 120/200 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":19260.157629706,"data":"dav2-s-eftb3__diode-in: 130/200 images, 1.5 min\n"}
+,{"stream_name":"stdout","time":19267.239347705,"data":"dav2-s-eftb3__diode-in: 140/200 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":19274.243625053,"data":"dav2-s-eftb3__diode-in: 150/200 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":19281.174996369,"data":"dav2-s-eftb3__diode-in: 160/200 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":19288.331580474,"data":"dav2-s-eftb3__diode-in: 170/200 images, 2.0 min\n"}
+,{"stream_name":"stdout","time":19295.538498906,"data":"dav2-s-eftb3__diode-in: 180/200 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":19302.641230759,"data":"dav2-s-eftb3__diode-in: 190/200 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":19309.663120944,"data":"dav2-s-eftb3__diode-in: 200/200 images, 2.4 min\n"}
+,{"stream_name":"stdout","time":19309.664911223,"data":"wrote /kaggle/working/results/dav2-s-eftb3__diode-in.csv\n"}
+,{"stream_name":"stderr","time":19310.126077758,"data":"\rLoading weights:   0%|          | 0/287 [00:00\u003c?, ?it/s]\rLoading weights:  90%|████████▉ | 258/287 [00:00\u003c00:00, 2575.91it/s]\rLoading weights: 100%|██████████| 287/287 [00:00\u003c00:00, 2662.20it/s]\n"}
+,{"stream_name":"stdout","time":19317.32751591,"data":"dav2-s-eftb3__diode-out: 10/200 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":19324.286704361,"data":"dav2-s-eftb3__diode-out: 20/200 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":19331.234353915,"data":"dav2-s-eftb3__diode-out: 30/200 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":19338.218588405,"data":"dav2-s-eftb3__diode-out: 40/200 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":19345.136251441,"data":"dav2-s-eftb3__diode-out: 50/200 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":19352.044770017,"data":"dav2-s-eftb3__diode-out: 60/200 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":19359.234362699,"data":"dav2-s-eftb3__diode-out: 70/200 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":19366.50195731,"data":"dav2-s-eftb3__diode-out: 80/200 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":19373.680460932,"data":"dav2-s-eftb3__diode-out: 90/200 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":19380.734405658,"data":"dav2-s-eftb3__diode-out: 100/200 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":19387.842737273,"data":"dav2-s-eftb3__diode-out: 110/200 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":19394.744601482,"data":"dav2-s-eftb3__diode-out: 120/200 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":19401.148079766,"data":"dav2-s-eftb3__diode-out: 130/200 images, 1.5 min\n"}
+,{"stream_name":"stdout","time":19407.814085471,"data":"dav2-s-eftb3__diode-out: 140/200 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":19414.641916327,"data":"dav2-s-eftb3__diode-out: 150/200 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":19421.764148013,"data":"dav2-s-eftb3__diode-out: 160/200 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":19428.707011874,"data":"dav2-s-eftb3__diode-out: 170/200 images, 2.0 min\n"}
+,{"stream_name":"stdout","time":19435.894618155,"data":"dav2-s-eftb3__diode-out: 180/200 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":19442.85036292,"data":"dav2-s-eftb3__diode-out: 190/200 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":19449.357922127,"data":"dav2-s-eftb3__diode-out: 200/200 images, 2.3 min\n"}
+,{"stream_name":"stdout","time":19449.359855372,"data":"wrote /kaggle/working/results/dav2-s-eftb3__diode-out.csv\n"}
+,{"stream_name":"stdout","time":19450.694718863,"data":"all done in 324.2 min\n"}
+,{"stream_name":"stderr","time":19452.644470387,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":19452.644498815,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":19452.862990179,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":19452.863020071,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":19453.585990177,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":19454.506093698,"data":"[NbConvertApp] Writing 373519 bytes to __results__.html\n"}
+]
