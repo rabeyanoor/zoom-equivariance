@@ -1,0 +1,7 @@
+,alpha,alpha,absrel1,absrel1,absrel3,absrel3
+model,metric3d-s,metric3d-s-staleK,metric3d-s,metric3d-s-staleK,metric3d-s,metric3d-s-staleK
+dataset,,,,,,
+diode-in,-0.088,0.912,0.133,0.133,0.477,0.596
+diode-out,-0.182,0.818,0.276,0.276,0.617,0.621
+kitti,-0.033,0.967,0.068,0.068,0.093,0.667
+nyu,-0.107,0.893,0.093,0.093,0.246,0.628

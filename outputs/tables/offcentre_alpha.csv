@@ -1,0 +1,9 @@
+model,dataset,centre,top-left,top-right,bottom-left,bottom-right
+dav2-s,kitti,1.252,1.983,1.574,0.887,0.876
+dav2-s,nyu,1.027,1.18,1.082,1.0,0.957
+depthpro,kitti,0.338,0.597,0.619,0.383,0.357
+depthpro,nyu,0.422,0.567,0.582,0.417,0.373
+moge2-s,kitti,0.44,0.704,0.589,0.102,0.018
+moge2-s,nyu,0.16,0.277,0.307,0.155,0.13
+unidepth2-s,kitti,0.625,0.88,0.886,0.196,0.174
+unidepth2-s,nyu,0.143,0.261,0.315,0.069,0.106

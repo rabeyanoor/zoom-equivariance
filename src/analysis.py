@@ -10,6 +10,7 @@ Both are fitted per image by least squares through the origin in log-log space, 
 summarised by the median over images with a bootstrap confidence interval.
 """
 import os
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -166,6 +167,13 @@ def boot_median(v, n=2000, seed=0):
 
 
 def summary(pi, by=("model", "dataset")):
+    with warnings.catch_warnings():
+        # columns that a run does not have (e.g. beta for pixels-only models) are all NaN
+        warnings.simplefilter("ignore", RuntimeWarning)
+        return _summary(pi, by)
+
+
+def _summary(pi, by):
     rows = []
     for key, g in pi.groupby(list(by)):
         key = key if isinstance(key, tuple) else (key,)
@@ -178,3 +186,46 @@ def summary(pi, by=("model", "dataset")):
                          d1_1=np.nanmean(g.d1_1), d1_2=np.nanmean(g.d1_2), d1_3=np.nanmean(g.d1_3),
                          fx_err1=np.nanmedian(g.fx_err1)))
     return pd.DataFrame(rows)
+
+
+FIX_EXPONENTS = (0.25, 0.5, 0.75, 1.0)
+
+
+def zoomfix(pi, s=3):
+    """Training-free correction when the zoom factor is known (e.g. EXIF DigitalZoomRatio):
+    multiply the depth by s**e. The exponent e is chosen leave-one-dataset-out, i.e. on the
+    other three datasets, so the dataset it is scored on never influences the choice.
+
+    Returns one row per (model, held-out dataset): chosen e, AbsRel at zoom s without the fix,
+    with the fix, and of the unzoomed prediction on the same pixels (the target to reach)."""
+    cols = [f"fix{s}_{e}" for e in FIX_EXPONENTS]
+    have = pi.dropna(subset=cols)
+    rows = []
+    for model, g in have.groupby("model"):
+        per_ds = g.groupby("dataset")[cols + [f"absrel{s}", f"base{s}"]].mean()
+        for ds in per_ds.index:
+            others = per_ds.drop(index=ds)
+            if others.empty:
+                continue
+            best = others[cols].mean().idxmin()
+            rows.append(dict(model=model, dataset=ds, exponent=float(best.split("_")[1]),
+                             absrel_zoomed=per_ds.loc[ds, f"absrel{s}"], absrel_fixed=per_ds.loc[ds, best],
+                             absrel_unzoomed_same_pixels=per_ds.loc[ds, f"base{s}"]))
+    return pd.DataFrame(rows)
+
+
+def principal_point(df):
+    """Off-centre zooms: where the model puts the principal point vs where the law puts it,
+    in units of the zoomed image width. Models that assume a centred principal point show
+    an error that grows with the crop offset."""
+    z = df[(df.kind == "zoom") & (df.zoom > 1)].copy()
+    if "pp_x" not in z or z.pp_x.isna().all():
+        return pd.DataFrame()
+    z = z.dropna(subset=["pp_x"])
+    width = 2 * z.pp_x_gt_base  # cx of the unzoomed camera is about half the image width
+    z["pp_err"] = (z.pp_x - z.pp_x_gt) / width
+    z["pp_centre_err"] = (width / 2 - z.pp_x_gt) / width  # error of "always the image centre"
+    z["offset"] = np.where((z.cx == 0.5) & (z.cy == 0.5), "centre", "quadrant")
+    return z.groupby(["model", "dataset", "offset", "zoom"]).agg(
+        model_error=("pp_err", lambda v: float(np.median(np.abs(v)))),
+        centred_guess_error=("pp_centre_err", lambda v: float(np.median(np.abs(v))))).reset_index()

@@ -52,3 +52,19 @@ def test_bootstrap_interval_contains_median():
     v = np.random.default_rng(0).normal(1.0, 0.3, 400)
     med, lo, hi = analysis.boot_median(v)
     assert lo < med < hi and abs(med - 1.0) < 0.05
+
+
+def test_zoomfix_picks_e1_for_apparent_size_model():
+    a = toy_frame()
+    b = a.copy()
+    b["dataset"] = "toy2"
+    pi = analysis.per_image(pd.concat([a, b], ignore_index=True))
+    fix = analysis.zoomfix(pi[pi.model == "size"])
+    assert (fix.exponent == 1.0).all()
+    assert (fix.absrel_fixed < 0.01).all() and (fix.absrel_zoomed > 0.5).all()
+
+
+def test_principal_point_error_is_zero_for_equivariant_model():
+    pp = analysis.principal_point(toy_frame())
+    eq = pp[pp.model == "eq"]
+    assert np.allclose(eq.model_error, 0, atol=1e-9)
