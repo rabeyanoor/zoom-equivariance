@@ -20,7 +20,7 @@ import analysis as A  # noqa: E402
 GEN = ROOT / "paper" / "gen"
 GEN.mkdir(parents=True, exist_ok=True)
 MAIN = ["dav2-s", "dav2-b", "zoedepth", "depthpro", "moge2-s", "unidepth2-s", "metric3d-s", "metric3d-s-staleK"]
-FT = ["dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft"]
+FT = ["dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft", "dav2-s-eftb"]
 
 macros = {}
 
@@ -128,6 +128,8 @@ if len(ft):
         for m in FT:
             r = sft[(sft.model == m) & (sft.dataset == ds)]
             cells += [f"{r.alpha.iloc[0]:.2f}", f"{r.absrel1.iloc[0]:.3f}", f"{r.absrel3.iloc[0]:.3f}"] if len(r) else ["--"] * 3
+            bl = blur.get((m, ds), np.nan) if hasattr(blur, "get") else np.nan
+            put(key(m, ds, "blur"), 100 * (np.exp(bl) - 1), "{:.1f}")
             if len(r):
                 put(key(m, ds, "alpha"), r.alpha.iloc[0])
                 put(key(m, ds, "absrelOne"), r.absrel1.iloc[0], "{:.3f}")
@@ -137,10 +139,10 @@ if len(ft):
         r"\begin{table*}[t]\centering\small",
         r"\caption{Fine-tuning DA-V2-S on unlabeled images. Same preprocessing for all three. "
         r"Anchor-only: same data and steps, no zoom loss. DIODE is not used in training.}\label{tab:eft}",
-        r"\begin{tabular}{l ccc ccc ccc}\toprule",
-        r"& \multicolumn{3}{c}{Frozen} & \multicolumn{3}{c}{Anchor-only FT} & \multicolumn{3}{c}{EFT} \\",
-        r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}",
-        r"Dataset & $\alpha$ & AbsRel $1\times$ & $3\times$ & $\alpha$ & AbsRel $1\times$ & $3\times$ & $\alpha$ & AbsRel $1\times$ & $3\times$ \\ \midrule",
+        r"\begin{tabular}{l ccc ccc ccc ccc}\toprule",
+        r"& \multicolumn{3}{c}{Frozen} & \multicolumn{3}{c}{Anchor-only FT} & \multicolumn{3}{c}{EFT} & \multicolumn{3}{c}{EFT+B} \\",
+        r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}",
+        r"Dataset" + r" & $\alpha$ & AbsRel $1\times$ & $3\times$" * 4 + r" \\ \midrule",
         *rows,
         r"\bottomrule\end{tabular}\end{table*}"]))
 

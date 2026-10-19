@@ -46,7 +46,8 @@ if args.figure1 or args.figure_only:
 
     picks = {"kitti": datasets.sample_ids("kitti", args.n)[3], "nyu": datasets.sample_ids("nyu", args.n)[5]}
     maps = {}
-    for name in ("dav2-s", "moge2-s", "metric3d-s"):
+    # Metric3D has hard-coded .cuda() calls, and this part runs on a CPU kernel
+    for name in ("dav2-s", "moge2-s"):
         for ds, i in picks.items():
             m = models.load(name, datasets.DOMAIN[ds])
             s = datasets.Loader(ds)(i)
@@ -59,4 +60,4 @@ if args.figure1 or args.figure_only:
                 maps[f"gt|{ds}|{zf}"] = zoom.crop(s["depth"], box).astype(np.float16)
             del m
         print(name, "figure maps done", flush=True)
-    np.savez_compressed(out / "figure1_maps.npz", **maps)
+        np.savez_compressed(out / "figure1_maps.npz", **maps)

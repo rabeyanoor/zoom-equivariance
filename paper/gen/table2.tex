@@ -1,0 +1,11 @@
+\begin{table*}[t]\centering\small
+\caption{Fine-tuning DA-V2-S on unlabeled images. Same preprocessing for all three. Anchor-only: same data and steps, no zoom loss. DIODE is not used in training.}\label{tab:eft}
+\begin{tabular}{l ccc ccc ccc ccc}\toprule
+& \multicolumn{3}{c}{Frozen} & \multicolumn{3}{c}{Anchor-only FT} & \multicolumn{3}{c}{EFT} & \multicolumn{3}{c}{EFT+B} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}
+Dataset & $\alpha$ & AbsRel $1\times$ & $3\times$ & $\alpha$ & AbsRel $1\times$ & $3\times$ & $\alpha$ & AbsRel $1\times$ & $3\times$ & $\alpha$ & AbsRel $1\times$ & $3\times$ \\ \midrule
+KITTI & 1.03 & 0.138 & 0.665 & -- & -- & -- & 0.18 & 0.156 & 0.158 & -- & -- & -- \\
+NYUv2 & 0.98 & 0.344 & 0.563 & -- & -- & -- & 0.12 & 0.313 & 0.226 & -- & -- & -- \\
+DIODE-in (unseen) & 0.70 & 0.280 & 0.558 & -- & -- & -- & 0.39 & 0.368 & 0.364 & -- & -- & -- \\
+DIODE-out (unseen) & 0.65 & 0.731 & 0.551 & -- & -- & -- & 0.39 & 0.877 & 0.648 & -- & -- & -- \\
+\bottomrule\end{tabular}\end{table*}

@@ -51,7 +51,8 @@ def random_box(h, w, rng, s_max=3.0):
 
 
 class EFT:
-    def __init__(self, model, input_hw, lr_head=5e-5, lr_backbone=5e-6, w_anchor=1.0, w_zoom=1.0, s_max=3.0, seed=0):
+    def __init__(self, model, input_hw, lr_head=5e-5, lr_backbone=5e-6, w_anchor=1.0, w_zoom=1.0, w_blur=0.0,
+                 s_max=3.0, seed=0):
         self.student = model.to(DEVICE).train()
         self.teacher = copy.deepcopy(model).eval()
         for p in self.teacher.parameters():
@@ -60,6 +61,10 @@ class EFT:
         self.w_anchor = w_anchor
         # w_zoom = 0 gives the "anchor only" baseline: same data, steps and flips, no zoom loss
         self.w_zoom = w_zoom
+        # w_blur > 0: the student must give the *unzoomed* answer on an image that only lost
+        # detail (down + up sampling, same field of view). Without it the first EFT run learned
+        # "blurry means zoomed" instead of reading the geometry.
+        self.w_blur = w_blur
         self.s_max = s_max
         self.rng = np.random.default_rng(seed)
         backbone = [p for n, p in self.student.named_parameters() if "backbone" in n]
@@ -73,7 +78,7 @@ class EFT:
     def step(self, imgs):
         """imgs: list of uint8 images (any size). Returns the two loss values."""
         h, w = self.hw
-        xs, zs, boxes = [], [], []
+        xs, zs, bs, boxes = [], [], [], []
         for img in imgs:
             if self.rng.random() < 0.5:
                 img = img[:, ::-1]
@@ -83,6 +88,11 @@ class EFT:
             xs.append(x)
             zs.append(z)
             boxes.append((x0, y0, cw, ch))
+            if self.w_blur:
+                # independent detail loss, same range of factors as the zooms
+                sb = math.exp(self.rng.uniform(0, math.log(self.s_max)))
+                small = F.interpolate(x, size=(max(14, int(h / sb)), max(14, int(w / sb))), mode="area")
+                bs.append(F.interpolate(small, size=self.hw, mode="bilinear", align_corners=False))
         x, z = torch.cat(xs), torch.cat(zs)
 
         with torch.autocast(DEVICE.type, dtype=torch.float16, enabled=self.amp):
@@ -90,6 +100,7 @@ class EFT:
                 t = log_depth(self.teacher, x)
             s_x = log_depth(self.student, x)
             s_z = log_depth(self.student, z)
+            s_b = log_depth(self.student, torch.cat(bs)).float() if self.w_blur else None
         t, s_x, s_z = t.float(), s_x.float(), s_z.float()
 
         l_zoom = 0
@@ -99,6 +110,8 @@ class EFT:
         l_zoom = l_zoom / len(boxes)
         l_anchor = (s_x - t).abs().mean()
         loss = self.w_zoom * l_zoom + self.w_anchor * l_anchor
+        if self.w_blur:
+            loss = loss + self.w_blur * (s_b - t).abs().mean()
 
         self.opt.zero_grad()
         self.scaler.scale(loss).backward()

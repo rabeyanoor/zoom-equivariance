@@ -172,6 +172,7 @@ REGISTRY = {
     "dav2-s-fixed": ("pixels only", lambda dom: _dav2_fixed(dom)),
     "dav2-s-eft": ("pixels only (EFT)", lambda dom: _dav2_fixed(dom, "eft")),
     "dav2-s-anchor": ("pixels only (anchor-only FT)", lambda dom: _dav2_fixed(dom, "anchor")),
+    "dav2-s-eftb": ("pixels only (EFT + blur invariance)", lambda dom: _dav2_fixed(dom, "eftb")),
 }
 
 

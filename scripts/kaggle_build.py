@@ -38,13 +38,16 @@ else:
     res = "/kaggle/working/results"
     kitti = "--images 'data/raw/kitti_raw/*/*/image_02/data/*.png'"
     if part == "baseline":
-        # trains anchor-only, then scores all three with the current audit code
+        # trains anchor-only and EFT+B, then scores all four with the current audit code
         # (the EFT checkpoints come from the attached zoom-equivariance-eft output)
-        flags, evals = "--w-zoom 0 --tag anchor", ("dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft")
+        runs = ["--w-zoom 0 --tag anchor", "--w-blur 1 --tag eftb"]
+        evals = ("dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft", "dav2-s-eftb")
     else:
-        flags, evals = "--tag eft", ("dav2-s-fixed", "dav2-s-eft")
-    JOBS = [f"scripts/train_eft.py outdoor --steps {steps} {kitti} {flags} --out /kaggle/working/eft",
-            f"scripts/train_eft.py indoor --steps {steps} --nyu-train {flags} --out /kaggle/working/eft"]
+        runs, evals = ["--tag eft"], ("dav2-s-fixed", "dav2-s-eft")
+    JOBS = []
+    for flags in runs:
+        JOBS += [f"scripts/train_eft.py outdoor --steps {steps} {kitti} {flags} --out /kaggle/working/eft",
+                 f"scripts/train_eft.py indoor --steps {steps} --nyu-train {flags} --out /kaggle/working/eft"]
     JOBS += [f"scripts/run_audit.py {m} {SETS} --n {N} --out {res}" for m in evals]
 
 files = {str(p.relative_to(ROOT)): base64.b64encode(p.read_bytes()).decode()

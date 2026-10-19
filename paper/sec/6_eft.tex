@@ -30,6 +30,20 @@ $5\cdot10^{-6}$ (backbone), batch 4, 3{,}000 steps, $\lambda=1$, horizontal flip
 model learned what a zoom looks like in general or only in KITTI and NYUv2. Frozen and tuned
 models are evaluated with identical preprocessing.
 
+\paragraph{The resolution shortcut and EFT+B.}
+A digital zoom does two things at once: it narrows the field of view and it removes detail
+(each output pixel is interpolated from fewer input pixels). A student trained with
+\cref{eq:eft} alone can therefore learn to detect a zoom from \emph{sharpness} instead of
+geometry. The blur control of \cref{sec:audit} exposes exactly this (\cref{sec:eftresults}).
+EFT+B adds a third term that removes the shortcut:
+\begin{equation}
+  \mathcal{L}_{\text{B}} = \mathcal{L} + \mu\,\big\| \log \hat D_\theta(\mathcal{B}_{s'} I) - \log \hat D_0(I)\big\|_1,
+\end{equation}
+where $\mathcal{B}_{s'}$ down-samples by an independent $s'\sim\operatorname{LogUniform}[1,3]$ and
+up-samples back. A blurred image has the field of view of the original, so its target is the
+unzoomed depth; detail loss alone is no longer evidence of a zoom. We use $\mu=1$.
+
 \paragraph{Baseline.} Any fine-tuning changes a model, so improvements could come from the
 training itself. The \emph{anchor-only} baseline uses the same images, steps, flips and
-optimiser with the zoom term switched off ($\mathcal{L}$ with only the anchor).
+optimiser with the zoom term switched off ($\mathcal{L}$ with only the anchor). All four
+variants (frozen, anchor-only, EFT, EFT+B) are scored with the same code.

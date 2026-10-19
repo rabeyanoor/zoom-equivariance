@@ -54,7 +54,7 @@ plt.show()
 # ## Table 2: frozen vs anchor-only vs EFT
 
 # %%
-FT = ["dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft"]
+FT = ["dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft", "dav2-s-eftb"]
 df = A.load()
 df = df[df.model.isin(FT)]
 s = A.summary(A.per_image(df))
@@ -68,7 +68,7 @@ curve = z.groupby(["model", "dataset", "zoom"]).agg(depth=("log_ratio_self", "me
                                                     s=("s_true", "median")).reset_index()
 fig, axes = plt.subplots(2, 4, figsize=(18, 7))
 for k, ds in enumerate(A.DATASETS):
-    for m, style in (("dav2-s-fixed", "o--"), ("dav2-s-anchor", "s:"), ("dav2-s-eft", "o-")):
+    for m, style in (("dav2-s-fixed", "o--"), ("dav2-s-anchor", "s:"), ("dav2-s-eft", "^-"), ("dav2-s-eftb", "o-")):
         if m not in set(curve.model):
             continue
         c = curve[(curve.model == m) & (curve.dataset == ds)].sort_values("zoom")
@@ -83,3 +83,14 @@ axes[0, 0].legend()
 plt.tight_layout()
 plt.savefig(FIG / "05_eft_vs_frozen.png", dpi=110)
 plt.show()
+
+# %% [markdown]
+# ## The resolution shortcut
+# Blur control: same detail loss as a 2x zoom, same field of view. The depth should not
+# move. If EFT learned "blurry = zoomed", it moves here; EFT+B is trained against that.
+
+# %%
+blur = df[df.kind == "blur"].groupby(["model", "dataset"]).agg(
+    depth_change=("log_ratio_self", lambda v: float(np.exp(np.median(v)) - 1)), absrel=("abs_rel", "mean")).unstack("dataset")
+blur.round(3).to_csv(TAB / "eft_blur_control.csv")
+blur.round(3)
