@@ -34,7 +34,19 @@ if kind == "audit":
         JOBS += [f"{m} kitti nyu --n 50 --off-centre --out-tag offc" for m in ("moge2-s", "unidepth2-s")]
     elif part == "b":
         JOBS = [j for j in JOBS if j.startswith("depthpro") or "--off-centre" in j]
+    # model ladder: larger variants and newer families, 100 images per set
+    LADDER = ("dav2-l", "moge2-b", "moge2-l", "unidepth2-b", "unidepth2-l", "unik3d-l",
+              "da3-nested", "da3-metric-l", "metric3d-l", "da3-l", "vggt")
+    if part == "c1":
+        JOBS = [f"{m} {SETS} --n 100" for m in LADDER[:6]]
+    elif part == "c2":
+        JOBS = [f"{m} {SETS} --n 100" for m in LADDER[6:]]
+    elif part == "csmoke":
+        # CPU kernel (no GPU slot needed); Metric3D has hard-coded .cuda() calls
+        JOBS = [f"{m} kitti --n 1" for m in LADDER if m != "metric3d-l"]
     JOBS = ["scripts/run_audit.py " + j for j in JOBS]
+    if part == "c2":
+        JOBS.append("scripts/count_params.py")
 elif kind == "stats":
     # CPU only: per-image scene statistics + Figure 1 depth maps
     JOBS = [f"scripts/scene_stats.py --n {N} " + ("--figure-only" if part == "fig" else "--figure1")]
@@ -58,7 +70,7 @@ else:
 
 files = {str(p.relative_to(ROOT)): base64.b64encode(p.read_bytes()).decode()
          for p in sorted([*ROOT.glob("src/*.py"), ROOT / "scripts/run_audit.py", ROOT / "scripts/train_eft.py",
-                         ROOT / "scripts/scene_stats.py"])}
+                         ROOT / "scripts/scene_stats.py", ROOT / "scripts/count_params.py"])}
 
 name = f"zoom-equivariance-{kind}{'-' + part if part and kind != 'stats' else ''}"
 out = ROOT / "kaggle" / "build" / f"{kind}{'_' + part if part else ''}"
@@ -72,7 +84,7 @@ body = (ROOT / "kaggle" / "templates" / f"{'eft' if kind == 'eft' else 'audit'}_
     "language": "python",
     "kernel_type": "script",
     "is_private": True,
-    "enable_gpu": kind != "stats",
+    "enable_gpu": kind != "stats" and part != "csmoke",
     "enable_internet": True,
     **({"kernel_sources": [f"{user}/zoom-equivariance-eft"]} if part == "baseline" else {}),
 }, indent=2))

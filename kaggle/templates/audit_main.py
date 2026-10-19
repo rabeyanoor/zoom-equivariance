@@ -34,6 +34,15 @@ def install():
         sh(f"pip install -q --no-deps -e {tp}/UniDepth")
     if not (tp / "Metric3D").exists():
         sh(f"git clone -q --depth 1 https://github.com/YvanYin/Metric3D.git {tp}/Metric3D")
+    # newer families: installed without their full dependency lists (DA3 pins numpy<2 and pulls
+    # in export tools we never use; see models._da3_import)
+    for repo, name in (("ByteDance-Seed/Depth-Anything-3", "Depth-Anything-3"),
+                       ("lpiccinelli-eth/UniK3D", "UniK3D"), ("facebookresearch/vggt", "vggt")):
+        if not (tp / name).exists():
+            sh(f"git clone -q --depth 1 https://github.com/{repo}.git {tp}/{name}")
+            # DA3 declares python<=3.13 while Kaggle runs 3.13.x patch releases
+            sh(f"pip install -q --no-deps --ignore-requires-python -e {tp}/{name}")
+    sh("pip install -q omegaconf evo")
 
 
 def download():

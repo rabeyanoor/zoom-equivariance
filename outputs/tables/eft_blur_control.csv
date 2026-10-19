@@ -1,0 +1,5 @@
+dataset,dav2-s-eft,dav2-s-fixed
+diode-in,0.006,0.01
+diode-out,0.015,0.006
+kitti,0.296,0.011
+nyu,0.042,0.007

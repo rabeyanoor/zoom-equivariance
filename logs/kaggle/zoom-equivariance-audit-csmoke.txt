@@ -1,0 +1,40 @@
+[     0.8s OUT] + pip install -q transformers==5.20.1 mmengine einops timm h5py termcolor tabulate trimesh wandb
+[     5.8s OUT]      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.8/46.8 kB 1.7 MB/s eta 0:00:00
+[     6.4s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 88.9 MB/s eta 0:00:00
+[     6.4s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 452.7/452.7 kB 18.6 MB/s eta 0:00:00
+[     6.5s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 750.4/750.4 kB 28.9 MB/s eta 0:00:00
+[     6.5s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 846.4/846.4 kB 24.9 MB/s eta 0:00:00
+[     6.6s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 256.2/256.2 kB 9.9 MB/s eta 0:00:00
+[    25.8s OUT] + pip install -q git+https://github.com/microsoft/MoGe.git
+[    56.9s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 248.0/248.0 MB 7.5 MB/s eta 0:00:00
+[    57.0s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 308.3/308.3 kB 4.3 MB/s eta 0:00:00
+[    57.0s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 53.0/53.0 kB 2.0 MB/s eta 0:00:00
+[    67.9s OUT] + git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniDepth.git /tmp/ze/third_party/UniDepth
+[    69.1s OUT] + pip install -q --no-deps -e /tmp/ze/third_party/UniDepth
+[    76.5s OUT] + git clone -q --depth 1 https://github.com/YvanYin/Metric3D.git /tmp/ze/third_party/Metric3D
+[    78.6s OUT] + git clone -q --depth 1 https://github.com/ByteDance-Seed/Depth-Anything-3.git /tmp/ze/third_party/Depth-Anything-3
+[    80.1s OUT] + pip install -q --no-deps -e /tmp/ze/third_party/Depth-Anything-3
+[    92.3s ERR] ERROR: Package 'depth-anything-3' requires a different Python: 3.13.15 not in '<=3.13,>=3.9'
+[    92.5s ERR] Traceback (most recent call last):
+[    92.5s ERR]   File "/kaggle/src/script.py", line 84, in <module>
+[    92.5s ERR]     main()
+[    92.5s ERR]     ~~~~^^
+[    92.5s ERR]   File "/kaggle/src/script.py", line 70, in main
+[    92.5s ERR]     install()
+[    92.5s ERR]     ~~~~~~~^^
+[    92.5s ERR]   File "/kaggle/src/script.py", line 45, in install
+[    92.5s ERR]     sh(f"pip install -q --no-deps -e {tp}/{name}")
+[    92.5s ERR]     ~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[    92.5s ERR]   File "/kaggle/src/script.py", line 18, in sh
+[    92.5s ERR]     subprocess.run(cmd, shell=True, check=True)
+[    92.5s ERR]     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[    92.5s ERR]   File "/usr/lib/python3.13/subprocess.py", line 577, in run
+[    92.5s ERR]     raise CalledProcessError(retcode, process.args,
+[    92.5s ERR]                              output=stdout, stderr=stderr)
+[    92.5s ERR] subprocess.CalledProcessError: Command 'pip install -q --no-deps -e /tmp/ze/third_party/Depth-Anything-3' returned non-zero exit status 1.
+[    97.4s ERR] /usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+[    97.4s ERR]   cells[i][c] = re.sub('\\\\\|', '|', cell)
+[    97.8s ERR] /usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+[    97.8s ERR]   text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[   100.7s ERR] [NbConvertApp] Converting notebook __script__.ipynb to html
+[   102.1s ERR] [NbConvertApp] Writing 350547 bytes to __results__.html

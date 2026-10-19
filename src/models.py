@@ -118,16 +118,16 @@ def _mmcv_shim():
 
 
 class Metric3D:
-    """Metric3D v2 ViT-S. Needs fx; works in a canonical camera with f = 1000 px."""
+    """Metric3D v2 (ViT-S or ViT-L). Needs fx; works in a canonical camera with f = 1000 px."""
 
     INPUT = (616, 1064)
     MEAN = np.array([123.675, 116.28, 103.53], np.float32)
     STD = np.array([58.395, 57.12, 57.375], np.float32)
 
-    def __init__(self):
+    def __init__(self, entry="metric3d_vit_small"):
         _mmcv_shim()
         sys.path.insert(0, str(THIRD / "Metric3D"))
-        self.model = torch.hub.load(str(THIRD / "Metric3D"), "metric3d_vit_small",
+        self.model = torch.hub.load(str(THIRD / "Metric3D"), entry,
                                     pretrain=True, source="local", trust_repo=True).eval().to(DEVICE)
 
     @torch.no_grad()
@@ -162,6 +162,99 @@ def _dav2_fixed(domain, tag=None):
     return eft_lib.FixedSizeDepth(m)
 
 
+def pinhole_from_rays(rays):
+    """Fit fx and cx of a pinhole camera to per-pixel ray directions (3, H, W):
+    x/z = (u - cx) / fx is linear in u. Uses the middle third of the rows."""
+    _, h, w = rays.shape
+    rows = slice(h // 3, 2 * h // 3)
+    t = (rays[0, rows] / rays[2, rows]).ravel()
+    u = np.broadcast_to(np.arange(w, dtype=np.float64), (rows.stop - rows.start, w)).ravel()
+    a, b = np.polyfit(u, t, 1)
+    return 1.0 / a, -b / a
+
+
+class UniK3DModel:
+    """UniK3D predicts per-pixel rays (any camera); we read off the pinhole fx, cx."""
+
+    def __init__(self, repo):
+        from unik3d.models import UniK3D
+
+        self.model = UniK3D.from_pretrained(repo).eval().to(DEVICE)
+
+    @torch.no_grad()
+    def predict(self, img, K=None):
+        out = self.model.infer(torch.from_numpy(img).permute(2, 0, 1))
+        fx, cx = pinhole_from_rays(out["rays"][0].float().cpu().numpy())
+        return {"depth": out["depth"][0, 0].float().cpu().numpy(), "fx": fx, "cx": cx}
+
+
+def _da3_import():
+    """depth_anything_3.api imports its export tools (moviepy, open3d, ...) at module level;
+    we never export, so a stub keeps the install light."""
+    import types
+
+    if "depth_anything_3.utils.export" not in sys.modules:
+        stub = types.ModuleType("depth_anything_3.utils.export")
+        stub.export = lambda *a, **k: None
+        sys.modules["depth_anything_3.utils.export"] = stub
+    from depth_anything_3.api import DepthAnything3
+
+    return DepthAnything3
+
+
+class DA3:
+    """Depth Anything 3.
+    kind "metric": DA3METRIC-LARGE, metres = net * f / 300 with the *given* focal (takes camera)
+    kind "nested": DA3NESTED, metric depth scaled by its *own* predicted focal (predicts camera)
+    kind "anyview": DA3-LARGE, relative depth + predicted camera (only the focal is used)
+    """
+
+    def __init__(self, repo, kind):
+        self.kind = kind
+        self.model = _da3_import().from_pretrained(repo).to(DEVICE).eval()
+
+    @torch.no_grad()
+    def predict(self, img, K=None):
+        h, w = img.shape[:2]
+        pred = self.model.inference([img], process_res=504)
+        d = np.asarray(pred.depth[0], dtype=np.float32)
+        ph, pw = d.shape
+        fx = cx = None
+        if pred.intrinsics is not None and self.kind != "metric":
+            Kp = np.asarray(pred.intrinsics[0], dtype=np.float64)
+            fx, cx = Kp[0, 0] * w / pw, (Kp[0, 2] + 0.5) * w / pw - 0.5
+        if self.kind == "metric":
+            f_proc = (K[0, 0] + K[1, 1]) / 2 * pw / w
+            d = d * f_proc / 300.0
+        return {"depth": _to_hw(d, (h, w)), "fx": fx, "cx": cx}
+
+
+class VGGTModel:
+    """VGGT-1B on a single image: predicts intrinsics; its depth is normalised per scene,
+    so only the focal is meaningful here."""
+
+    def __init__(self, repo="facebook/VGGT-1B"):
+        from vggt.models.vggt import VGGT
+
+        self.model = VGGT.from_pretrained(repo).eval().to(DEVICE)
+
+    @torch.no_grad()
+    def predict(self, img, K=None):
+        from vggt.utils.pose_enc import pose_encoding_to_extri_intri
+
+        h, w = img.shape[:2]
+        pw = 518
+        ph = int(14 * round(h * pw / w / 14))
+        x = torch.from_numpy(img).permute(2, 0, 1).float()[None] / 255
+        x = F.interpolate(x, size=(ph, pw), mode="bicubic", align_corners=False, antialias=True).clamp(0, 1).to(DEVICE)
+        with torch.autocast(DEVICE.type, dtype=torch.float16, enabled=DEVICE.type == "cuda"):
+            out = self.model(x)
+        _, intr = pose_encoding_to_extri_intri(out["pose_enc"], (ph, pw))
+        Kp = intr[0, 0].float().cpu().numpy()
+        depth = out["depth"][0, 0, ..., 0].float().cpu().numpy()
+        return {"depth": _to_hw(depth, (h, w)), "fx": float(Kp[0, 0]) * w / pw, "cx": (float(Kp[0, 2]) + 0.5) * w / pw - 0.5}
+
+
 # name -> (group, loader). "dav2" outdoor/indoor weights are picked per dataset.
 REGISTRY = {
     "dav2-s": ("pixels only", lambda dom: HFDepth(f"depth-anything/Depth-Anything-V2-Metric-{dom}-Small-hf", "dav2")),
@@ -171,6 +264,18 @@ REGISTRY = {
     "moge2-s": ("predicts camera", lambda dom: MoGe2("Ruicheng/moge-2-vits-normal")),
     "unidepth2-s": ("predicts camera", lambda dom: UniDepth2("lpiccinelli/unidepth-v2-vits14")),
     "metric3d-s": ("takes camera", lambda dom: Metric3D()),
+    # larger models and newer families (the "model ladder")
+    "dav2-l": ("pixels only", lambda dom: HFDepth(f"depth-anything/Depth-Anything-V2-Metric-{dom}-Large-hf", "dav2")),
+    "moge2-b": ("predicts camera", lambda dom: MoGe2("Ruicheng/moge-2-vitb-normal")),
+    "moge2-l": ("predicts camera", lambda dom: MoGe2("Ruicheng/moge-2-vitl-normal")),
+    "unidepth2-b": ("predicts camera", lambda dom: UniDepth2("lpiccinelli/unidepth-v2-vitb14")),
+    "unidepth2-l": ("predicts camera", lambda dom: UniDepth2("lpiccinelli/unidepth-v2-vitl14")),
+    "unik3d-l": ("predicts camera", lambda dom: UniK3DModel("lpiccinelli/unik3d-vitl")),
+    "da3-nested": ("predicts camera", lambda dom: DA3("depth-anything/DA3NESTED-GIANT-LARGE-1.1", "nested")),
+    "da3-metric-l": ("takes camera", lambda dom: DA3("depth-anything/DA3METRIC-LARGE", "metric")),
+    "metric3d-l": ("takes camera", lambda dom: Metric3D("metric3d_vit_large")),
+    "da3-l": ("predicts camera (relative depth)", lambda dom: DA3("depth-anything/DA3-LARGE-1.1", "anyview")),
+    "vggt": ("predicts camera (relative depth)", lambda dom: VGGTModel()),
     # frozen vs fine-tuned, same preprocessing (section 6 of the paper)
     "dav2-s-fixed": ("pixels only", lambda dom: _dav2_fixed(dom)),
     "dav2-s-eft": ("pixels only (EFT)", lambda dom: _dav2_fixed(dom, "eft")),

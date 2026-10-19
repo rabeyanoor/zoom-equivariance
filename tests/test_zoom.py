@@ -49,3 +49,13 @@ def test_zoom_and_blur_keep_size_and_dtype():
 
 def test_zoom_1x_is_identity_in_K():
     np.testing.assert_allclose(zoom.zoom_K(K, (0, 0, W, H), (H, W)), K)
+
+
+def test_pinhole_fit_from_rays():
+    import models
+
+    h, w, fx, cx = 60, 200, 150.0, 97.3
+    u, v = np.meshgrid(np.arange(w), np.arange(h))
+    r = np.stack([(u - cx) / fx, (v - 30) / fx, np.ones((h, w))])
+    r /= np.linalg.norm(r, axis=0)
+    np.testing.assert_allclose(models.pinhole_from_rays(r), (fx, cx), rtol=1e-9)
