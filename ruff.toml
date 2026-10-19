@@ -1,0 +1,5 @@
+line-length = 130
+[lint]
+select = ["E", "F", "W", "I"]
+[lint.isort]
+known-local-folder = ["zoom", "models", "datasets", "audit", "eft", "analysis", "test_audit"]

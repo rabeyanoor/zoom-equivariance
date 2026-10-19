@@ -24,8 +24,14 @@ if kind == "audit":
     JOBS += [f"{m} kitti nyu --n {2 if SMOKE else 50} --off-centre --out-tag offc"
              for m in ("moge2-s", "unidepth2-s", "depthpro", "dav2-s")]
     # Depth Pro is ~5x slower than the rest, so part b = Depth Pro + off-centre
-    if part in ("a", "a2"):   # a2: rerun of a with the same-pixel reference column
+    if part == "a":
         JOBS = [j for j in JOBS if not j.startswith("depthpro") and "--off-centre" not in j]
+    elif part == "a2":
+        # final run with the current audit code (same-pixel reference, principal point,
+        # training-free correction): all models, plus off-centre zooms for the two models
+        # that predict a principal point
+        JOBS = [j for j in JOBS if "--off-centre" not in j]
+        JOBS += [f"{m} kitti nyu --n 50 --off-centre --out-tag offc" for m in ("moge2-s", "unidepth2-s")]
     elif part == "b":
         JOBS = [j for j in JOBS if j.startswith("depthpro") or "--off-centre" in j]
     JOBS = ["scripts/run_audit.py " + j for j in JOBS]

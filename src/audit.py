@@ -13,6 +13,9 @@ import models
 import zoom
 
 ZOOMS = (1.0, 1.25, 1.5, 2.0, 3.0)
+# exponents for the training-free correction D * s**e (used when the zoom factor is known,
+# e.g. from the EXIF DigitalZoomRatio tag); e is chosen on other datasets in the analysis
+CORRECTION_EXPONENTS = (0.25, 0.5, 0.75, 1.0)
 
 
 def depth_errors(pred, gt, max_depth):
@@ -55,6 +58,14 @@ def zoom_rows(model, sample, max_depth, zooms=ZOOMS, center=(0.5, 0.5), stale_K=
         row.update(depth_errors(d_s, gt_box, max_depth))
         # the unzoomed prediction scored on exactly the same pixels: the fair reference
         row.update({f"{k}_base": v for k, v in depth_errors(d_1, gt_box, max_depth).items()})
+        # principal point: predicted vs where the law puts it ("cx" is already the crop centre)
+        Kz_true = zoom.zoom_K(K, box, (h, w))
+        row.update(pp_x=out.get("cx"), pp_x_base=base.get("cx"),
+                   pp_x_gt=float(Kz_true[0, 2]), pp_x_gt_base=float(K[0, 2]))
+        if s != 1.0:
+            s_true = Kz_true[0, 0] / K[0, 0]
+            for e in CORRECTION_EXPONENTS:
+                row[f"abs_rel_fix{e}"] = depth_errors(d_s * s_true ** e, gt_box, max_depth)["abs_rel"]
         rows.append(row)
     # control: same detail loss, no change of field of view
     for s in blur:

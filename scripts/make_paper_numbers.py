@@ -140,7 +140,7 @@ if len(ft):
         r"\caption{Fine-tuning DA-V2-S on unlabeled images. Same preprocessing for all four. "
         r"Anchor-only: same data and steps, no zoom loss. DIODE is not used in training.}\label{tab:eft}",
         r"\begin{tabular}{l ccc ccc ccc ccc}\toprule",
-        r"& \multicolumn{3}{c}{Frozen} & \multicolumn{3}{c}{Anchor-only FT} & \multicolumn{3}{c}{EFT} & \multicolumn{3}{c}{EFT+B} \\",
+        "& " + " & ".join(rf"\multicolumn{{3}}{{c}}{{{t}}}" for t in ("Frozen", "Anchor-only FT", "EFT", "EFT+B")) + r" \\",
         r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}",
         r"Dataset" + r" & $\alpha$ & AbsRel $1\times$ & $3\times$" * 4 + r" \\ \midrule",
         *rows,

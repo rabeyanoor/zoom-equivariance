@@ -9,12 +9,11 @@ taken from the exact K, so rounding of the crop box is accounted for):
 Both are fitted per image by least squares through the origin in log-log space, then
 summarised by the median over images with a bootstrap confidence interval.
 """
+import os
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
-import os
 
 RESULTS = Path(os.environ.get("ZE_RESULTS", Path(__file__).resolve().parents[1] / "outputs" / "results"))
 
@@ -32,10 +31,37 @@ DATASETS = ["kitti", "nyu", "diode-in", "diode-out"]
 PRETTY_DS = {"kitti": "KITTI", "nyu": "NYUv2", "diode-in": "DIODE-in", "diode-out": "DIODE-out"}
 
 
+CENTRES = [(0.5, 0.5), (0.25, 0.25), (0.75, 0.25), (0.25, 0.75), (0.75, 0.75)]
+
+
+def repair_cx(df):
+    """The first audit-a2 run wrote the predicted principal point into "cx", overwriting the
+    crop centre. Rows are written in a fixed order (per image: centre zooms + blur row, then
+    the four quadrants), so the crop centre can be restored exactly; cy was never touched."""
+    if "cx_gt" not in df.columns or "pp_x" in df.columns:
+        return df
+    df = df.rename(columns={"cx": "pp_x", "cx_base": "pp_x_base", "cx_gt": "pp_x_gt", "cx_gt_base": "pp_x_gt_base"})
+    cx = np.full(len(df), np.nan)
+    for _, idx in df.groupby("name", sort=False).groups.items():
+        k = 0
+        for i in idx:
+            r = df.loc[i]
+            if r.kind == "blur":
+                cx[df.index.get_loc(i)] = 0.5
+                continue
+            cx[df.index.get_loc(i)] = CENTRES[k // len(ZOOMS)][0]
+            k += 1
+    df["cx"] = cx
+    return df
+
+
+ZOOMS = (1.0, 1.25, 1.5, 2.0, 3.0)
+
+
 def load(pattern="*__*.csv", folder=None):
     folder = Path(folder or RESULTS)
     files = [f for f in sorted(folder.glob(pattern)) if "__offc" not in f.name or "offc" in pattern]
-    df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
+    df = pd.concat([repair_cx(pd.read_csv(f)) for f in files], ignore_index=True)
     first = df[df.kind == "zoom"].groupby(["model", "dataset", "name", "cx", "cy"])["fx_gt"].transform("min")
     df.loc[df.kind == "zoom", "s_true"] = df.loc[df.kind == "zoom", "fx_gt"] / first
     return df

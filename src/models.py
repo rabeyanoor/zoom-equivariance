@@ -76,7 +76,9 @@ class MoGe2:
         depth[~out["mask"].numpy()] = np.nan
         # MoGe returns intrinsics normalised by image width / height
         fx = float(out["intrinsics"][0, 0]) * w
-        return {"depth": depth, "fx": fx}
+        # principal point in pixels (pixel centres at integer coordinates)
+        cx = float(out["intrinsics"][0, 2]) * w - 0.5
+        return {"depth": depth, "fx": fx, "cx": cx}
 
 
 class UniDepth2:
@@ -90,7 +92,8 @@ class UniDepth2:
         x = torch.from_numpy(img).permute(2, 0, 1)
         out = self.model.infer(x)
         fx = float(out["intrinsics"][0, 0, 0])
-        return {"depth": out["depth"][0, 0].cpu().numpy(), "fx": fx}
+        cx = float(out["intrinsics"][0, 0, 2])
+        return {"depth": out["depth"][0, 0].cpu().numpy(), "fx": fx, "cx": cx}
 
 
 def _mmcv_shim():

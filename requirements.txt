@@ -1,0 +1,19 @@
+# tested with Python 3.12; torch from https://download.pytorch.org/whl/cpu (or a CUDA build)
+torch==2.14.1
+torchvision
+transformers==5.20.1
+numpy
+scipy
+pandas
+matplotlib
+h5py
+pillow
+einops
+timm
+mmengine            # Metric3D config (see models._mmcv_shim)
+git+https://github.com/microsoft/MoGe.git
+# UniDepth: pip install --no-deps -e third_party/UniDepth (clone github.com/lpiccinelli-eth/UniDepth)
+jupyter
+jupytext
+pytest
+ruff
