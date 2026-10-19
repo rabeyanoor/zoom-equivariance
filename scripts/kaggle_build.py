@@ -1,6 +1,6 @@
 """Build a one-file Kaggle kernel: project code (base64) + job list + kaggle/<kind>_main.py.
 
-    python scripts/kaggle_build.py <kaggle-username> audit [smoke]
+    python scripts/kaggle_build.py <kaggle-username> audit [smoke|a|b]   (a, b: two halves, 12 h limit)
     python scripts/kaggle_build.py <kaggle-username> eft [smoke]
     kaggle kernels push -p kaggle/build_<kind>[_smoke]
 """
@@ -11,7 +11,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 user, kind = sys.argv[1], sys.argv[2]
-SMOKE = len(sys.argv) > 3 and sys.argv[3] == "smoke"   # tiny run to catch bugs fast
+part = sys.argv[3] if len(sys.argv) > 3 else ""
+SMOKE = part == "smoke"   # tiny run to catch bugs fast
 SETS = "kitti nyu diode-in diode-out"
 N = 3 if SMOKE else 200
 
@@ -22,6 +23,11 @@ if kind == "audit":
     # off-centre zooms (principal point), smaller sample
     JOBS += [f"{m} kitti nyu --n {2 if SMOKE else 50} --off-centre --out-tag offc"
              for m in ("moge2-s", "unidepth2-s", "depthpro", "dav2-s")]
+    # Depth Pro is ~5x slower than the rest, so part b = Depth Pro + off-centre
+    if part == "a":
+        JOBS = [j for j in JOBS if not j.startswith("depthpro") and "--off-centre" not in j]
+    elif part == "b":
+        JOBS = [j for j in JOBS if j.startswith("depthpro") or "--off-centre" in j]
 else:
     steps = 20 if SMOKE else 3000
     res = "/kaggle/working/results"
@@ -32,8 +38,8 @@ else:
 files = {str(p.relative_to(ROOT)): base64.b64encode(p.read_bytes()).decode()
          for p in sorted([*ROOT.glob("src/*.py"), ROOT / "scripts/run_audit.py", ROOT / "scripts/train_eft.py"])}
 
-name = f"zoom-equivariance-{kind}{'-smoke' if SMOKE else ''}"
-out = ROOT / "kaggle" / f"build_{kind}{'_smoke' if SMOKE else ''}"
+name = f"zoom-equivariance-{kind}{'-' + part if part else ''}"
+out = ROOT / "kaggle" / f"build_{kind}{'_' + part if part else ''}"
 out.mkdir(parents=True, exist_ok=True)
 body = (ROOT / "kaggle" / f"{kind}_main.py").read_text()
 (out / "kernel.py").write_text(f"FILES = {json.dumps(files)}\nJOBS = {json.dumps(JOBS)}\n" + body)

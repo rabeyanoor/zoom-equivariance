@@ -62,6 +62,9 @@ class EFT:
         self.rng = np.random.default_rng(seed)
         backbone = [p for n, p in self.student.named_parameters() if "backbone" in n]
         head = [p for n, p in self.student.named_parameters() if "backbone" not in n]
+        # fp16 on the GPU roughly halves the step time; the losses are taken in fp32
+        self.amp = DEVICE.type == "cuda"
+        self.scaler = torch.amp.GradScaler("cuda", enabled=self.amp)
         self.opt = torch.optim.AdamW([{"params": head, "lr": lr_head},
                                       {"params": backbone, "lr": lr_backbone}], weight_decay=1e-4)
 
@@ -80,10 +83,12 @@ class EFT:
             boxes.append((x0, y0, cw, ch))
         x, z = torch.cat(xs), torch.cat(zs)
 
-        with torch.no_grad():
-            t = log_depth(self.teacher, x)
-        s_x = log_depth(self.student, x)
-        s_z = log_depth(self.student, z)
+        with torch.autocast(DEVICE.type, dtype=torch.float16, enabled=self.amp):
+            with torch.no_grad():
+                t = log_depth(self.teacher, x)
+            s_x = log_depth(self.student, x)
+            s_z = log_depth(self.student, z)
+        t, s_x, s_z = t.float(), s_x.float(), s_z.float()
 
         l_zoom = 0
         for k, (x0, y0, cw, ch) in enumerate(boxes):
@@ -94,9 +99,11 @@ class EFT:
         loss = l_zoom + self.w_anchor * l_anchor
 
         self.opt.zero_grad()
-        loss.backward()
+        self.scaler.scale(loss).backward()
+        self.scaler.unscale_(self.opt)
         torch.nn.utils.clip_grad_norm_(self.student.parameters(), 1.0)
-        self.opt.step()
+        self.scaler.step(self.opt)
+        self.scaler.update()
         return float(l_zoom), float(l_anchor)
 
 

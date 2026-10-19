@@ -52,7 +52,8 @@ class HFDepth:
         out = self.model(**inputs)
         if self.kind == "dav2":
             return {"depth": _to_hw(out.predicted_depth.cpu(), (h, w)), "fx": None}
-        post = self.proc.post_process_depth_estimation(out, target_sizes=[(h, w)])[0]
+        post = self.proc.post_process_depth_estimation(
+            out, target_sizes=[(h, w)], **({"source_sizes": [(h, w)]} if self.kind == "zoe" else {}))[0]
         fx = None
         if self.kind == "depthpro":
             fx = float(post["focal_length"])
@@ -91,6 +92,27 @@ class UniDepth2:
         return {"depth": out["depth"][0, 0].cpu().numpy(), "fx": fx}
 
 
+def _mmcv_shim():
+    """Metric3D imports a few helpers from the old mmcv 1.x, which does not build on new
+    torch. mmengine has the same Config; the other two are only used for logging."""
+    import types
+
+    try:
+        import mmcv.utils  # noqa: F401
+        return
+    except ImportError:
+        pass
+    from mmengine import Config, DictAction
+
+    utils = types.ModuleType("mmcv.utils")
+    utils.Config, utils.DictAction = Config, DictAction
+    utils.collect_env = lambda: {}
+    utils.get_git_hash = lambda *a, **k: "unknown"
+    mmcv = types.ModuleType("mmcv")
+    mmcv.utils = utils
+    sys.modules["mmcv"], sys.modules["mmcv.utils"] = mmcv, utils
+
+
 class Metric3D:
     """Metric3D v2 ViT-S. Needs fx; works in a canonical camera with f = 1000 px."""
 
@@ -99,6 +121,7 @@ class Metric3D:
     STD = np.array([58.395, 57.12, 57.375], np.float32)
 
     def __init__(self):
+        _mmcv_shim()
         sys.path.insert(0, str(THIRD / "Metric3D"))
         self.model = torch.hub.load(str(THIRD / "Metric3D"), "metric3d_vit_small",
                                     pretrain=True, source="local", trust_repo=True).eval().to(DEVICE)

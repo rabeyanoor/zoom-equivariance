@@ -28,7 +28,8 @@ def kitti_list(root=RAW / "kitti" / "depth_selection" / "val_selection_cropped")
 
 def kitti_load(img_path):
     root = img_path.parents[1]
-    gt_path = root / "groundtruth_depth" / img_path.name.replace("_image_", "_groundtruth_depth_")
+    # ..._sync_image_0000000005_image_02.png -> ..._sync_groundtruth_depth_0000000005_image_02.png
+    gt_path = root / "groundtruth_depth" / img_path.name.replace("_sync_image_", "_sync_groundtruth_depth_")
     k_path = root / "intrinsics" / img_path.name.replace(".png", ".txt")
     img = np.array(Image.open(img_path).convert("RGB"))
     depth = np.array(Image.open(gt_path), dtype=np.float32) / 256.0
