@@ -8,9 +8,11 @@
 #
 # Four variants of DA-V2-S, all scored with identical preprocessing (input height 392):
 # - **frozen** - the released model;
-# - **anchor-only** - same data, steps and flips, zoom loss off: what fine-tuning alone does;
+# - **blur-only** - same data, steps and flips, zoom loss off: what fine-tuning alone does
+#   (an anchor-only run would be the frozen model: student == teacher gives zero gradient);
 # - **EFT** - zoom self-consistency (in the spirit of Zhong et al., ICCV 2023);
-# - **EFT+B** - EFT plus blur invariance, against the "blurry = zoomed" shortcut.
+# - **EFT+B** - EFT plus blur invariance, against the "blurry = zoomed" shortcut;
+# - **EFT+B, lambda=3** - with a stronger anchor, to probe the cost on unzoomed images.
 #
 # DIODE is never used in training. Every comparison is paired (same images), tested with a
 # Wilcoxon signed-rank test and Holm-corrected over all comparisons.
@@ -33,7 +35,8 @@ import plotstyle as ps
 ps.use()
 TAB = ROOT / "outputs/tables"
 EFT = ROOT / "outputs" / "eft"
-FT = ["dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft", "dav2-s-eftb"]
+# anchor-only is omitted: it is the frozen model (zero loss and gradient at the start)
+FT = ["dav2-s-fixed", "dav2-s-blur", "dav2-s-eft", "dav2-s-eftb", "dav2-s-eftb3"]
 
 df = A.load()
 df = df[df.model.isin(FT)]
@@ -54,11 +57,11 @@ def train_log(tag, dom):
 
 fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.4), sharey=True)
 for ax, dom in zip(axes, ("outdoor", "indoor")):
-    for tag, m in (("eft", "dav2-s-eft"), ("eftb", "dav2-s-eftb"), ("anchor", "dav2-s-anchor")):
+    for tag, m in (("eft", "dav2-s-eft"), ("eftb", "dav2-s-eftb"), ("eftb3", "dav2-s-eftb3"), ("blur", "dav2-s-blur")):
         log = train_log(tag, dom)
         if log is None:
             continue
-        if tag != "anchor":
+        if tag != "blur":
             ax.plot(log.step, log.l_zoom.rolling(100).mean(), color=ps.colour(m), lw=1.4, label=f"{ps.LABEL[m]}: zoom loss")
         ax.plot(log.step, log.l_anchor.rolling(100).mean(), color=ps.colour(m), lw=1, ls="--", label=f"{ps.LABEL[m]}: anchor loss")
     ax.set(title=f"{dom} head", xlabel="step", ylabel="L1 in log depth")

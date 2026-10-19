@@ -20,7 +20,7 @@ import analysis as A  # noqa: E402
 GEN = ROOT / "paper" / "gen"
 GEN.mkdir(parents=True, exist_ok=True)
 MAIN = ["dav2-s", "dav2-b", "zoedepth", "depthpro", "moge2-s", "unidepth2-s", "metric3d-s", "metric3d-s-staleK"]
-FT = ["dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft", "dav2-s-eftb"]
+FT = ["dav2-s-fixed", "dav2-s-blur", "dav2-s-eft", "dav2-s-eftb"]
 
 macros = {}
 
@@ -138,9 +138,9 @@ if len(ft):
     (GEN / "table2.tex").write_text("\n".join([
         r"\begin{table*}[t]\centering\small",
         r"\caption{Fine-tuning DA-V2-S on unlabeled images. Same preprocessing for all four. "
-        r"Anchor-only: same data and steps, no zoom loss. DIODE is not used in training.}\label{tab:eft}",
+        r"Blur-only: same data and steps, no zoom loss. DIODE is not used in training.}\label{tab:eft}",
         r"\begin{tabular}{l ccc ccc ccc ccc}\toprule",
-        "& " + " & ".join(rf"\multicolumn{{3}}{{c}}{{{t}}}" for t in ("Frozen", "Anchor-only FT", "EFT", "EFT+B")) + r" \\",
+        "& " + " & ".join(rf"\multicolumn{{3}}{{c}}{{{t}}}" for t in ("Frozen", "Blur-only FT", "EFT", "EFT+B")) + r" \\",
         r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}",
         r"Dataset" + r" & $\alpha$ & AbsRel $1\times$ & $3\times$" * 4 + r" \\ \midrule",
         *rows,

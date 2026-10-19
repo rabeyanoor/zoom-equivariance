@@ -43,7 +43,10 @@ where $\mathcal{B}_{s'}$ down-samples by an independent $s'\sim\operatorname{Log
 up-samples back. A blurred image has the field of view of the original, so its target is the
 unzoomed depth; detail loss alone is no longer evidence of a zoom. We use $\mu=1$.
 
-\paragraph{Baseline.} Any fine-tuning changes a model, so improvements could come from the
-training itself. The \emph{anchor-only} baseline uses the same images, steps, flips and
-optimiser with the zoom term switched off ($\mathcal{L}$ with only the anchor). All four
-variants (frozen, anchor-only, EFT, EFT+B) are scored with the same code.
+\paragraph{Baselines and ablations.} Any fine-tuning changes a model, so improvements could come
+from the training itself. An anchor-only run is not a valid control here: the student starts as
+an exact copy of the teacher and sees the same input, so its loss and gradient are exactly zero
+and it stays the frozen model (we verified this). The \emph{blur-only} control instead keeps the
+anchor and the blur term and drops the zoom term, with the same images, steps, flips and
+optimiser. We also report EFT+B with a three times stronger anchor ($\lambda=3$) to probe the
+trade-off with accuracy on unzoomed images. All variants are scored with the same code.
