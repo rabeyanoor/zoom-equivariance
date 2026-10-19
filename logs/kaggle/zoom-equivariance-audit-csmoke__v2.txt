@@ -1,0 +1,202 @@
+[     1.0s OUT] + pip install -q transformers==5.20.1 mmengine einops timm h5py termcolor tabulate trimesh wandb
+[     6.8s OUT]      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.8/46.8 kB 1.3 MB/s eta 0:00:00
+[     7.5s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 80.2 MB/s eta 0:00:00
+[     7.5s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 452.7/452.7 kB 13.0 MB/s eta 0:00:00
+[     7.6s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 750.4/750.4 kB 19.5 MB/s eta 0:00:00
+[     7.6s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 846.4/846.4 kB 20.2 MB/s eta 0:00:00
+[     7.7s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 256.2/256.2 kB 6.2 MB/s eta 0:00:00
+[    29.5s OUT] + pip install -q git+https://github.com/microsoft/MoGe.git
+[    68.8s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 248.0/248.0 MB 7.1 MB/s eta 0:00:00
+[    68.9s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 308.3/308.3 kB 10.1 MB/s eta 0:00:00
+[    68.9s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 53.0/53.0 kB 1.5 MB/s eta 0:00:00
+[    80.7s OUT] + git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniDepth.git /tmp/ze/third_party/UniDepth
+[    83.9s OUT] + pip install -q --no-deps -e /tmp/ze/third_party/UniDepth
+[    92.0s OUT] + git clone -q --depth 1 https://github.com/YvanYin/Metric3D.git /tmp/ze/third_party/Metric3D
+[    95.4s OUT] + git clone -q --depth 1 https://github.com/ByteDance-Seed/Depth-Anything-3.git /tmp/ze/third_party/Depth-Anything-3
+[    98.1s OUT] + pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/Depth-Anything-3
+[   112.9s OUT] + git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniK3D.git /tmp/ze/third_party/UniK3D
+[   118.1s OUT] + pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/UniK3D
+[   126.8s OUT] + git clone -q --depth 1 https://github.com/facebookresearch/vggt.git /tmp/ze/third_party/vggt
+[   131.9s OUT] + pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/vggt
+[   140.6s OUT] + pip install -q omegaconf evo
+[   143.3s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 165.4/165.4 kB 5.0 MB/s eta 0:00:00
+[   143.3s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 150.9/150.9 kB 5.0 MB/s eta 0:00:00
+[   143.4s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 43.3/43.3 kB 1.1 MB/s eta 0:00:00
+[   143.4s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 493.4/493.4 kB 11.6 MB/s eta 0:00:00
+[   143.5s OUT]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 31.2 MB/s eta 0:00:00
+[   146.8s ERR] ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+[   146.8s ERR] depth-anything-3 0.0.0 requires e3nn, which is not installed.
+[   146.8s ERR] depth-anything-3 0.0.0 requires open3d, which is not installed.
+[   146.8s ERR] depth-anything-3 0.0.0 requires pillow-heif, which is not installed.
+[   146.8s ERR] depth-anything-3 0.0.0 requires plyfile, which is not installed.
+[   146.8s ERR] depth-anything-3 0.0.0 requires pre-commit, which is not installed.
+[   146.8s ERR] depth-anything-3 0.0.0 requires pycolmap, which is not installed.
+[   146.8s ERR] depth-anything-3 0.0.0 requires xformers, which is not installed.
+[   146.8s ERR] depth-anything-3 0.0.0 requires numpy<2, but you have numpy 2.1.3 which is incompatible.
+[   356.6s OUT] + cd /tmp/ze/data/raw/kitti && unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' && rm sel.zip
+[   364.4s OUT] + cd /tmp/ze/data/raw/diode && tar xzf val.tar.gz && rm val.tar.gz
+[   432.1s OUT] setup done in 7.2 min
+[   432.1s OUT] + /usr/bin/python3 scripts/run_audit.py dav2-l kitti --n 1 --out /kaggle/working/results
+[   487.3s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   517.8s ERR] Loading weights:   0%|          | 0/503 [00:00<?, ?it/s]
+[   517.8s ERR] Loading weights:  29%|██▊       | 144/503 [00:00<00:00, 1433.69it/s]
+[   517.8s ERR] Loading weights:  57%|█████▋    | 288/503 [00:00<00:00, 1435.79it/s]
+[   517.8s ERR] Loading weights:  88%|████████▊ | 443/503 [00:00<00:00, 1487.30it/s]
+[   517.8s ERR] Loading weights: 100%|██████████| 503/503 [00:00<00:00, 1526.28it/s]
+[   897.4s OUT] wrote /kaggle/working/results/dav2-l__kitti.csv
+[   899.7s OUT] + /usr/bin/python3 scripts/run_audit.py moge2-b kitti --n 1 --out /kaggle/working/results
+[   904.8s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[   940.6s ERR] /usr/local/lib/python3.13/dist-packages/moge/model/modules/conv_stack.py:170: UserWarning: In CPU autocast, but the target dtype is not supported. Disabling autocast.
+[   940.6s ERR] CPU Autocast only supports dtypes of torch.bfloat16, torch.float16 currently.
+[   940.6s ERR]   torch.autocast(device_type=x.device.type, dtype=torch.float32, enabled=True)
+[   950.1s ERR] /usr/local/lib/python3.13/dist-packages/moge/model/v2.py:284: UserWarning: In CPU autocast, but the target dtype is not supported. Disabling autocast.
+[   950.1s ERR] CPU Autocast only supports dtypes of torch.bfloat16, torch.float16 currently.
+[   950.1s ERR]   with torch.autocast(device_type=self.device.type, dtype=torch.float32):
+[   962.9s ERR] /usr/local/lib/python3.13/dist-packages/moge/model/modules/conv_stack.py:170: UserWarning: In CPU autocast, but the target dtype is not supported. Disabling autocast.
+[   962.9s ERR] CPU Autocast only supports dtypes of torch.bfloat16, torch.float16 currently.
+[   962.9s ERR]   torch.autocast(device_type=x.device.type, dtype=torch.float32, enabled=True)
+[   971.9s ERR] /usr/local/lib/python3.13/dist-packages/moge/model/v2.py:284: UserWarning: In CPU autocast, but the target dtype is not supported. Disabling autocast.
+[   971.9s ERR] CPU Autocast only supports dtypes of torch.bfloat16, torch.float16 currently.
+[   971.9s ERR]   with torch.autocast(device_type=self.device.type, dtype=torch.float32):
+[  1055.9s OUT] wrote /kaggle/working/results/moge2-b__kitti.csv
+[  1057.1s OUT] + /usr/bin/python3 scripts/run_audit.py moge2-l kitti --n 1 --out /kaggle/working/results
+[  1061.1s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[  1133.6s ERR] /usr/local/lib/python3.13/dist-packages/moge/model/modules/conv_stack.py:170: UserWarning: In CPU autocast, but the target dtype is not supported. Disabling autocast.
+[  1133.6s ERR] CPU Autocast only supports dtypes of torch.bfloat16, torch.float16 currently.
+[  1133.6s ERR]   torch.autocast(device_type=x.device.type, dtype=torch.float32, enabled=True)
+[  1140.8s ERR] /usr/local/lib/python3.13/dist-packages/moge/model/v2.py:284: UserWarning: In CPU autocast, but the target dtype is not supported. Disabling autocast.
+[  1140.8s ERR] CPU Autocast only supports dtypes of torch.bfloat16, torch.float16 currently.
+[  1140.8s ERR]   with torch.autocast(device_type=self.device.type, dtype=torch.float32):
+[  1177.2s ERR] /usr/local/lib/python3.13/dist-packages/moge/model/modules/conv_stack.py:170: UserWarning: In CPU autocast, but the target dtype is not supported. Disabling autocast.
+[  1177.2s ERR] CPU Autocast only supports dtypes of torch.bfloat16, torch.float16 currently.
+[  1177.2s ERR]   torch.autocast(device_type=x.device.type, dtype=torch.float32, enabled=True)
+[  1184.6s ERR] /usr/local/lib/python3.13/dist-packages/moge/model/v2.py:284: UserWarning: In CPU autocast, but the target dtype is not supported. Disabling autocast.
+[  1184.6s ERR] CPU Autocast only supports dtypes of torch.bfloat16, torch.float16 currently.
+[  1184.6s ERR]   with torch.autocast(device_type=self.device.type, dtype=torch.float32):
+[  1354.4s OUT] wrote /kaggle/working/results/moge2-l__kitti.csv
+[  1355.8s OUT] + /usr/bin/python3 scripts/run_audit.py unidepth2-b kitti --n 1 --out /kaggle/working/results
+[  1365.0s ERR] /usr/local/lib/python3.13/dist-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+[  1365.0s ERR]   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[  1365.7s ERR] /tmp/ze/third_party/UniDepth/unidepth/utils/chamfer_distance.py:9: UserWarning: !! To run evaluation you need KNN. Please compile KNN: `cd unidepth/ops/knn with && bash compile.sh`.
+[  1365.7s ERR]   warnings.warn(
+[  1366.7s ERR] /tmp/ze/third_party/UniDepth/unidepth/models/unidepthv2/unidepthv2.py:240: UserWarning: CUDA is not available or torch_xla is imported. Disabling autocast.
+[  1366.7s ERR]   @torch.autocast(device_type="cuda", enabled=True, dtype=torch.float16)
+[  1367.1s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[  1367.6s ERR] xFormers not available
+[  1367.6s ERR] xFormers not available
+[  1389.9s ERR] /tmp/ze/third_party/UniDepth/unidepth/models/unidepthv2/unidepthv2.py:262: UserWarning: !! self.resolution_level not set, using default bounds !!
+[  1389.9s ERR]   warnings.warn("!! self.resolution_level not set, using default bounds !!")
+[  1471.2s OUT] Cannot import NystromAttention, you can not run original UniDepth. UniDepthV2 is available.
+[  1471.2s OUT] Not loading pretrained weights for backbone
+[  1471.2s OUT] EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches && bash compile.sh`
+[  1471.2s OUT] wrote /kaggle/working/results/unidepth2-b__kitti.csv
+[  1473.2s OUT] + /usr/bin/python3 scripts/run_audit.py unidepth2-l kitti --n 1 --out /kaggle/working/results
+[  1483.8s ERR] /usr/local/lib/python3.13/dist-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+[  1483.8s ERR]   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[  1484.5s ERR] /tmp/ze/third_party/UniDepth/unidepth/utils/chamfer_distance.py:9: UserWarning: !! To run evaluation you need KNN. Please compile KNN: `cd unidepth/ops/knn with && bash compile.sh`.
+[  1484.5s ERR]   warnings.warn(
+[  1485.2s ERR] /tmp/ze/third_party/UniDepth/unidepth/models/unidepthv2/unidepthv2.py:240: UserWarning: CUDA is not available or torch_xla is imported. Disabling autocast.
+[  1485.2s ERR]   @torch.autocast(device_type="cuda", enabled=True, dtype=torch.float16)
+[  1485.7s ERR] xFormers not available
+[  1485.7s ERR] xFormers not available
+[  1495.1s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[  1533.2s ERR] /tmp/ze/third_party/UniDepth/unidepth/models/unidepthv2/unidepthv2.py:262: UserWarning: !! self.resolution_level not set, using default bounds !!
+[  1533.2s ERR]   warnings.warn("!! self.resolution_level not set, using default bounds !!")
+[  1745.8s OUT] Cannot import NystromAttention, you can not run original UniDepth. UniDepthV2 is available.
+[  1745.8s OUT] Not loading pretrained weights for backbone
+[  1745.8s OUT] EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches && bash compile.sh`
+[  1745.8s OUT] wrote /kaggle/working/results/unidepth2-l__kitti.csv
+[  1747.7s OUT] + /usr/bin/python3 scripts/run_audit.py unik3d-l kitti --n 1 --out /kaggle/working/results
+[  1754.2s ERR] /tmp/ze/third_party/UniK3D/unik3d/ops/losses/robust_loss.py:195: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+[  1754.2s ERR]   from pkg_resources import resource_stream
+[  1754.4s ERR] /tmp/ze/third_party/UniK3D/unik3d/utils/chamfer_distance.py:9: UserWarning: !! To run evaluation you need KNN. Please compile KNN: `cd unik3d/ops/knn && bash compile.sh`.
+[  1754.4s ERR]   warnings.warn(
+[  1755.2s ERR] /tmp/ze/third_party/UniK3D/unik3d/utils/sht.py:110: UserWarning: CUDA is not available or torch_xla is imported. Disabling autocast.
+[  1755.2s ERR]   @torch.autocast(device_type="cuda", enabled=True, dtype=torch.float32)
+[  1755.5s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[  1755.7s ERR] xFormers not available
+[  1755.7s ERR] xFormers not available
+[  1796.1s ERR] /tmp/ze/third_party/UniK3D/unik3d/models/unik3d.py:306: UserWarning: !! self.resolution_level not set, using default bounds !!
+[  1796.1s ERR]   warnings.warn("!! self.resolution_level not set, using default bounds !!")
+[  2002.8s OUT] DINOv2 loaded from None with info: {}
+[  2002.8s OUT] wrote /kaggle/working/results/unik3d-l__kitti.csv
+[  2004.7s OUT] + /usr/bin/python3 scripts/run_audit.py da3-nested kitti --n 1 --out /kaggle/working/results
+[  2030.3s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[  2402.6s OUT] [97m[INFO ] using SwiGLU layer as FFN[0m
+[  2402.6s OUT] [93m[WARN ] Dependency 'e3nn' not found. Required for rotating the camera space SH coeff[0m
+[  2402.6s OUT] [97m[INFO ] using MLP layer as FFN[0m
+[  2402.6s OUT] [97m[INFO ] Processed Images Done taking 0.10838961601257324 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2402.6s OUT] [97m[INFO ] Model Forward Pass Done. Time: 56.75862908363342 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.0002307891845703125 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Processed Images Done taking 0.028043746948242188 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2402.6s OUT] [97m[INFO ] Model Forward Pass Done. Time: 48.44377326965332 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00011301040649414062 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Processed Images Done taking 0.028870105743408203 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2402.6s OUT] [97m[INFO ] Model Forward Pass Done. Time: 48.72877240180969 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.0001163482666015625 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Processed Images Done taking 0.025591373443603516 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2402.6s OUT] [97m[INFO ] Model Forward Pass Done. Time: 49.84233283996582 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00011682510375976562 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Processed Images Done taking 0.030191659927368164 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2402.6s OUT] [97m[INFO ] Model Forward Pass Done. Time: 48.75712251663208 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00010371208190917969 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Processed Images Done taking 0.029924392700195312 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2402.6s OUT] [97m[INFO ] Model Forward Pass Done. Time: 48.76755094528198 seconds[0m
+[  2402.6s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00016045570373535156 seconds[0m
+[  2402.6s OUT] wrote /kaggle/working/results/da3-nested__kitti.csv
+[  2404.0s OUT] + /usr/bin/python3 scripts/run_audit.py da3-metric-l kitti --n 1 --out /kaggle/working/results
+[  2414.8s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[  2511.8s OUT] [97m[INFO ] using MLP layer as FFN[0m
+[  2511.8s OUT] [97m[INFO ] Processed Images Done taking 0.022470474243164062 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2511.8s OUT] [97m[INFO ] Model Forward Pass Done. Time: 11.203001499176025 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.0004088878631591797 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Processed Images Done taking 0.02939319610595703 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2511.8s OUT] [97m[INFO ] Model Forward Pass Done. Time: 11.216130256652832 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.0003056526184082031 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Processed Images Done taking 0.022919893264770508 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2511.8s OUT] [97m[INFO ] Model Forward Pass Done. Time: 10.948091983795166 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00019598007202148438 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Processed Images Done taking 0.026897192001342773 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2511.8s OUT] [97m[INFO ] Model Forward Pass Done. Time: 11.009070634841919 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.0002052783966064453 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Processed Images Done taking 0.024077177047729492 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2511.8s OUT] [97m[INFO ] Model Forward Pass Done. Time: 10.983524799346924 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00017499923706054688 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Processed Images Done taking 0.029322147369384766 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2511.8s OUT] [97m[INFO ] Model Forward Pass Done. Time: 11.189321279525757 seconds[0m
+[  2511.8s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00022530555725097656 seconds[0m
+[  2511.8s OUT] wrote /kaggle/working/results/da3-metric-l__kitti.csv
+[  2513.2s OUT] + /usr/bin/python3 scripts/run_audit.py da3-l kitti --n 1 --out /kaggle/working/results
+[  2519.0s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[  2630.4s OUT] [97m[INFO ] using MLP layer as FFN[0m
+[  2630.4s OUT] [97m[INFO ] Processed Images Done taking 0.022695064544677734 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2630.4s OUT] [97m[INFO ] Model Forward Pass Done. Time: 12.321743488311768 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00014710426330566406 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Processed Images Done taking 0.024471282958984375 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2630.4s OUT] [97m[INFO ] Model Forward Pass Done. Time: 13.01914119720459 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00011110305786132812 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Processed Images Done taking 0.026786088943481445 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2630.4s OUT] [97m[INFO ] Model Forward Pass Done. Time: 12.074500560760498 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 7.987022399902344e-05 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Processed Images Done taking 0.023069143295288086 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2630.4s OUT] [97m[INFO ] Model Forward Pass Done. Time: 12.440194606781006 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00010514259338378906 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Processed Images Done taking 0.027331113815307617 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2630.4s OUT] [97m[INFO ] Model Forward Pass Done. Time: 12.219913482666016 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 0.00013256072998046875 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Processed Images Done taking 0.025843143463134766 seconds. Shape:  torch.Size([1, 3, 140, 504])[0m
+[  2630.4s OUT] [97m[INFO ] Model Forward Pass Done. Time: 12.377970218658447 seconds[0m
+[  2630.4s OUT] [97m[INFO ] Conversion to Prediction Done. Time: 8.368492126464844e-05 seconds[0m
+[  2630.4s OUT] wrote /kaggle/working/results/da3-l__kitti.csv
+[  2631.8s OUT] + /usr/bin/python3 scripts/run_audit.py vggt kitti --n 1 --out /kaggle/working/results
+[  2635.4s ERR] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[  2711.3s ERR] /tmp/ze/third_party/vggt/vggt/models/vggt.py:65: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+[  2711.3s ERR]   with torch.cuda.amp.autocast(enabled=False):
+[  2780.9s OUT] wrote /kaggle/working/results/vggt__kitti.csv
+[  2781.9s OUT] all done in 46.3 min
+[  2785.1s ERR] /usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+[  2785.1s ERR]   cells[i][c] = re.sub('\\\\\|', '|', cell)
+[  2785.6s ERR] /usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+[  2785.6s ERR]   text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[  2786.8s ERR] [NbConvertApp] Converting notebook __script__.ipynb to html
+[  2788.4s ERR] [NbConvertApp] Writing 356938 bytes to __results__.html
