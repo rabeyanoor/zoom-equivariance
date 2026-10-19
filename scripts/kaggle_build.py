@@ -40,7 +40,7 @@ if kind == "audit":
     if part == "c1":
         JOBS = [f"{m} {SETS} --n 100" for m in LADDER[:6]]
     elif part == "c2":
-        JOBS = [f"{m} {SETS} --n 100" for m in LADDER[6:]]
+        JOBS = [f"{m} {SETS} --n 50" for m in LADDER[6:]]  # 50: keeps the week within the Kaggle GPU quota
     elif part == "csmoke":
         # CPU kernel (no GPU slot needed); Metric3D has hard-coded .cuda() calls
         JOBS = [f"{m} kitti --n 1" for m in LADDER if m != "metric3d-l"]
