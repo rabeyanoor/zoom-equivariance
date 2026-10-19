@@ -1,0 +1,371 @@
+[{"stream_name":"stdout","time":0.563986559,"data":"+ pip install -q transformers==5.20.1 mmengine einops timm h5py termcolor tabulate trimesh wandb\n"}
+,{"stream_name":"stdout","time":4.671032218,"data":"     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.8/46.8 kB 1.4 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":5.599870491,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 58.0 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":5.678179765,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 452.7/452.7 kB 18.2 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":5.750941959,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 750.4/750.4 kB 37.7 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":5.832822418,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 846.4/846.4 kB 28.3 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":5.967369161,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 256.2/256.2 kB 14.9 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":21.202588869,"data":"+ pip install -q git+https://github.com/microsoft/MoGe.git\n"}
+,{"stream_name":"stdout","time":55.739049249,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 308.3/308.3 kB 2.1 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":55.814536428,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 53.0/53.0 kB 1.6 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":60.05628204,"data":"+ git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniDepth.git /tmp/ze/third_party/UniDepth\n"}
+,{"stream_name":"stdout","time":62.220408851,"data":"+ pip install -q --no-deps -e /tmp/ze/third_party/UniDepth\n"}
+,{"stream_name":"stdout","time":68.76868,"data":"+ git clone -q --depth 1 https://github.com/YvanYin/Metric3D.git /tmp/ze/third_party/Metric3D\n"}
+,{"stream_name":"stdout","time":72.759364588,"data":"+ git clone -q --depth 1 https://github.com/ByteDance-Seed/Depth-Anything-3.git /tmp/ze/third_party/Depth-Anything-3\n"}
+,{"stream_name":"stdout","time":75.352411356,"data":"+ pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/Depth-Anything-3\n"}
+,{"stream_name":"stdout","time":87.636973117,"data":"+ git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniK3D.git /tmp/ze/third_party/UniK3D\n"}
+,{"stream_name":"stdout","time":91.945080775,"data":"+ pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/UniK3D\n"}
+,{"stream_name":"stdout","time":98.565160515,"data":"+ git clone -q --depth 1 https://github.com/facebookresearch/vggt.git /tmp/ze/third_party/vggt\n"}
+,{"stream_name":"stdout","time":102.586208691,"data":"+ pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/vggt\n"}
+,{"stream_name":"stdout","time":109.607577773,"data":"+ pip install -q omegaconf evo\n"}
+,{"stream_name":"stdout","time":112.388339981,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 165.4/165.4 kB 1.4 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":112.46613023,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 150.9/150.9 kB 4.6 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":112.528882861,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 43.3/43.3 kB 2.1 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":112.645756208,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 493.4/493.4 kB 7.0 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":112.763764287,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 19.2 MB/s eta 0:00:00\n"}
+,{"stream_name":"stderr","time":115.370075038,"data":"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n"}
+,{"stream_name":"stderr","time":115.370098845,"data":"depth-anything-3 0.0.0 requires e3nn, which is not installed.\n"}
+,{"stream_name":"stderr","time":115.370103433,"data":"depth-anything-3 0.0.0 requires open3d, which is not installed.\n"}
+,{"stream_name":"stderr","time":115.370107229,"data":"depth-anything-3 0.0.0 requires pillow-heif, which is not installed.\n"}
+,{"stream_name":"stderr","time":115.370110809,"data":"depth-anything-3 0.0.0 requires plyfile, which is not installed.\n"}
+,{"stream_name":"stderr","time":115.370114231,"data":"depth-anything-3 0.0.0 requires pre-commit, which is not installed.\n"}
+,{"stream_name":"stderr","time":115.370117776,"data":"depth-anything-3 0.0.0 requires pycolmap, which is not installed.\n"}
+,{"stream_name":"stderr","time":115.370121295,"data":"depth-anything-3 0.0.0 requires xformers, which is not installed.\n"}
+,{"stream_name":"stderr","time":115.37012487,"data":"depth-anything-3 0.0.0 requires numpy\u003c2, but you have numpy 2.1.3 which is incompatible.\n"}
+,{"stream_name":"stdout","time":299.125542725,"data":"+ cd /tmp/ze/data/raw/kitti \u0026\u0026 unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' \u0026\u0026 rm sel.zip\n"}
+,{"stream_name":"stdout","time":305.014610895,"data":"+ cd /tmp/ze/data/raw/diode \u0026\u0026 tar xzf val.tar.gz \u0026\u0026 rm val.tar.gz\n"}
+,{"stream_name":"stdout","time":364.31451418300003,"data":"setup done in 6.1 min\n"}
+,{"stream_name":"stdout","time":364.314564288,"data":"+ /usr/bin/python3 scripts/run_audit.py dav2-l kitti nyu diode-in diode-out --n 100 --out /kaggle/working/results\n"}
+,{"stream_name":"stderr","time":389.201717487,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":404.82166544,"data":"\rLoading weights:   0%|          | 0/503 [00:00\u003c?, ?it/s]\rLoading weights:  52%|█████▏    | 261/503 [00:00\u003c00:00, 2606.26it/s]\rLoading weights: 100%|██████████| 503/503 [00:00\u003c00:00, 2613.85it/s]\n"}
+,{"stream_name":"stdout","time":520.025569954,"data":"dav2-l__kitti: 10/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":649.935258557,"data":"dav2-l__kitti: 20/100 images, 4.1 min\n"}
+,{"stream_name":"stdout","time":779.215150827,"data":"dav2-l__kitti: 30/100 images, 6.2 min\n"}
+,{"stream_name":"stdout","time":908.423857578,"data":"dav2-l__kitti: 40/100 images, 8.4 min\n"}
+,{"stream_name":"stdout","time":1037.636298845,"data":"dav2-l__kitti: 50/100 images, 10.5 min\n"}
+,{"stream_name":"stdout","time":1167.049013197,"data":"dav2-l__kitti: 60/100 images, 12.7 min\n"}
+,{"stream_name":"stdout","time":1296.032206017,"data":"dav2-l__kitti: 70/100 images, 14.8 min\n"}
+,{"stream_name":"stdout","time":1425.479101465,"data":"dav2-l__kitti: 80/100 images, 17.0 min\n"}
+,{"stream_name":"stdout","time":1554.341300615,"data":"dav2-l__kitti: 90/100 images, 19.1 min\n"}
+,{"stream_name":"stdout","time":1683.691450907,"data":"dav2-l__kitti: 100/100 images, 21.3 min\n"}
+,{"stream_name":"stdout","time":1683.694376813,"data":"wrote /kaggle/working/results/dav2-l__kitti.csv\n"}
+,{"stream_name":"stderr","time":1695.590462975,"data":"\rLoading weights:   0%|          | 0/503 [00:00\u003c?, ?it/s]\rLoading weights:  53%|█████▎    | 266/503 [00:00\u003c00:00, 2658.92it/s]\rLoading weights: 100%|██████████| 503/503 [00:00\u003c00:00, 2686.29it/s]\n"}
+,{"stream_name":"stdout","time":1732.1263061,"data":"dav2-l__nyu: 10/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":1767.551835668,"data":"dav2-l__nyu: 20/100 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":1802.705588486,"data":"dav2-l__nyu: 30/100 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":1838.721595309,"data":"dav2-l__nyu: 40/100 images, 2.4 min\n"}
+,{"stream_name":"stdout","time":1874.031215009,"data":"dav2-l__nyu: 50/100 images, 3.0 min\n"}
+,{"stream_name":"stdout","time":1909.760594509,"data":"dav2-l__nyu: 60/100 images, 3.6 min\n"}
+,{"stream_name":"stdout","time":1945.52217553,"data":"dav2-l__nyu: 70/100 images, 4.2 min\n"}
+,{"stream_name":"stdout","time":1981.114897726,"data":"dav2-l__nyu: 80/100 images, 4.8 min\n"}
+,{"stream_name":"stdout","time":2016.849338461,"data":"dav2-l__nyu: 90/100 images, 5.3 min\n"}
+,{"stream_name":"stdout","time":2052.618163341,"data":"dav2-l__nyu: 100/100 images, 5.9 min\n"}
+,{"stream_name":"stdout","time":2052.622205813,"data":"wrote /kaggle/working/results/dav2-l__nyu.csv\n"}
+,{"stream_name":"stderr","time":2053.380575578,"data":"\rLoading weights:   0%|          | 0/503 [00:00\u003c?, ?it/s]\rLoading weights:  55%|█████▌    | 278/503 [00:00\u003c00:00, 2777.10it/s]\rLoading weights: 100%|██████████| 503/503 [00:00\u003c00:00, 2754.50it/s]\n"}
+,{"stream_name":"stdout","time":2091.716929813,"data":"dav2-l__diode-in: 10/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":2129.816980768,"data":"dav2-l__diode-in: 20/100 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":2167.5516168,"data":"dav2-l__diode-in: 30/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":2205.445959201,"data":"dav2-l__diode-in: 40/100 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":2243.614790548,"data":"dav2-l__diode-in: 50/100 images, 3.2 min\n"}
+,{"stream_name":"stdout","time":2281.82515462,"data":"dav2-l__diode-in: 60/100 images, 3.8 min\n"}
+,{"stream_name":"stdout","time":2320.001786599,"data":"dav2-l__diode-in: 70/100 images, 4.4 min\n"}
+,{"stream_name":"stdout","time":2358.059269949,"data":"dav2-l__diode-in: 80/100 images, 5.1 min\n"}
+,{"stream_name":"stdout","time":2396.216371659,"data":"dav2-l__diode-in: 90/100 images, 5.7 min\n"}
+,{"stream_name":"stdout","time":2434.30211767,"data":"dav2-l__diode-in: 100/100 images, 6.3 min\n"}
+,{"stream_name":"stdout","time":2434.304753702,"data":"wrote /kaggle/working/results/dav2-l__diode-in.csv\n"}
+,{"stream_name":"stderr","time":2435.079671535,"data":"\rLoading weights:   0%|          | 0/503 [00:00\u003c?, ?it/s]\rLoading weights:  53%|█████▎    | 268/503 [00:00\u003c00:00, 2667.76it/s]\rLoading weights: 100%|██████████| 503/503 [00:00\u003c00:00, 2645.32it/s]\n"}
+,{"stream_name":"stdout","time":2473.560214354,"data":"dav2-l__diode-out: 10/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":2511.451852985,"data":"dav2-l__diode-out: 20/100 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":2549.219893969,"data":"dav2-l__diode-out: 30/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":2587.449740692,"data":"dav2-l__diode-out: 40/100 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":2625.667102549,"data":"dav2-l__diode-out: 50/100 images, 3.2 min\n"}
+,{"stream_name":"stdout","time":2663.386447528,"data":"dav2-l__diode-out: 60/100 images, 3.8 min\n"}
+,{"stream_name":"stdout","time":2701.075868152,"data":"dav2-l__diode-out: 70/100 images, 4.4 min\n"}
+,{"stream_name":"stdout","time":2739.13165593,"data":"dav2-l__diode-out: 80/100 images, 5.1 min\n"}
+,{"stream_name":"stdout","time":2777.377778096,"data":"dav2-l__diode-out: 90/100 images, 5.7 min\n"}
+,{"stream_name":"stdout","time":2815.278198993,"data":"dav2-l__diode-out: 100/100 images, 6.3 min\n"}
+,{"stream_name":"stdout","time":2815.281052728,"data":"wrote /kaggle/working/results/dav2-l__diode-out.csv\n"}
+,{"stream_name":"stdout","time":2818.811972177,"data":"+ /usr/bin/python3 scripts/run_audit.py moge2-b kitti nyu diode-in diode-out --n 100 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":2847.62892537,"data":"moge2-b__kitti: 10/100 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":2864.358473521,"data":"moge2-b__kitti: 20/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":2881.546586352,"data":"moge2-b__kitti: 30/100 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":2898.070336973,"data":"moge2-b__kitti: 40/100 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":2914.360173354,"data":"moge2-b__kitti: 50/100 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":2930.693504004,"data":"moge2-b__kitti: 60/100 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":2947.239538019,"data":"moge2-b__kitti: 70/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":2963.98462779,"data":"moge2-b__kitti: 80/100 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":2980.561959765,"data":"moge2-b__kitti: 90/100 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":2996.94407323,"data":"moge2-b__kitti: 100/100 images, 2.8 min\n"}
+,{"stream_name":"stdout","time":2996.946611174,"data":"wrote /kaggle/working/results/moge2-b__kitti.csv\n"}
+,{"stream_name":"stderr","time":2997.17870909,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":3015.453903717,"data":"moge2-b__nyu: 10/100 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":3032.078818905,"data":"moge2-b__nyu: 20/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":3048.686268523,"data":"moge2-b__nyu: 30/100 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":3065.177200424,"data":"moge2-b__nyu: 40/100 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":3081.564407921,"data":"moge2-b__nyu: 50/100 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":3097.995929551,"data":"moge2-b__nyu: 60/100 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":3114.53107615,"data":"moge2-b__nyu: 70/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":3131.070223378,"data":"moge2-b__nyu: 80/100 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":3147.542264286,"data":"moge2-b__nyu: 90/100 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":3163.995931793,"data":"moge2-b__nyu: 100/100 images, 2.8 min\n"}
+,{"stream_name":"stdout","time":3163.997710938,"data":"wrote /kaggle/working/results/moge2-b__nyu.csv\n"}
+,{"stream_name":"stdout","time":3184.631798021,"data":"moge2-b__diode-in: 10/100 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":3203.758405332,"data":"moge2-b__diode-in: 20/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":3222.847748414,"data":"moge2-b__diode-in: 30/100 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":3241.757081148,"data":"moge2-b__diode-in: 40/100 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":3260.686669597,"data":"moge2-b__diode-in: 50/100 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":3279.692392441,"data":"moge2-b__diode-in: 60/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":3298.707309425,"data":"moge2-b__diode-in: 70/100 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":3317.652753393,"data":"moge2-b__diode-in: 80/100 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":3336.573249043,"data":"moge2-b__diode-in: 90/100 images, 2.8 min\n"}
+,{"stream_name":"stdout","time":3355.513386867,"data":"moge2-b__diode-in: 100/100 images, 3.2 min\n"}
+,{"stream_name":"stdout","time":3355.515185778,"data":"wrote /kaggle/working/results/moge2-b__diode-in.csv\n"}
+,{"stream_name":"stdout","time":3376.032778756,"data":"moge2-b__diode-out: 10/100 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":3394.827118838,"data":"moge2-b__diode-out: 20/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":3413.675796723,"data":"moge2-b__diode-out: 30/100 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":3432.704413005,"data":"moge2-b__diode-out: 40/100 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":3451.740049991,"data":"moge2-b__diode-out: 50/100 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":3470.256219999,"data":"moge2-b__diode-out: 60/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":3488.915302193,"data":"moge2-b__diode-out: 70/100 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":3507.882236742,"data":"moge2-b__diode-out: 80/100 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":3526.862574327,"data":"moge2-b__diode-out: 90/100 images, 2.8 min\n"}
+,{"stream_name":"stdout","time":3545.796551865,"data":"moge2-b__diode-out: 100/100 images, 3.1 min\n"}
+,{"stream_name":"stdout","time":3545.798417493,"data":"wrote /kaggle/working/results/moge2-b__diode-out.csv\n"}
+,{"stream_name":"stdout","time":3546.851188478,"data":"+ /usr/bin/python3 scripts/run_audit.py moge2-l kitti nyu diode-in diode-out --n 100 --out /kaggle/working/results\n"}
+,{"stream_name":"stderr","time":3550.191585139,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":3596.439559123,"data":"moge2-l__kitti: 10/100 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":3625.469752238,"data":"moge2-l__kitti: 20/100 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":3653.040293296,"data":"moge2-l__kitti: 30/100 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":3680.514035662,"data":"moge2-l__kitti: 40/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":3708.755159371,"data":"moge2-l__kitti: 50/100 images, 2.3 min\n"}
+,{"stream_name":"stdout","time":3736.537601602,"data":"moge2-l__kitti: 60/100 images, 2.8 min\n"}
+,{"stream_name":"stdout","time":3764.344236144,"data":"moge2-l__kitti: 70/100 images, 3.3 min\n"}
+,{"stream_name":"stdout","time":3792.308885387,"data":"moge2-l__kitti: 80/100 images, 3.7 min\n"}
+,{"stream_name":"stdout","time":3820.098773815,"data":"moge2-l__kitti: 90/100 images, 4.2 min\n"}
+,{"stream_name":"stdout","time":3848.010652427,"data":"moge2-l__kitti: 100/100 images, 4.7 min\n"}
+,{"stream_name":"stdout","time":3848.014071912,"data":"wrote /kaggle/working/results/moge2-l__kitti.csv\n"}
+,{"stream_name":"stdout","time":3881.670417494,"data":"moge2-l__nyu: 10/100 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":3909.651285489,"data":"moge2-l__nyu: 20/100 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":3937.166208119,"data":"moge2-l__nyu: 30/100 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":3965.269913122,"data":"moge2-l__nyu: 40/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":3993.085853275,"data":"moge2-l__nyu: 50/100 images, 2.3 min\n"}
+,{"stream_name":"stdout","time":4020.898540722,"data":"moge2-l__nyu: 60/100 images, 2.8 min\n"}
+,{"stream_name":"stdout","time":4048.895451507,"data":"moge2-l__nyu: 70/100 images, 3.3 min\n"}
+,{"stream_name":"stdout","time":4076.765490663,"data":"moge2-l__nyu: 80/100 images, 3.7 min\n"}
+,{"stream_name":"stdout","time":4104.541518612,"data":"moge2-l__nyu: 90/100 images, 4.2 min\n"}
+,{"stream_name":"stdout","time":4132.433622835,"data":"moge2-l__nyu: 100/100 images, 4.7 min\n"}
+,{"stream_name":"stdout","time":4132.436046541,"data":"wrote /kaggle/working/results/moge2-l__nyu.csv\n"}
+,{"stream_name":"stdout","time":4168.237938963,"data":"moge2-l__diode-in: 10/100 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":4198.494165879,"data":"moge2-l__diode-in: 20/100 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":4228.544575998,"data":"moge2-l__diode-in: 30/100 images, 1.5 min\n"}
+,{"stream_name":"stdout","time":4258.857168782,"data":"moge2-l__diode-in: 40/100 images, 2.0 min\n"}
+,{"stream_name":"stdout","time":4288.920256785,"data":"moge2-l__diode-in: 50/100 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":4319.229803237,"data":"moge2-l__diode-in: 60/100 images, 3.0 min\n"}
+,{"stream_name":"stdout","time":4349.463399745,"data":"moge2-l__diode-in: 70/100 images, 3.5 min\n"}
+,{"stream_name":"stdout","time":4379.630563547,"data":"moge2-l__diode-in: 80/100 images, 4.0 min\n"}
+,{"stream_name":"stdout","time":4409.944946445,"data":"moge2-l__diode-in: 90/100 images, 4.5 min\n"}
+,{"stream_name":"stdout","time":4440.150828624,"data":"moge2-l__diode-in: 100/100 images, 5.0 min\n"}
+,{"stream_name":"stdout","time":4440.152946321,"data":"wrote /kaggle/working/results/moge2-l__diode-in.csv\n"}
+,{"stream_name":"stdout","time":4475.817920135,"data":"moge2-l__diode-out: 10/100 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":4505.999023343,"data":"moge2-l__diode-out: 20/100 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":4535.942227742,"data":"moge2-l__diode-out: 30/100 images, 1.5 min\n"}
+,{"stream_name":"stdout","time":4566.420880189,"data":"moge2-l__diode-out: 40/100 images, 2.0 min\n"}
+,{"stream_name":"stdout","time":4596.816334187,"data":"moge2-l__diode-out: 50/100 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":4626.387595535,"data":"moge2-l__diode-out: 60/100 images, 3.0 min\n"}
+,{"stream_name":"stdout","time":4656.322276239,"data":"moge2-l__diode-out: 70/100 images, 3.5 min\n"}
+,{"stream_name":"stdout","time":4686.566040022,"data":"moge2-l__diode-out: 80/100 images, 4.0 min\n"}
+,{"stream_name":"stdout","time":4716.887427483,"data":"moge2-l__diode-out: 90/100 images, 4.5 min\n"}
+,{"stream_name":"stdout","time":4747.334729644,"data":"moge2-l__diode-out: 100/100 images, 5.0 min\n"}
+,{"stream_name":"stdout","time":4747.337310887,"data":"wrote /kaggle/working/results/moge2-l__diode-out.csv\n"}
+,{"stream_name":"stdout","time":4748.398881239,"data":"+ /usr/bin/python3 scripts/run_audit.py unidepth2-b kitti nyu diode-in diode-out --n 100 --out /kaggle/working/results\n"}
+,{"stream_name":"stderr","time":4754.718407748,"data":"/usr/local/lib/python3.13/dist-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n"}
+,{"stream_name":"stderr","time":4754.718454151,"data":"  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n"}
+,{"stream_name":"stderr","time":4755.263255871,"data":"/tmp/ze/third_party/UniDepth/unidepth/utils/chamfer_distance.py:9: UserWarning: !! To run evaluation you need KNN. Please compile KNN: `cd unidepth/ops/knn with \u0026\u0026 bash compile.sh`.\n"}
+,{"stream_name":"stderr","time":4755.263295371,"data":"  warnings.warn(\n"}
+,{"stream_name":"stderr","time":4756.166313816,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":4756.199715342,"data":"xFormers not available\n"}
+,{"stream_name":"stderr","time":4756.204940087,"data":"xFormers not available\n"}
+,{"stream_name":"stderr","time":4765.344160281,"data":"/tmp/ze/third_party/UniDepth/unidepth/models/unidepthv2/unidepthv2.py:262: UserWarning: !! self.resolution_level not set, using default bounds !!\n"}
+,{"stream_name":"stderr","time":4765.344199907,"data":"  warnings.warn(\"!! self.resolution_level not set, using default bounds !!\")\n"}
+,{"stream_name":"stdout","time":4777.39228423,"data":"Cannot import NystromAttention, you can not run original UniDepth. UniDepthV2 is available.\n"}
+,{"stream_name":"stdout","time":4777.392333351,"data":"Not loading pretrained weights for backbone\n"}
+,{"stream_name":"stdout","time":4777.392338428,"data":"EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches \u0026\u0026 bash compile.sh`\n"}
+,{"stream_name":"stdout","time":4777.39234385,"data":"unidepth2-b__kitti: 10/100 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":4788.858586111,"data":"unidepth2-b__kitti: 20/100 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":4800.656242938,"data":"unidepth2-b__kitti: 30/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":4812.719206408,"data":"unidepth2-b__kitti: 40/100 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":4824.72375917,"data":"unidepth2-b__kitti: 50/100 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":4836.421986157,"data":"unidepth2-b__kitti: 60/100 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":4847.869759951,"data":"unidepth2-b__kitti: 70/100 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":4859.420460355,"data":"unidepth2-b__kitti: 80/100 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":4871.036422424,"data":"unidepth2-b__kitti: 90/100 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":4882.836809109,"data":"unidepth2-b__kitti: 100/100 images, 2.0 min\n"}
+,{"stream_name":"stdout","time":4882.840510243,"data":"wrote /kaggle/working/results/unidepth2-b__kitti.csv\n"}
+,{"stream_name":"stdout","time":4891.856817464,"data":"Not loading pretrained weights for backbone\n"}
+,{"stream_name":"stdout","time":4891.856855215,"data":"EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches \u0026\u0026 bash compile.sh`\n"}
+,{"stream_name":"stdout","time":4891.856867259,"data":"unidepth2-b__nyu: 10/100 images, 0.1 min\n"}
+,{"stream_name":"stdout","time":4898.50946887,"data":"unidepth2-b__nyu: 20/100 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":4905.17147781,"data":"unidepth2-b__nyu: 30/100 images, 0.3 min\n"}
+,{"stream_name":"stdout","time":4911.810574387,"data":"unidepth2-b__nyu: 40/100 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":4918.46501394,"data":"unidepth2-b__nyu: 50/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":4925.105215318,"data":"unidepth2-b__nyu: 60/100 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":4931.722902639,"data":"unidepth2-b__nyu: 70/100 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":4938.342208834,"data":"unidepth2-b__nyu: 80/100 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":4944.966759138,"data":"unidepth2-b__nyu: 90/100 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":4951.610066909,"data":"unidepth2-b__nyu: 100/100 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":4951.611879697,"data":"wrote /kaggle/working/results/unidepth2-b__nyu.csv\n"}
+,{"stream_name":"stdout","time":4968.464102546,"data":"Not loading pretrained weights for backbone\n"}
+,{"stream_name":"stdout","time":4968.464140526,"data":"EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches \u0026\u0026 bash compile.sh`\n"}
+,{"stream_name":"stdout","time":4968.464147528,"data":"unidepth2-b__diode-in: 10/100 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":4983.057236528,"data":"unidepth2-b__diode-in: 20/100 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":4997.509774071,"data":"unidepth2-b__diode-in: 30/100 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":5011.843563677,"data":"unidepth2-b__diode-in: 40/100 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":5026.227021529,"data":"unidepth2-b__diode-in: 50/100 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":5040.627087235,"data":"unidepth2-b__diode-in: 60/100 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":5055.117009352,"data":"unidepth2-b__diode-in: 70/100 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":5069.554434572,"data":"unidepth2-b__diode-in: 80/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":5083.980788616,"data":"unidepth2-b__diode-in: 90/100 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":5098.323773245,"data":"unidepth2-b__diode-in: 100/100 images, 2.4 min\n"}
+,{"stream_name":"stdout","time":5098.327826664,"data":"wrote /kaggle/working/results/unidepth2-b__diode-in.csv\n"}
+,{"stream_name":"stdout","time":5114.93975935,"data":"Not loading pretrained weights for backbone\n"}
+,{"stream_name":"stdout","time":5114.939794806,"data":"EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches \u0026\u0026 bash compile.sh`\n"}
+,{"stream_name":"stdout","time":5114.93980257,"data":"unidepth2-b__diode-out: 10/100 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":5129.23112104,"data":"unidepth2-b__diode-out: 20/100 images, 0.5 min\n"}
+,{"stream_name":"stdout","time":5143.563164435,"data":"unidepth2-b__diode-out: 30/100 images, 0.7 min\n"}
+,{"stream_name":"stdout","time":5158.09518358,"data":"unidepth2-b__diode-out: 40/100 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":5172.486589227,"data":"unidepth2-b__diode-out: 50/100 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":5186.365288696,"data":"unidepth2-b__diode-out: 60/100 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":5200.479107736,"data":"unidepth2-b__diode-out: 70/100 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":5214.962500964,"data":"unidepth2-b__diode-out: 80/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":5229.373792172,"data":"unidepth2-b__diode-out: 90/100 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":5243.635707134,"data":"unidepth2-b__diode-out: 100/100 images, 2.4 min\n"}
+,{"stream_name":"stdout","time":5243.639934701,"data":"wrote /kaggle/working/results/unidepth2-b__diode-out.csv\n"}
+,{"stream_name":"stdout","time":5244.9966969,"data":"+ /usr/bin/python3 scripts/run_audit.py unidepth2-l kitti nyu diode-in diode-out --n 100 --out /kaggle/working/results\n"}
+,{"stream_name":"stderr","time":5249.419488348,"data":"/usr/local/lib/python3.13/dist-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n"}
+,{"stream_name":"stderr","time":5249.419522659,"data":"  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n"}
+,{"stream_name":"stderr","time":5249.89817541,"data":"/tmp/ze/third_party/UniDepth/unidepth/utils/chamfer_distance.py:9: UserWarning: !! To run evaluation you need KNN. Please compile KNN: `cd unidepth/ops/knn with \u0026\u0026 bash compile.sh`.\n"}
+,{"stream_name":"stderr","time":5249.898218558,"data":"  warnings.warn(\n"}
+,{"stream_name":"stderr","time":5250.660205829,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":5250.681837178,"data":"xFormers not available\n"}
+,{"stream_name":"stderr","time":5250.683037544,"data":"xFormers not available\n"}
+,{"stream_name":"stderr","time":5267.682105453,"data":"/tmp/ze/third_party/UniDepth/unidepth/models/unidepthv2/unidepthv2.py:262: UserWarning: !! self.resolution_level not set, using default bounds !!\n"}
+,{"stream_name":"stderr","time":5267.68217849,"data":"  warnings.warn(\"!! self.resolution_level not set, using default bounds !!\")\n"}
+,{"stream_name":"stdout","time":5290.100053185,"data":"Cannot import NystromAttention, you can not run original UniDepth. UniDepthV2 is available.\n"}
+,{"stream_name":"stdout","time":5290.100094354,"data":"Not loading pretrained weights for backbone\n"}
+,{"stream_name":"stdout","time":5290.10010115,"data":"EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches \u0026\u0026 bash compile.sh`\n"}
+,{"stream_name":"stdout","time":5290.100107818,"data":"unidepth2-l__kitti: 10/100 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":5313.221707378,"data":"unidepth2-l__kitti: 20/100 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":5336.203010428,"data":"unidepth2-l__kitti: 30/100 images, 1.1 min\n"}
+,{"stream_name":"stdout","time":5358.272248438,"data":"unidepth2-l__kitti: 40/100 images, 1.5 min\n"}
+,{"stream_name":"stdout","time":5380.643803061,"data":"unidepth2-l__kitti: 50/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":5403.471273154,"data":"unidepth2-l__kitti: 60/100 images, 2.3 min\n"}
+,{"stream_name":"stdout","time":5425.902349659,"data":"unidepth2-l__kitti: 70/100 images, 2.6 min\n"}
+,{"stream_name":"stdout","time":5448.243931999,"data":"unidepth2-l__kitti: 80/100 images, 3.0 min\n"}
+,{"stream_name":"stdout","time":5470.75500562,"data":"unidepth2-l__kitti: 90/100 images, 3.4 min\n"}
+,{"stream_name":"stdout","time":5493.355788867,"data":"unidepth2-l__kitti: 100/100 images, 3.8 min\n"}
+,{"stream_name":"stdout","time":5493.358835403,"data":"wrote /kaggle/working/results/unidepth2-l__kitti.csv\n"}
+,{"stream_name":"stdout","time":5511.100437612,"data":"Not loading pretrained weights for backbone\n"}
+,{"stream_name":"stdout","time":5511.10047383,"data":"EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches \u0026\u0026 bash compile.sh`\n"}
+,{"stream_name":"stdout","time":5511.100480456,"data":"unidepth2-l__nyu: 10/100 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":5523.155438362,"data":"unidepth2-l__nyu: 20/100 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":5535.395348493,"data":"unidepth2-l__nyu: 30/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":5547.4744912,"data":"unidepth2-l__nyu: 40/100 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":5559.417384934,"data":"unidepth2-l__nyu: 50/100 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":5571.332310777,"data":"unidepth2-l__nyu: 60/100 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":5583.279463617,"data":"unidepth2-l__nyu: 70/100 images, 1.4 min\n"}
+,{"stream_name":"stdout","time":5595.26377795,"data":"unidepth2-l__nyu: 80/100 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":5607.314667034,"data":"unidepth2-l__nyu: 90/100 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":5619.347721989,"data":"unidepth2-l__nyu: 100/100 images, 2.0 min\n"}
+,{"stream_name":"stdout","time":5619.350250606,"data":"wrote /kaggle/working/results/unidepth2-l__nyu.csv\n"}
+,{"stream_name":"stdout","time":5650.450080492,"data":"Not loading pretrained weights for backbone\n"}
+,{"stream_name":"stdout","time":5650.450116539,"data":"EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches \u0026\u0026 bash compile.sh`\n"}
+,{"stream_name":"stdout","time":5650.45012326,"data":"unidepth2-l__diode-in: 10/100 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":5675.956738901,"data":"unidepth2-l__diode-in: 20/100 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":5700.878871225,"data":"unidepth2-l__diode-in: 30/100 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":5725.939327559,"data":"unidepth2-l__diode-in: 40/100 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":5751.147905578,"data":"unidepth2-l__diode-in: 50/100 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":5776.211416873,"data":"unidepth2-l__diode-in: 60/100 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":5801.277180429,"data":"unidepth2-l__diode-in: 70/100 images, 2.9 min\n"}
+,{"stream_name":"stdout","time":5826.383181537,"data":"unidepth2-l__diode-in: 80/100 images, 3.4 min\n"}
+,{"stream_name":"stdout","time":5851.556953593,"data":"unidepth2-l__diode-in: 90/100 images, 3.8 min\n"}
+,{"stream_name":"stdout","time":5876.61265908,"data":"unidepth2-l__diode-in: 100/100 images, 4.2 min\n"}
+,{"stream_name":"stdout","time":5876.615424641,"data":"wrote /kaggle/working/results/unidepth2-l__diode-in.csv\n"}
+,{"stream_name":"stdout","time":5907.646722801,"data":"Not loading pretrained weights for backbone\n"}
+,{"stream_name":"stdout","time":5907.646765009,"data":"EdgeGuidedLocalSSI reverts to a non cuda-optimized operation, you will experince large slowdown, please install it:  `cd ./unidepth/ops/extract_patches \u0026\u0026 bash compile.sh`\n"}
+,{"stream_name":"stdout","time":5907.646773842,"data":"unidepth2-l__diode-out: 10/100 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":5932.890549653,"data":"unidepth2-l__diode-out: 20/100 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":5957.602729401,"data":"unidepth2-l__diode-out: 30/100 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":5982.922597147,"data":"unidepth2-l__diode-out: 40/100 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":6008.168242965,"data":"unidepth2-l__diode-out: 50/100 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":6032.775853555,"data":"unidepth2-l__diode-out: 60/100 images, 2.5 min\n"}
+,{"stream_name":"stdout","time":6057.522114314,"data":"unidepth2-l__diode-out: 70/100 images, 2.9 min\n"}
+,{"stream_name":"stdout","time":6082.799621487,"data":"unidepth2-l__diode-out: 80/100 images, 3.3 min\n"}
+,{"stream_name":"stdout","time":6108.065525064,"data":"unidepth2-l__diode-out: 90/100 images, 3.8 min\n"}
+,{"stream_name":"stdout","time":6133.126068307,"data":"unidepth2-l__diode-out: 100/100 images, 4.2 min\n"}
+,{"stream_name":"stdout","time":6133.129543097,"data":"wrote /kaggle/working/results/unidepth2-l__diode-out.csv\n"}
+,{"stream_name":"stdout","time":6134.484293893,"data":"+ /usr/bin/python3 scripts/run_audit.py unik3d-l kitti nyu diode-in diode-out --n 100 --out /kaggle/working/results\n"}
+,{"stream_name":"stderr","time":6139.567431758,"data":"/tmp/ze/third_party/UniK3D/unik3d/ops/losses/robust_loss.py:195: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools\u003c81.\n"}
+,{"stream_name":"stderr","time":6139.567489856,"data":"  from pkg_resources import resource_stream\n"}
+,{"stream_name":"stderr","time":6139.732869846,"data":"/tmp/ze/third_party/UniK3D/unik3d/utils/chamfer_distance.py:9: UserWarning: !! To run evaluation you need KNN. Please compile KNN: `cd unik3d/ops/knn \u0026\u0026 bash compile.sh`.\n"}
+,{"stream_name":"stderr","time":6139.732894315,"data":"  warnings.warn(\n"}
+,{"stream_name":"stderr","time":6140.525670582,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":6140.560563372,"data":"xFormers not available\n"}
+,{"stream_name":"stderr","time":6140.565624146,"data":"xFormers not available\n"}
+,{"stream_name":"stderr","time":6160.064537798,"data":"/tmp/ze/third_party/UniK3D/unik3d/models/unik3d.py:306: UserWarning: !! self.resolution_level not set, using default bounds !!\n"}
+,{"stream_name":"stderr","time":6160.064575506,"data":"  warnings.warn(\"!! self.resolution_level not set, using default bounds !!\")\n"}
+,{"stream_name":"stdout","time":6182.984282299,"data":"DINOv2 loaded from None with info: {}\n"}
+,{"stream_name":"stdout","time":6182.984317183,"data":"unik3d-l__kitti: 10/100 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":6206.56037273,"data":"unik3d-l__kitti: 20/100 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":6230.437355421,"data":"unik3d-l__kitti: 30/100 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":6253.218985064,"data":"unik3d-l__kitti: 40/100 images, 1.6 min\n"}
+,{"stream_name":"stdout","time":6276.115287805,"data":"unik3d-l__kitti: 50/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":6299.56630028,"data":"unik3d-l__kitti: 60/100 images, 2.3 min\n"}
+,{"stream_name":"stdout","time":6322.649597561,"data":"unik3d-l__kitti: 70/100 images, 2.7 min\n"}
+,{"stream_name":"stdout","time":6345.611946487,"data":"unik3d-l__kitti: 80/100 images, 3.1 min\n"}
+,{"stream_name":"stdout","time":6368.735526929,"data":"unik3d-l__kitti: 90/100 images, 3.5 min\n"}
+,{"stream_name":"stdout","time":6392.027015696,"data":"unik3d-l__kitti: 100/100 images, 3.9 min\n"}
+,{"stream_name":"stdout","time":6392.02994513,"data":"wrote /kaggle/working/results/unik3d-l__kitti.csv\n"}
+,{"stream_name":"stdout","time":6410.330775293,"data":"DINOv2 loaded from None with info: {}\n"}
+,{"stream_name":"stdout","time":6410.330815488,"data":"unik3d-l__nyu: 10/100 images, 0.2 min\n"}
+,{"stream_name":"stdout","time":6422.925455679,"data":"unik3d-l__nyu: 20/100 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":6435.637955157,"data":"unik3d-l__nyu: 30/100 images, 0.6 min\n"}
+,{"stream_name":"stdout","time":6448.144490165,"data":"unik3d-l__nyu: 40/100 images, 0.8 min\n"}
+,{"stream_name":"stdout","time":6460.486230268,"data":"unik3d-l__nyu: 50/100 images, 1.0 min\n"}
+,{"stream_name":"stdout","time":6472.859343303,"data":"unik3d-l__nyu: 60/100 images, 1.2 min\n"}
+,{"stream_name":"stdout","time":6485.337250613,"data":"unik3d-l__nyu: 70/100 images, 1.5 min\n"}
+,{"stream_name":"stdout","time":6497.84787979,"data":"unik3d-l__nyu: 80/100 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":6510.382830256,"data":"unik3d-l__nyu: 90/100 images, 1.9 min\n"}
+,{"stream_name":"stdout","time":6522.814856941,"data":"unik3d-l__nyu: 100/100 images, 2.1 min\n"}
+,{"stream_name":"stdout","time":6522.818992349,"data":"wrote /kaggle/working/results/unik3d-l__nyu.csv\n"}
+,{"stream_name":"stdout","time":6555.073273191,"data":"DINOv2 loaded from None with info: {}\n"}
+,{"stream_name":"stdout","time":6555.073303755,"data":"unik3d-l__diode-in: 10/100 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":6581.792714495,"data":"unik3d-l__diode-in: 20/100 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":6607.79477123,"data":"unik3d-l__diode-in: 30/100 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":6634.077406324,"data":"unik3d-l__diode-in: 40/100 images, 1.8 min\n"}
+,{"stream_name":"stdout","time":6660.389577008,"data":"unik3d-l__diode-in: 50/100 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":6686.452441743,"data":"unik3d-l__diode-in: 60/100 images, 2.6 min\n"}
+,{"stream_name":"stdout","time":6712.689711188,"data":"unik3d-l__diode-in: 70/100 images, 3.1 min\n"}
+,{"stream_name":"stdout","time":6738.835901736,"data":"unik3d-l__diode-in: 80/100 images, 3.5 min\n"}
+,{"stream_name":"stdout","time":6764.933205072,"data":"unik3d-l__diode-in: 90/100 images, 3.9 min\n"}
+,{"stream_name":"stdout","time":6791.20492348,"data":"unik3d-l__diode-in: 100/100 images, 4.4 min\n"}
+,{"stream_name":"stdout","time":6791.207953087,"data":"wrote /kaggle/working/results/unik3d-l__diode-in.csv\n"}
+,{"stream_name":"stdout","time":6823.494226135,"data":"DINOv2 loaded from None with info: {}\n"}
+,{"stream_name":"stdout","time":6823.49426324,"data":"unik3d-l__diode-out: 10/100 images, 0.4 min\n"}
+,{"stream_name":"stdout","time":6849.699975528,"data":"unik3d-l__diode-out: 20/100 images, 0.9 min\n"}
+,{"stream_name":"stdout","time":6875.405481603,"data":"unik3d-l__diode-out: 30/100 images, 1.3 min\n"}
+,{"stream_name":"stdout","time":6901.720655076,"data":"unik3d-l__diode-out: 40/100 images, 1.7 min\n"}
+,{"stream_name":"stdout","time":6927.963753151,"data":"unik3d-l__diode-out: 50/100 images, 2.2 min\n"}
+,{"stream_name":"stdout","time":6953.49799727,"data":"unik3d-l__diode-out: 60/100 images, 2.6 min\n"}
+,{"stream_name":"stdout","time":6979.252975229,"data":"unik3d-l__diode-out: 70/100 images, 3.0 min\n"}
+,{"stream_name":"stdout","time":7005.527845308,"data":"unik3d-l__diode-out: 80/100 images, 3.5 min\n"}
+,{"stream_name":"stdout","time":7031.69355654,"data":"unik3d-l__diode-out: 90/100 images, 3.9 min\n"}
+,{"stream_name":"stdout","time":7057.852616928,"data":"unik3d-l__diode-out: 100/100 images, 4.3 min\n"}
+,{"stream_name":"stdout","time":7057.855809236,"data":"wrote /kaggle/working/results/unik3d-l__diode-out.csv\n"}
+,{"stream_name":"stdout","time":7059.278936965,"data":"all done in 117.6 min\n"}
+,{"stream_name":"stderr","time":7061.193682787,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":7061.193708562,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":7061.422395441,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":7061.422422628,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":7062.19723142,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":7063.104465486,"data":"[NbConvertApp] Writing 356721 bytes to __results__.html\n"}
+]

@@ -114,17 +114,33 @@ write_table("table1", [
     *rows, r"\bottomrule\end{tabular}\end{table*}"])
 
 # ------------------------------------------------------------------ Table 3 (model ladder)
+# the ladder runs use a smaller sample, so the fair comparison is on the images every model saw
+ladder_models = [x for x in MAIN + LADDER if x in pooled.index and not x.endswith("staleK")]
+seen = pi[pi.model.isin(ladder_models)].groupby(["dataset", "name"]).model.nunique()
+shared = seen[seen == len(ladder_models)].index
+sh = pi.set_index(["dataset", "name"])
+sh = sh[sh.index.isin(shared)].groupby("model")[["alpha", "beta"]].median()
+put("nLadderShared", len(shared), "{:d}")
+for m in ladder_models:
+    put(key(m, "alphaShared"), sh.alpha.get(m, np.nan))
+    put(key(m, "betaShared"), sh.beta.get(m, np.nan))
 rows = []
-for m in [x for x in MAIN + LADDER if x in pooled.index and not x.endswith("staleK")]:
+for m in ladder_models:
     r = pooled.loc[m]
-    rows.append(f"{A.PRETTY.get(m, m)} & {A.GROUP.get(m, '')} & {fmt(r.alpha)} & {fmt(r.beta)} & {int(r.n)} \\\\")
+    group = A.GROUP.get(m, "").replace("pixels only", "pixels").replace("predicts camera", "pred. K") \
+        .replace("takes camera (true K)", "takes K")
+    rows.append(f"{A.PRETTY.get(m, m)} & {group} & {fmt(r.alpha)} & {fmt(r.beta)} & {int(r.n)} & "
+                f"{fmt(sh.alpha.get(m, np.nan))} & {fmt(sh.beta.get(m, np.nan))} \\\\")
 write_table("table_ladder", [
     r"\begin{table}[t]\centering\small",
-    r"\caption{Model ladder: larger variants and newer families. DA3-L and VGGT normalise depth per scene, so "
-    r"only $\beta$ is defined for them.}\label{tab:ladder}",
+    r"\caption{Model ladder: larger variants and newer families. Left: each model on its own sample. Right: all "
+    r"models on the \nLadderShared{} images that every one of them saw (paired). DA3-L and VGGT normalise depth per "
+    r"scene, so only $\beta$ is defined for them. pred.\ K: predicts the camera; takes K: given the true "
+    r"camera.}\label{tab:ladder}",
     r"\setlength{\tabcolsep}{3pt}",
-    r"\begin{tabular}{llccc}\toprule",
-    r"Model & Group & $\alpha$ & $\beta$ & images \\ \midrule",
+    r"\begin{tabular}{llccccc}\toprule",
+    r"& & \multicolumn{3}{c}{own sample} & \multicolumn{2}{c}{shared} \\ \cmidrule(lr){3-5}\cmidrule(lr){6-7}",
+    r"Model & Group & $\alpha$ & $\beta$ & images & $\alpha$ & $\beta$ \\ \midrule",
     *rows, r"\bottomrule\end{tabular}\end{table}"])
 
 # ------------------------------------------------------------------ per-dataset alpha
@@ -203,6 +219,14 @@ for m in MAIN:
     put(key(m, "fixAbsrel"), g.absrel_fixed.mean() if len(g) else np.nan, "{:.3f}")
     put(key(m, "fixZoomed"), g.absrel_zoomed.mean() if len(g) else np.nan, "{:.3f}")
     put(key(m, "fixTarget"), g.absrel_unzoomed_same_pixels.mean() if len(g) else np.nan, "{:.3f}")
+
+# ------------------------------------------------------------------ principal point under off-centre zooms
+off = A.load("*__offc.csv") if list(A.RESULTS.glob("*__offc.csv")) else pd.DataFrame()
+ppt = A.principal_point(off) if len(off) else pd.DataFrame()
+for m in ["moge2-s", "unidepth2-s", "depthpro"]:
+    g = ppt[(ppt.model == m) & (ppt.offset == "quadrant") & (ppt.zoom == 2.0)] if len(ppt) else pd.DataFrame()
+    put(key(m, "ppQuadTwo"), g.model_error.median() if len(g) else np.nan, "{:.3f}")
+    put(key(m, "ppGuessTwo"), g.centred_guess_error.median() if len(g) else np.nan, "{:.3f}")
 
 # ------------------------------------------------------------------ fine-tuning (Table 2)
 ft = df[df.model.isin(FT)]

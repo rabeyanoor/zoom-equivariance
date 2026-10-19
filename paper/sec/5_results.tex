@@ -70,16 +70,27 @@ compression change it by \DavTwoSBilinear{} and \DavTwoSJpeg.
 
 \paragraph{Bigger and newer models.}
 \Cref{tab:ladder} extends the audit to larger variants and to Depth Anything~3, UniK3D and VGGT
-(100 images per set; 50 for the DA3 and VGGT runs).
-% TODO(results): describe the ladder only after audit-c1/c2 are in; no claim from the 1-image smoke run.
+(100 images per set; 50 for the DA3 and VGGT runs). On the \nLadderShared{} images that every model saw,
+size helps the pixels-only family but does not remove the effect: $\alpha$ falls from \DavTwoSAlphaShared{}
+(DA-V2-S) to \DavTwoBAlphaShared{} (B) and \DavTwoLAlphaShared{} (L), so the large model still returns less
+than half the depth at $3\times$. MoGe-2 is flat across sizes (\MogeTwoSAlphaShared, \MogeTwoBAlphaShared,
+\MogeTwoLAlphaShared), with a focal exponent stuck near \MogeTwoLBetaShared. UniDepthV2 improves with size
+(\UnidepthTwoSAlphaShared{} to \UnidepthTwoLAlphaShared, $\beta$ from \UnidepthTwoSBetaShared{} to
+\UnidepthTwoLBetaShared), and UniK3D-L, the newest camera-predicting model, comes closest
+($\alpha=\UnikThreedLAlphaShared$, $\beta=\UnikThreedLBetaShared$). None reaches the level of a model that
+is given the correct camera (Metric3D v2, $\alpha=\MetricThreedSAlphaShared$). Scale and newer camera heads
+narrow the gap; they do not close it.
+% TODO(results): add DA3 and VGGT once audit-c2 is in.
 
 \input{gen/table_ladder}
 
 \paragraph{Crop position and principal point.}
 Zooming into the four image quadrants instead of the centre leaves $\alpha$ of the same order (supplement).
-MoGe-2 places the principal point at the image centre whatever the crop, so off-centre crops are
-outside what its camera model can express.
-% TODO(results): numbers from principal_point() once audit-a2 is in.
+For a $2\times$ crop of an image quadrant the law moves the principal point by half the image width.
+Both models that predict it ignore the move: the error of MoGe-2 (\MogeTwoSPpQuadTwo{} of the width) and of
+UniDepthV2 (\UnidepthTwoSPpQuadTwo) equals that of always answering the image centre
+(\MogeTwoSPpGuessTwo). Off-centre crops, which phone and detection crops usually are, are outside what
+their camera models express.
 
 \paragraph{When does the label-free score predict error?}
 Across the \proxyPairs{} model--dataset pairs, $|\alpha|$ rank-correlates with AbsRel at $3\times$
