@@ -6,8 +6,9 @@
 #   selection (checked in the kernel);
 # - indoor head: RGB of the 795 official NYUv2 train images.
 #
-# Frozen and EFT models are evaluated with identical preprocessing (input height 392),
-# so every difference comes from the weights. DIODE was never seen in training: it shows
+# Frozen, anchor-only and EFT models are evaluated with identical preprocessing (input height
+# 392), so every difference comes from the weights. Anchor-only = same data, steps and flips,
+# zoom loss switched off: it shows what fine-tuning alone does. DIODE was never seen in training: it shows
 # whether the model learned "how zoom looks" or just memorised KITTI / NYU.
 
 # %%
@@ -30,9 +31,16 @@ EFT = ROOT / "outputs" / "eft"
 # ## Training curves
 
 # %%
+def train_log(tag, dom):
+    # the first EFT run wrote train_log_<domain>.csv, later runs train_log_<tag>_<domain>.csv
+    for f in (EFT / f"train_log_{tag}_{dom}.csv", EFT / f"train_log_{dom}.csv"):
+        if f.exists():
+            return pd.read_csv(f)
+
+
 fig, axes = plt.subplots(1, 2, figsize=(12, 3.5))
 for ax, dom in zip(axes, ("outdoor", "indoor")):
-    log = pd.read_csv(EFT / f"train_log_{dom}.csv")
+    log = train_log("eft", dom)
     ax.plot(log.step, log.l_zoom.rolling(50).mean(), label="zoom loss")
     ax.plot(log.step, log.l_anchor.rolling(50).mean(), label="anchor loss")
     ax.set(title=f"EFT {dom}", xlabel="step", ylabel="L1 in log depth")
@@ -43,11 +51,12 @@ plt.savefig(FIG / "05_eft_training.png", dpi=110)
 plt.show()
 
 # %% [markdown]
-# ## Table 2: frozen vs EFT
+# ## Table 2: frozen vs anchor-only vs EFT
 
 # %%
+FT = ["dav2-s-fixed", "dav2-s-anchor", "dav2-s-eft"]
 df = A.load()
-df = df[df.model.isin(["dav2-s-fixed", "dav2-s-eft"])]
+df = df[df.model.isin(FT)]
 s = A.summary(A.per_image(df))
 t2 = s.pivot(index="dataset", columns="model", values=["alpha", "absrel1", "absrel2", "absrel3", "d1_3"]).reindex(A.DATASETS)
 t2.round(3).to_csv(TAB / "table2_eft.csv")
@@ -59,7 +68,9 @@ curve = z.groupby(["model", "dataset", "zoom"]).agg(depth=("log_ratio_self", "me
                                                     s=("s_true", "median")).reset_index()
 fig, axes = plt.subplots(2, 4, figsize=(18, 7))
 for k, ds in enumerate(A.DATASETS):
-    for m, style in (("dav2-s-fixed", "o--"), ("dav2-s-eft", "o-")):
+    for m, style in (("dav2-s-fixed", "o--"), ("dav2-s-anchor", "s:"), ("dav2-s-eft", "o-")):
+        if m not in set(curve.model):
+            continue
         c = curve[(curve.model == m) & (curve.dataset == ds)].sort_values("zoom")
         axes[0, k].plot(c.s, np.exp(c.depth), style, label=A.PRETTY[m])
         axes[1, k].plot(c.s, c.absrel, style, label=A.PRETTY[m])

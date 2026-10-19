@@ -62,10 +62,9 @@ def main():
     print(f"setup done in {(time.time() - t0) / 60:.1f} min", flush=True)
     os.chdir(PROJ)
     out = WORK / "results"
-    run = f"{sys.executable} scripts/run_audit.py"
     for job in JOBS:  # noqa: F821  (filled in by the builder)
         try:
-            sh(f"{run} {job} --out {out}")
+            sh(f"{sys.executable} {job} --out {out}")
         except subprocess.CalledProcessError as e:
             # one broken model should not cost us the others
             print("FAILED:", job, e, flush=True)

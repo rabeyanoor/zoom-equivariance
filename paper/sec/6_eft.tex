@@ -1,0 +1,35 @@
+\section{Equivariance fine-tuning}
+\label{sec:eft}
+
+The law in \cref{eq:law} is not only a test; it is free supervision. Following the
+self-consistency idea of Zhong \etal~\cite{zhong2023equivariance}, but with a metric target and a
+frozen teacher, for a pixels-only
+model $\hat D_\theta$ we keep a frozen copy $\hat D_0$ (the teacher) and minimise, on
+unlabeled images $I$,
+\begin{equation}
+  \mathcal{L} =
+  \underbrace{\big\| \mathcal{U}_b \log \hat D_\theta(\mathcal{Z}_b I) - \log \hat D_0(I)\big|_b \big\|_1}_{\text{zoom}}
+  + \lambda\,
+  \underbrace{\big\| \log \hat D_\theta(I) - \log \hat D_0(I)\big\|_1}_{\text{anchor}},
+  \label{eq:eft}
+\end{equation}
+where $b$ is a random box with zoom factor $s\sim\operatorname{LogUniform}[1,3]$ and random
+centre, $\mathcal{U}_b$ resamples the zoomed prediction onto the crop grid, and
+$\cdot|_b$ crops. The teacher's prediction on the \emph{unzoomed} image is the target for
+the zoomed one, so the student has to discover from the pixels that a zoom happened and
+undo the size-based shortcut. The anchor keeps the student on the teacher for ordinary images.
+No depth labels and no intrinsics are used.
+
+\paragraph{Setup.}
+We tune Depth Anything V2 metric Small (24.8M parameters), the outdoor head on the frames of
+seven KITTI raw drives that are disjoint from the 13 drives of the KITTI val selection (3{,}323
+images; the kernel asserts the disjointness), and the indoor head on the RGB of the 795
+official NYUv2 training images. AdamW, learning rate $5\cdot10^{-5}$ (head) and
+$5\cdot10^{-6}$ (backbone), batch 4, 3{,}000 steps, $\lambda=1$, horizontal flips, input height
+392\,px, mixed precision on one T4 GPU. DIODE is never used for training: it measures whether the
+model learned what a zoom looks like in general or only in KITTI and NYUv2. Frozen and tuned
+models are evaluated with identical preprocessing.
+
+\paragraph{Baseline.} Any fine-tuning changes a model, so improvements could come from the
+training itself. The \emph{anchor-only} baseline uses the same images, steps, flips and
+optimiser with the zoom term switched off ($\mathcal{L}$ with only the anchor).

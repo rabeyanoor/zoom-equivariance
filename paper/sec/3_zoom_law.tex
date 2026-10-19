@@ -1,0 +1,85 @@
+\section{Digital zoom as an exact camera transform}
+\label{sec:law}
+
+\paragraph{The law.}
+Let an image $I$ of size $W\times H$ be taken by a pinhole camera with intrinsics
+$K=\begin{psmallmatrix} f_x & 0 & c_x\\ 0 & f_y & c_y\\ 0&0&1\end{psmallmatrix}$.
+Cropping the box $b=(x_0,y_0,w,h)$ and resizing it back to $W\times H$ gives an image
+$\mathcal{Z}_b I$ that is \emph{exactly} the image of the same scene taken with
+\begin{equation}
+  f'_x = s_x f_x,\quad c'_x = s_x\,(c_x - x_0 + \tfrac12) - \tfrac12,\qquad s_x = W/w,
+  \label{eq:law}
+\end{equation}
+and likewise for $y$ (the half pixels come from pixel centres).
+Every pixel that survives the crop sees the same 3D point, so its metric depth is unchanged.
+For a centred crop with $s_x=s_y=s$ we call $s$ the \emph{zoom factor}.
+\cref{eq:law} needs no assumption about the scene, the model or the data;
+our implementation reproduces it to floating-point precision (\cref{sec:audit}).
+
+\paragraph{What a correct model must do.}
+Let a model map an image to a depth map $\hat D(I)$ and, optionally, a focal estimate
+$\hat f(I)$. Zoom equivariance asks
+\begin{equation}
+  \hat D(\mathcal{Z}_b I)\big(\mathcal{Z}_b(p)\big) = \hat D(I)(p), \qquad
+  \hat f(\mathcal{Z}_b I) = s\,\hat f(I)
+  \label{eq:equiv}
+\end{equation}
+for all pixels $p$ inside $b$. Neither side involves ground truth.
+
+\paragraph{Two exponents.}
+Real models do not satisfy \cref{eq:equiv}, but over $s\in[1,3]$ we find their behaviour is
+summarised well by two power laws,
+\begin{equation}
+  \frac{\hat D(\mathcal{Z}_b I)}{\hat D(I)} \approx s^{-\alpha}, \qquad
+  \frac{\hat f(\mathcal{Z}_b I)}{\hat f(I)} \approx s^{\beta},
+  \label{eq:exponents}
+\end{equation}
+fitted per image by least squares in log-log space through the origin
+(the depth ratio is the median over the pixels in $b$).
+An equivariant model has $\alpha=0$ and $\beta=1$.
+A model that ignores the zoom in its camera estimate has $\beta=0$.
+
+\paragraph{Three invariants.}
+Unprojecting the prediction with the model's own focal gives a point cloud.
+Under a zoom, depth scales by $s^{-\alpha}$ and the lateral coordinate
+$X=(u-c)\,\hat D/\hat f$ by $s\cdot s^{-\alpha}/s^{\beta}=s^{1-\alpha-\beta}$. Hence
+\begin{itemize}
+  \item $\alpha=0$: depth is preserved;
+  \item $\beta=1$: the shape of the point cloud (the ratio $X/Z$) is preserved;
+  \item $\alpha+\beta=1$: lateral coordinates are preserved (not depth, not shape).
+\end{itemize}
+The third relation is what a model obtains if it reasons from apparent size.
+An object of metric width $L$ that spans $\ell$ pixels is placed at
+$\hat D=\hat f L/\ell$. A zoom multiplies $\ell$ by $s$ and $\hat f$ by $s^{\beta}$, so
+$\hat D$ scales by $s^{\beta-1}$, that is $\alpha=1-\beta$.
+A pixels-only model ($\hat f$ fixed, implicitly) that reasons from size has $\alpha=1$:
+twice as large means twice as close.
+
+\paragraph{The zoom--squash ambiguity.}
+Why would a model reason from size at all, when the zoom is in plain sight?
+Because a zoom is invisible to size cues.
+A point $(X,Y,Z)$ seen with focal $sf$ projects to $u = sf\,X/Z + c = f\,X/(Z/s) + c$.
+\begin{quote}
+\emph{A zoomed photo of a scene is pixel-for-pixel the unzoomed photo of the same scene
+squashed along the viewing axis by $s$.}
+\end{quote}
+The squashed scene has the same lateral sizes, so every object has a plausible width; only its
+extent \emph{in depth} is wrong (a 4.5\,m car becomes 2.25\,m long at $s=2$), and so are the
+angles between surfaces. Telling the two apart needs priors on 3D shape (aspect ratios in
+depth, right angles, the rate at which parallel lines converge), not priors on size.
+Two consequences follow, and we test both:
+(i) for a fronto-parallel plane the squash changes nothing, so \emph{no} estimator can be
+equivariant on such scenes without being told the camera;
+(ii) equivariance should improve with the depth range of the scene, where the squash is most
+visible.
+The ambiguity also explains why the third invariant is the natural failure mode: believing the
+squashed scene means $\alpha=1$ with $\beta=0$, a point on the line $\alpha+\beta=1$.
+Note that the line only guarantees lateral consistency; along it, depth and shape are wrong
+unless $\beta=1$.
+
+\paragraph{Models that take the camera as input.}
+Models such as Metric3D~\cite{yin2023metric3d,hu2024metric3dv2} receive $K$ and predict depth in a
+canonical camera. With the correct $K'$ from \cref{eq:law} they are equivariant by design.
+In practice the zoom often happens after capture (a crop in a gallery app, a screenshot,
+a detection crop) and the metadata still describes the original camera. We call this the
+\emph{stale-$K$} setting and evaluate it explicitly.

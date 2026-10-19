@@ -28,6 +28,8 @@ p.add_argument("--nyu-train", action="store_true", help="RGB of the 795 official
 p.add_argument("--steps", type=int, default=3000)
 p.add_argument("--batch", type=int, default=4)
 p.add_argument("--w-anchor", type=float, default=1.0)
+p.add_argument("--w-zoom", type=float, default=1.0, help="0 = anchor-only baseline")
+p.add_argument("--tag", default="eft", help="checkpoint name: dav2-s-<tag>-<domain>.pt")
 p.add_argument("--s-max", type=float, default=3.0)
 p.add_argument("--out", default=str(ROOT / "outputs" / "eft"))
 args = p.parse_args()
@@ -53,7 +55,7 @@ from transformers import AutoModelForDepthEstimation  # noqa: E402
 name = "Outdoor" if args.domain == "outdoor" else "Indoor"
 model = AutoModelForDepthEstimation.from_pretrained(f"depth-anything/Depth-Anything-V2-Metric-{name}-Small-hf")
 h0, w0 = get(0).shape[:2]
-trainer = eft.EFT(model, eft.input_hw(h0, w0), w_anchor=args.w_anchor, s_max=args.s_max)
+trainer = eft.EFT(model, eft.input_hw(h0, w0), w_anchor=args.w_anchor, w_zoom=args.w_zoom, s_max=args.s_max)
 
 rng = np.random.default_rng(0)
 log, t0 = [], time.time()
@@ -68,6 +70,6 @@ for step in range(1, args.steps + 1):
 
 out = Path(args.out)
 out.mkdir(parents=True, exist_ok=True)
-torch.save(trainer.student.cpu().state_dict(), out / f"dav2-s-eft-{args.domain}.pt")
-pd.DataFrame(log).to_csv(out / f"train_log_{args.domain}.csv", index=False)
+torch.save(trainer.student.cpu().state_dict(), out / f"dav2-s-{args.tag}-{args.domain}.pt")
+pd.DataFrame(log).to_csv(out / f"train_log_{args.tag}_{args.domain}.csv", index=False)
 print("saved", out, flush=True)

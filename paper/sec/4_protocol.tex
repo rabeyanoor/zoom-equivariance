@@ -1,0 +1,43 @@
+\section{The zoom audit}
+\label{sec:audit}
+
+\paragraph{Models.}
+We test seven models in three groups (\cref{sec:related}):
+\emph{pixels only} --- Depth Anything V2 metric Small and Base~\cite{yang2024dav2} (indoor
+or outdoor head, matching the dataset) and ZoeDepth NYU+KITTI~\cite{bhat2023zoedepth};
+\emph{predicts camera} --- Depth Pro~\cite{bochkovskii2025depthpro},
+MoGe-2 ViT-S~\cite{wang2025moge2} and UniDepthV2 ViT-S~\cite{piccinelli2025unidepthv2};
+\emph{takes camera} --- Metric3D v2 ViT-S~\cite{hu2024metric3dv2}, run once with the correct
+zoomed $K'$ and once with the stale $K$.
+All use the official weights and the authors' preprocessing (Hugging Face
+\texttt{transformers} or the official repositories).
+
+\paragraph{Data.}
+KITTI depth val selection~\cite{geiger2013kitti,uhrig2017sparsity} (outdoor, LiDAR),
+the 654 official NYUv2 test images~\cite{silberman2012nyu} (indoor, Kinect, Eigen crop),
+and the DIODE validation set~\cite{vasiljevic2019diode} split into indoor and outdoor scans
+(laser). From each of the four sets we draw a fixed random subset of 200 images (seed 0),
+identical for all models. Ground-truth intrinsics come with all three datasets.
+
+\paragraph{Zooms and controls.}
+We zoom by $s\in\{1.25, 1.5, 2, 3\}$ about the image centre (bicubic, antialiased, as in a
+phone's digital zoom). The zoom factor used in all fits is the exact one, $f'_x/f_x$ from
+\cref{eq:law}, which absorbs the rounding of the crop box. The prediction on the zoomed image
+is resampled onto the crop's own pixel grid by area averaging and compared, pixel by pixel,
+with the prediction on the original image (label-free) and with ground truth (for accuracy).
+To separate the camera change from the loss of detail, the \emph{blur control} down-samples
+the image by $s=2$ and up-samples it again: same detail loss as a $2\times$ zoom, same field of
+view. A subset of 50 images per set from KITTI and NYUv2 is also zoomed about the four
+quadrant centres, where the principal point moves out of the image centre.
+
+\paragraph{Metrics.}
+\textbf{Label-free:} the exponents $\alpha$ and $\beta$ of \cref{eq:exponents}, and the depth
+inconsistency at $2\times$, $\mathrm{DIE}_2=|\operatorname{median}_p \log
+\hat D_2/\hat D_1|$. \textbf{With labels:} AbsRel and $\delta_1$ on the pixels of the crop
+that have ground truth (capped at 80\,m for KITTI, 10\,m for NYUv2, 50\,m and 150\,m for
+DIODE indoor and outdoor). We report medians over images with 95\% bootstrap intervals.
+
+\paragraph{Sanity check of the pipeline.}
+Projecting random 3D points with $K$, applying the crop-and-resize to the pixel coordinates,
+and projecting with $K'$ agree to $<10^{-3}$\,px for all zooms and crop centres, and a constant
+depth map survives the zoom/unzoom round trip exactly (notebook~01 in the code release).

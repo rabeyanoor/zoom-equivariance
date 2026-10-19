@@ -51,13 +51,15 @@ def random_box(h, w, rng, s_max=3.0):
 
 
 class EFT:
-    def __init__(self, model, input_hw, lr_head=5e-5, lr_backbone=5e-6, w_anchor=1.0, s_max=3.0, seed=0):
+    def __init__(self, model, input_hw, lr_head=5e-5, lr_backbone=5e-6, w_anchor=1.0, w_zoom=1.0, s_max=3.0, seed=0):
         self.student = model.to(DEVICE).train()
         self.teacher = copy.deepcopy(model).eval()
         for p in self.teacher.parameters():
             p.requires_grad_(False)
         self.hw = input_hw
         self.w_anchor = w_anchor
+        # w_zoom = 0 gives the "anchor only" baseline: same data, steps and flips, no zoom loss
+        self.w_zoom = w_zoom
         self.s_max = s_max
         self.rng = np.random.default_rng(seed)
         backbone = [p for n, p in self.student.named_parameters() if "backbone" in n]
@@ -96,7 +98,7 @@ class EFT:
             l_zoom = l_zoom + (back - t[k:k + 1, :, y0:y0 + ch, x0:x0 + cw]).abs().mean()
         l_zoom = l_zoom / len(boxes)
         l_anchor = (s_x - t).abs().mean()
-        loss = l_zoom + self.w_anchor * l_anchor
+        loss = self.w_zoom * l_zoom + self.w_anchor * l_anchor
 
         self.opt.zero_grad()
         self.scaler.scale(loss).backward()

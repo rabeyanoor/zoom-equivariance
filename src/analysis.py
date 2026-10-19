@@ -19,11 +19,12 @@ RESULTS = Path(__file__).resolve().parents[1] / "outputs" / "results"
 GROUP = {"dav2-s": "pixels only", "dav2-b": "pixels only", "zoedepth": "pixels only",
          "depthpro": "predicts camera", "moge2-s": "predicts camera", "unidepth2-s": "predicts camera",
          "metric3d-s": "takes camera (true K)", "metric3d-s-staleK": "takes camera (stale K)",
-         "dav2-s-fixed": "pixels only", "dav2-s-eft": "pixels only + EFT"}
+         "dav2-s-fixed": "pixels only", "dav2-s-eft": "pixels only + EFT",
+         "dav2-s-anchor": "pixels only + anchor-only FT"}
 PRETTY = {"dav2-s": "DA-V2-S", "dav2-b": "DA-V2-B", "zoedepth": "ZoeDepth", "depthpro": "Depth Pro",
           "moge2-s": "MoGe-2-S", "unidepth2-s": "UniDepthV2-S", "metric3d-s": "Metric3D v2-S",
           "metric3d-s-staleK": "Metric3D v2-S (stale K)", "dav2-s-fixed": "DA-V2-S (frozen)",
-          "dav2-s-eft": "DA-V2-S + EFT (ours)"}
+          "dav2-s-eft": "DA-V2-S + EFT", "dav2-s-anchor": "DA-V2-S + anchor-only FT"}
 DATASETS = ["kitti", "nyu", "diode-in", "diode-out"]
 PRETTY_DS = {"kitti": "KITTI", "nyu": "NYUv2", "diode-in": "DIODE-in", "diode-out": "DIODE-out"}
 

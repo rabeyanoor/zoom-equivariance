@@ -144,16 +144,16 @@ class Metric3D:
         return {"depth": np.clip(depth, 0, 300), "fx": None}
 
 
-def _dav2_fixed(domain, eft):
-    """DA-V2-S at the EFT input size; eft=True loads the fine-tuned weights from
-    $EFT_DIR/dav2-s-eft-<domain>.pt."""
+def _dav2_fixed(domain, tag=None):
+    """DA-V2-S at the EFT input size; with a tag, loads fine-tuned weights from
+    $EFT_DIR/dav2-s-<tag>-<domain>.pt (tag "eft" or "anchor")."""
     from transformers import AutoModelForDepthEstimation
 
     import eft as eft_lib
 
     m = AutoModelForDepthEstimation.from_pretrained(f"depth-anything/Depth-Anything-V2-Metric-{domain}-Small-hf")
-    if eft:
-        ckpt = Path(os.environ.get("EFT_DIR", ROOT / "outputs" / "eft")) / f"dav2-s-eft-{domain.lower()}.pt"
+    if tag:
+        ckpt = Path(os.environ.get("EFT_DIR", ROOT / "outputs" / "eft")) / f"dav2-s-{tag}-{domain.lower()}.pt"
         m.load_state_dict(torch.load(ckpt, map_location="cpu"))
     return eft_lib.FixedSizeDepth(m)
 
@@ -168,8 +168,9 @@ REGISTRY = {
     "unidepth2-s": ("predicts camera", lambda dom: UniDepth2("lpiccinelli/unidepth-v2-vits14")),
     "metric3d-s": ("takes camera", lambda dom: Metric3D()),
     # frozen vs fine-tuned, same preprocessing (section 6 of the paper)
-    "dav2-s-fixed": ("pixels only", lambda dom: _dav2_fixed(dom, eft=False)),
-    "dav2-s-eft": ("pixels only (EFT)", lambda dom: _dav2_fixed(dom, eft=True)),
+    "dav2-s-fixed": ("pixels only", lambda dom: _dav2_fixed(dom)),
+    "dav2-s-eft": ("pixels only (EFT)", lambda dom: _dav2_fixed(dom, "eft")),
+    "dav2-s-anchor": ("pixels only (anchor-only FT)", lambda dom: _dav2_fixed(dom, "anchor")),
 }
 
 

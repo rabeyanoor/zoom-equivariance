@@ -28,20 +28,31 @@ if kind == "audit":
         JOBS = [j for j in JOBS if not j.startswith("depthpro") and "--off-centre" not in j]
     elif part == "b":
         JOBS = [j for j in JOBS if j.startswith("depthpro") or "--off-centre" in j]
+    JOBS = ["scripts/run_audit.py " + j for j in JOBS]
+elif kind == "stats":
+    # CPU only: per-image scene statistics + Figure 1 depth maps
+    JOBS = [f"scripts/scene_stats.py --n {N} --figure1"]
 else:
+    # eft: the method; eft_baseline (part "baseline"): anchor-only fine-tuning, same data and steps
     steps = 20 if SMOKE else 3000
     res = "/kaggle/working/results"
-    JOBS = [f"scripts/train_eft.py outdoor --steps {steps} --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --out /kaggle/working/eft",
-            f"scripts/train_eft.py indoor --steps {steps} --nyu-train --out /kaggle/working/eft"]
-    JOBS += [f"scripts/run_audit.py {m} {SETS} --n {N} --out {res}" for m in ("dav2-s-fixed", "dav2-s-eft")]
+    kitti = "--images 'data/raw/kitti_raw/*/*/image_02/data/*.png'"
+    if part == "baseline":
+        flags, evals = "--w-zoom 0 --tag anchor", ("dav2-s-anchor",)
+    else:
+        flags, evals = "--tag eft", ("dav2-s-fixed", "dav2-s-eft")
+    JOBS = [f"scripts/train_eft.py outdoor --steps {steps} {kitti} {flags} --out /kaggle/working/eft",
+            f"scripts/train_eft.py indoor --steps {steps} --nyu-train {flags} --out /kaggle/working/eft"]
+    JOBS += [f"scripts/run_audit.py {m} {SETS} --n {N} --out {res}" for m in evals]
 
 files = {str(p.relative_to(ROOT)): base64.b64encode(p.read_bytes()).decode()
-         for p in sorted([*ROOT.glob("src/*.py"), ROOT / "scripts/run_audit.py", ROOT / "scripts/train_eft.py"])}
+         for p in sorted([*ROOT.glob("src/*.py"), ROOT / "scripts/run_audit.py", ROOT / "scripts/train_eft.py",
+                         ROOT / "scripts/scene_stats.py"])}
 
 name = f"zoom-equivariance-{kind}{'-' + part if part else ''}"
 out = ROOT / "kaggle" / f"build_{kind}{'_' + part if part else ''}"
 out.mkdir(parents=True, exist_ok=True)
-body = (ROOT / "kaggle" / f"{kind}_main.py").read_text()
+body = (ROOT / "kaggle" / f"{'eft' if kind == 'eft' else 'audit'}_main.py").read_text()
 (out / "kernel.py").write_text(f"FILES = {json.dumps(files)}\nJOBS = {json.dumps(JOBS)}\n" + body)
 (out / "kernel-metadata.json").write_text(json.dumps({
     "id": f"{user}/{name}",
@@ -50,7 +61,7 @@ body = (ROOT / "kaggle" / f"{kind}_main.py").read_text()
     "language": "python",
     "kernel_type": "script",
     "is_private": True,
-    "enable_gpu": True,
+    "enable_gpu": kind != "stats",
     "enable_internet": True,
 }, indent=2))
 print("built", out, len(files), "files,", len(JOBS), "jobs")
