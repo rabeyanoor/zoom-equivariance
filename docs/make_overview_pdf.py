@@ -257,7 +257,8 @@ bullets([f"EFT+B prai puro equivariant (KITTI te α {f2(ftv('dav2-s-eftb', 'kitt
          f"({f2(ftv('dav2-s-zhong', 'kitti', 'absrel1'), 3)}). Frozen teacher, zoom term ar blur term, tinta-i lage.",
          "\"Anchor-only\" baseline asole frozen model (student = teacher, tai gradient 0), tai blur-only control."])
 figure("fig5_finetuning", 16, "Figure 5. Upore: zoom e depth ratio (1 = ideal). Niche: AbsRel. Dhushor: frozen, holud: EFT, "
-       "lal: EFT+B, golapi: EFT+B λ = 3, sobuj: blur-only. Note: alada zoom e AbsRel alada pixel e mapa; NYU te frozen model 1.25–1.5x e 1x er cheye bhalo "
+       "lal: EFT+B, golapi: EFT+B λ = 3, sobuj: blur-only. Note: alada zoom e AbsRel alada pixel e mapa; "
+       "NYU te frozen model 1.25–1.5x e 1x er cheye bhalo "
        "AbsRel pay, karon 1x e depth beshi bole ar zoom shrink kakatale thik er kachhe ane. Tai AbsRel na, α dekhte hobe.")
 
 # ------------------------------------------------------------------ 8
