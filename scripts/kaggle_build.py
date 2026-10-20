@@ -46,11 +46,17 @@ if kind == "audit":
         JOBS = [f"{m} {SETS} --n 100 --controls-only --out-tag ctrl" for m in ("dav2-s", "depthpro", "moge2-s", "metric3d-s")]
         # ZoomFix with a finer exponent grid (alpha can exceed 1), same 100 images
         JOBS += [f"{m} {SETS} --n 100 --fine-fix --out-tag fix" for m in ("dav2-s", "depthpro", "moge2-s")]
-    elif part in ("cues", "cues2", "cues3"):
-        # CPU kernels (GPU quota spent): split the 2x zoom into context loss and magnification
-        models_, n = {"cues": (("dav2-s", "zoedepth", "moge2-s", "unidepth2-s"), 100),
-                      "cues2": (("depthpro",), 50), "cues3": (("da3-metric-l",), 50)}[part]
-        JOBS = [f"{m} {SETS} --n {n} --cues --out-tag cues" for m in models_]
+    elif part in ("cues", "cues2", "cues3", "cuestpu"):
+        # GPU quota spent: split the 2x zoom into context loss and magnification on CPU kernels, or
+        # all of it on a TPU VM, whose 96 CPU cores run the same PyTorch code much faster
+        if part == "cuestpu":
+            JOBS = [f"{m} {SETS} --n {n} --cues --out-tag cues" for m, n in
+                    (("dav2-s", 100), ("zoedepth", 100), ("moge2-s", 100), ("unidepth2-s", 100),
+                     ("depthpro", 50), ("da3-metric-l", 50))]
+        else:
+            models_, n = {"cues": (("dav2-s", "zoedepth", "moge2-s", "unidepth2-s"), 100),
+                          "cues2": (("depthpro",), 50), "cues3": (("da3-metric-l",), 50)}[part]
+            JOBS = [f"{m} {SETS} --n {n} --cues --out-tag cues" for m in models_]
     elif part == "csmoke":
         # CPU kernel (no GPU slot needed); Metric3D has hard-coded .cuda() calls
         JOBS = [f"{m} kitti --n 1" for m in LADDER if m != "metric3d-l"]
@@ -100,7 +106,8 @@ body = (ROOT / "kaggle" / "templates" / f"{'eft' if kind == 'eft' else 'audit'}_
     "language": "python",
     "kernel_type": "script",
     "is_private": True,
-    "enable_gpu": kind != "stats" and part not in ("csmoke", "cues", "cues2", "cues3"),
+    "enable_gpu": kind != "stats" and part not in ("csmoke", "cues", "cues2", "cues3", "cuestpu"),
+    **({"enable_tpu": True, "machine_shape": "Tpu1VmV38"} if part == "cuestpu" else {}),
     "enable_internet": True,
     **({"kernel_sources": [f"{user}/zoom-equivariance-eft"]} if part == "baseline" else {}),
 }, indent=2))

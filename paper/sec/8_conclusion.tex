@@ -2,19 +2,22 @@
 \label{sec:conclusion}
 
 \paragraph{Limitations.}
-A digital zoom is an exact camera change, but real zoom lenses add distortion and change focus; our
-optical-zoom control isolates detail loss from the camera change but is still a resampled image. For a
-model without camera input, a crop also removes context, so $\alpha=0$ is a target, not a guarantee, on
-every image (\cref{sec:audit}). The label-free score predicts zoom-induced error, not accuracy in general,
-and fails on DIODE-outdoor. EFT+B trades accuracy on unzoomed and unseen images for equivariance in our
-setting; it is a demonstration that the law can train a model, not a drop-in replacement. Stale
-intrinsics in camera-conditioned models are a known deployment problem~\cite{kim2026mismatch}; we only
-place them on the same scale as the other groups.
+A digital zoom is an exact camera change, but a real zoom lens also adds distortion and changes focus. Our
+optical-zoom control separates detail loss from the camera change, but it is still a resampled image. For a
+model without camera input, a crop also removes context, so $\alpha=0$ is a target and not a promise on
+every image (\cref{sec:audit}). The cue split uses images with a plain border, which no model saw in
+training, so it shows which cue a model reacts to but not how it behaves on natural photos with less
+context. The label-free score predicts which model degrades under zoom and helps flag images, but it does
+not predict accuracy in general, and it is weakest on DIODE-outdoor. EFT+B buys equivariance with some
+accuracy on unzoomed and unseen images in our setting. It shows that the law can train a model. It is not a
+drop-in replacement. Stale intrinsics in camera-conditioned models are a known deployment problem~\cite{kim2026mismatch},
+and we only place them on the same scale as the other groups.
 
 \paragraph{Conclusion.}
-A crop is the simplest change of camera there is, and its effect is known exactly. Metric depth models
-that do not receive the camera largely ignore it: they read depth from apparent size, which a zoom cannot
-change, and the zoom--squash ambiguity says why. The two exponents make this visible without labels,
-place every model on a common scale, and point to what a correction has to avoid: a model can learn to
-detect a zoom from blur instead of geometry. We hope the audit becomes a routine check for any model that
-claims to output metres.
+A crop is the simplest camera change there is, and its effect is known exactly. Metric depth models that
+are not given the camera mostly miss it. They read depth from apparent size, which a zoom changes in the
+same way as moving closer, and the zoom--squash ambiguity explains why size cannot tell the difference.
+Splitting the zoom shows that magnification, not lost context, does most of the damage. Two exponents make
+all of this visible without labels and put every model on one scale. They also show what a fix must avoid,
+since a model can learn to spot a zoom from blur instead of geometry. We hope the zoom check becomes a
+routine test for any model that claims to output metres.
