@@ -2,7 +2,7 @@
 
     python scripts/kaggle_build.py <kaggle-username> audit cuestpu
     python scripts/colab_build.py kaggle/build/audit_cuestpu
-Upload the .ipynb to Colab, pick a T4 runtime and run all; the last cell zips the results.
+Upload the .ipynb to Colab, pick a T4 runtime and run all; the last cell zips /content/out/results.
 """
 import json
 import sys
