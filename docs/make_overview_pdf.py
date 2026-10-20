@@ -5,6 +5,7 @@
 Every number is read from outputs/ (CSV tables written by the notebooks, or recomputed
 here from outputs/results); nothing is typed by hand. Rerun after new Kaggle results.
 """
+import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -96,7 +97,8 @@ pi = A.per_image(df)
 t1 = pd.read_csv(TAB / "table1_pooled.csv", index_col=0)
 proxy = pd.read_csv(TAB / "proxy_across_pairs.csv")
 within = pd.read_csv(TAB / "proxy_within_dataset.csv")
-ft_models = [m for m in ("dav2-s-fixed", "dav2-s-blur", "dav2-s-eft", "dav2-s-eftb", "dav2-s-eftb3") if m in set(df.model)]
+ft_models = [m for m in ("dav2-s-fixed", "dav2-s-blur", "dav2-s-zhong", "dav2-s-eft", "dav2-s-eftb", "dav2-s-eftb3")
+             if m in set(df.model)]
 ft = A.summary(pi[pi.model.isin(ft_models)])
 blur = df[(df.kind == "blur") & df.model.isin(ft_models)].groupby(["model", "dataset"]).log_ratio_self.apply(
     lambda v: 100 * (np.exp(np.median(np.abs(v))) - 1))
@@ -104,6 +106,17 @@ stale = pi[pi.model.isin(["metric3d-s", "metric3d-s-staleK"])].pivot_table(index
                                                                           values="alpha")
 stale_diff = (stale["metric3d-s-staleK"] - stale["metric3d-s"]).median()
 n_img = int(t1.n.max())
+pooled = A.summary(pi, by=("model",)).set_index("model")
+manifest = pd.read_csv(TAB / "results_manifest.csv")
+params_file = ROOT / "outputs" / "results" / "params.json"
+params = pd.read_json(params_file, typ="series") if params_file.exists() else pd.Series(dtype=float)
+ctrl = A.load("*__ctrl.csv") if list(A.RESULTS.glob("*__ctrl.csv")) else pd.DataFrame()
+crossfit = pd.read_csv(TAB / "zoomfix_crossfit.csv") if (TAB / "zoomfix_crossfit.csv").exists() else pd.DataFrame()
+pp = pd.read_csv(TAB / "principal_point.csv")
+# parametrised tests count once per case, as pytest reports them
+collected = subprocess.run([sys.executable, "-m", "pytest", "--collect-only", "-q", str(ROOT / "tests")],
+                           capture_output=True, text=True, cwd=ROOT).stdout
+n_tests = sum(int(line.rsplit(": ", 1)[1]) for line in collected.splitlines() if line.startswith("tests/"))
 
 # ------------------------------------------------------------------ title
 P("Zoom In, Scale Out", "title")
@@ -113,7 +126,8 @@ story.append(Spacer(1, 10))
 P(f"<b>Ek line e:</b> Chhobi crop kore boro korle (digital zoom) focal length thik s gun bare, kintu kono jinish "
   f"kachhe ashe na. Amra dekhiyechi beshirbhag metric depth model zoom korle depth kom bole: shobcheye popular "
   f"Depth Anything V2 3x zoom e depth prai 1/3 bole (α = {f2(t1.loc['DA-V2-S', 'alpha'])}). Ete label lage na, "
-  f"theory ache, ar label chhara fine-tuning (EFT+B) diye eta prai puro thik kora jay.", "box")
+  f"theory ache, ar label chhara fine-tuning (EFT+B) diye α prai 0 te ana jay, kintu shadharon chhobite "
+  f"accuracy kichuta kome.", "box")
 
 # ------------------------------------------------------------------ 1
 P("1. Shomossha", "h1")
@@ -158,8 +172,10 @@ table([["Ki", "Details"],
                 f"chhobi, shob model e ekoi chhobi ({n_img} chhobi/model)"],
        ["Zoom", "1, 1.25, 1.5, 2, 3x majhkhane · off-centre: 4 kona, 50 chhobi (KITTI, NYU)"],
        ["Control", "blur control (zoom er moto jhapsa, field of view ek) · geometry check (pixel error 0) · "
-                   "unzoomed prediction ekoi pixel e (fair reference) · result verify tool (56 file, shob check pass)"],
-       ["Statistics", "95% bootstrap CI · paired Wilcoxon signed-rank + Holm correction · Spearman with bootstrap CI"],
+                   f"unzoomed prediction ekoi pixel e (fair reference) · optical vs digital zoom, bilinear, JPEG · result verify "
+                   f"tool ({len(manifest)} file, shob check pass)"],
+       ["Statistics", "95% bootstrap CI (paper e scene-level cluster bootstrap) · paired Wilcoxon signed-rank + Holm "
+                      "correction · Spearman with bootstrap CI"],
        ["Compute", "Kaggle T4 GPU; laptop e shudhu analysis"]],
       [3 * cm, 13.3 * cm])
 
@@ -222,34 +238,80 @@ for ds in A.DATASETS:
         rows.append([A.PRETTY_DS[ds] + (" (unseen)" if ds.startswith("diode") else ""), ps.LABEL[m], f2(r.alpha),
                      f2(r.absrel1, 3), f2(r.absrel3, 3), f"{blur.get((m, ds), np.nan):.1f}%"])
 table(rows, [3.4 * cm, 3.4 * cm, 1.6 * cm, 2.2 * cm, 2.2 * cm, 2.4 * cm])
-bullets(["EFT+B prai puro equivariant (KITTI ar NYU te α 0.05–0.07), ar blur shortcut prai chole geche.",
-         "Trade-off: shadharon (1x) chhobite accuracy kichuta kome, beshi kome DIODE e (training e dekhe nai). "
-         "λ = 3 (shokto anchor) diye eta kombe kina, sheta ekhon Kaggle e test hocche.",
-         "\"Anchor-only\" baseline asole frozen model (student = teacher, tai gradient 0); "
-         "er bodole blur-only baseline cholche."])
+def ftv(m, ds, col):
+    r = ft[(ft.model == m) & (ft.dataset == ds)]
+    return r.iloc[0][col] if len(r) else np.nan
+
+
+bullets([f"EFT+B prai puro equivariant (KITTI te α {f2(ftv('dav2-s-eftb', 'kitti', 'alpha'))}, NYU te "
+         f"{f2(ftv('dav2-s-eftb', 'nyu', 'alpha'))}), ar blur shortcut prai chole geche.",
+         f"Trade-off: KITTI te 1x AbsRel {f2(ftv('dav2-s-fixed', 'kitti', 'absrel1'), 3)} → "
+         f"{f2(ftv('dav2-s-eftb', 'kitti', 'absrel1'), 3)}, DIODE e aro beshi (training e dekhe nai); NYU te bhalo hoy.",
+         f"λ = 3 (3 gun shokto anchor) eta thik kore na: KITTI {f2(ftv('dav2-s-eftb3', 'kitti', 'absrel1'), 3)}, "
+         f"NYU kharap hoy ({f2(ftv('dav2-s-eftb3', 'nyu', 'absrel1'), 3)}). Trade-off ta weight tune kore shoray jay na.",
+         f"Blur-only (zoom term chhara) α beshi komay na (KITTI {f2(ftv('dav2-s-blur', 'kitti', 'alpha'))}): "
+         f"jhapsa chhobi dekhano camera shekhay na.",
+         f"Zhong et al.-style (frozen teacher er bodole student nijer prediction target) α komay "
+         f"({f2(ftv('dav2-s-zhong', 'kitti', 'alpha'))}), kintu blur shortcut fire ashe "
+         f"({blur.get(('dav2-s-zhong', 'kitti'), np.nan):.0f}%) ar 1x AbsRel shobcheye kharap "
+         f"({f2(ftv('dav2-s-zhong', 'kitti', 'absrel1'), 3)}). Frozen teacher, zoom term ar blur term, tinta-i lage.",
+         "\"Anchor-only\" baseline asole frozen model (student = teacher, tai gradient 0), tai blur-only control."])
 figure("fig5_finetuning", 16, "Figure 5. Upore: zoom e depth ratio (1 = ideal). Niche: AbsRel. Dhushor: frozen, holud: EFT, "
-       "lal: EFT+B. Note: alada zoom e AbsRel alada pixel e mapa; NYU te frozen model 1.25–1.5x e 1x er cheye bhalo "
+       "lal: EFT+B, golapi: EFT+B λ = 3, sobuj: blur-only. Note: alada zoom e AbsRel alada pixel e mapa; NYU te frozen model 1.25–1.5x e 1x er cheye bhalo "
        "AbsRel pay, karon 1x e depth beshi bole ar zoom shrink kakatale thik er kachhe ane. Tai AbsRel na, α dekhte hobe.")
 
 # ------------------------------------------------------------------ 8
-P("8. Prathomik: model boro hole ki thik hoy? (1 ta chhobi, final na)", "h1")
-smoke = ROOT / "outputs" / "kaggle" / "audit-csmoke" / "results"
-if smoke.exists():
-    rows = [["Model", "3x e depth ratio (thik = 1)", "3x e focal ratio (thik = 3)"]]
-    for f in sorted(smoke.glob("*__kitti.csv")):
-        d = pd.read_csv(f)
-        z = d[(d.kind == "zoom") & (d.zoom == 3.0)].iloc[0]
-        m = f.stem.split("__")[0]
-        fr = z.fx / z.fx_base if pd.notna(z.fx) else np.nan
-        rel = m in ("da3-l", "vggt")
-        label = ps.LABEL.get(m, m) + (" (thik K deya)" if m == "da3-metric-l" else "")
-        rows.append([label, "– (relative depth)" if rel else f2(np.exp(z.log_ratio_self)), f2(fr)])
-    table(rows, [5 * cm, 5.5 * cm, 5.5 * cm])
-    P("Shobcheye notun ar boro DA3-Nested (≈1.4B) 3x zoom e depth 0.38 bole ar focal prai bodlay na. Mane boro ar notun "
-      "model holei zoom bujhe na. Eta shudhu 1 ta KITTI chhobi; puro run (100 chhobi × 4 dataset) Kaggle e cholche.")
+P("8. Model boro ba notun hole ki thik hoy? (model ladder)", "h1")
+LADDER = ["dav2-s", "dav2-b", "dav2-l", "moge2-s", "moge2-b", "moge2-l", "unidepth2-s", "unidepth2-b", "unidepth2-l",
+          "unik3d-l", "depthpro", "da3-nested", "da3-l", "vggt", "da3-metric-l", "metric3d-s", "metric3d-l"]
+rows = [["Model", "Params", "α", "β", "chhobi"]]
+for m in [m for m in LADDER if m in pooled.index]:
+    r = pooled.loc[m]
+    rel = m in ("da3-l", "vggt")
+    rows.append([ps.LABEL.get(m, m) + (" (relative)" if rel else ""),
+                 f"{params[m] / 1e6:,.0f}M" if m in params else "–", "–" if rel else f2(r.alpha), f2(r.beta), int(r.n)])
+table(rows, [5 * cm, 2.4 * cm, 2.2 * cm, 2.2 * cm, 2.2 * cm])
+P("Protita model nijer sample e (main model 200, boro variant 100, DA3/VGGT/Metric3D-L 50 chhobi prati dataset). "
+  "Paper e ekoi chhobi te paired tulona-o ache (151 ta chhobi), result ek.")
+bullets([f"DA-V2 boro hole α ektu kome ({f2(pooled.loc['dav2-s'].alpha)} → {f2(pooled.loc['dav2-l'].alpha)}), "
+         "kintu L model-o 3x e ordheker kom depth bole.",
+         f"MoGe-2 er size bariye labh nai ({f2(pooled.loc['moge2-s'].alpha)}, {f2(pooled.loc['moge2-b'].alpha)}, "
+         f"{f2(pooled.loc['moge2-l'].alpha)}); UniDepthV2 L e bhalo ({f2(pooled.loc['unidepth2-l'].alpha)}); "
+         f"UniK3D-L shobcheye kache (α {f2(pooled.loc['unik3d-l'].alpha)}, β {f2(pooled.loc['unik3d-l'].beta)}).",
+         f"Shobcheye boro DA3-Nested ({params.get('da3-nested', np.nan) / 1e6:,.0f}M) α = "
+         f"{f2(pooled.loc['da3-nested'].alpha)}, chhoto camera model gulor cheye kharap, ZoeDepth er kachhe.",
+         f"Shothik camera dile DA3-Metric-L ({f2(pooled.loc['da3-metric-l'].alpha)}) ar Metric3D-L "
+         f"({f2(pooled.loc['metric3d-l'].alpha)}) depth thik rakhe.",
+         "<b>Mane:</b> model koto boro ta na, camera model e dhoke kina setai ashol."])
+
+# ------------------------------------------------------------------ 8b
+P("9. Control, principal point ar ZoomFix", "h1")
+if len(ctrl):
+    rows = [["Model", "Optical 2x", "Digital 2x", "Bilinear 2x", "JPEG"]]
+    for m in ["dav2-s", "depthpro", "moge2-s", "metric3d-s"]:
+        cells = [f2(float(np.exp(ctrl[(ctrl.model == m) & (ctrl.kind == k)].log_ratio_self.median())))
+                 for k in ("optical", "digital_lr", "bilinear", "jpeg")]
+        rows.append([ps.LABEL.get(m, m)] + cells)
+    table(rows, [4 * cm, 3 * cm, 3 * cm, 3 * cm, 3 * cm])
+    P("Depth ratio (1 = bodlay na). Real detail shoho optical zoom-o DA-V2-S er depth prai digital zoom er motoi komay. "
+      "Tai dosh detail haranor na, camera bojhar. Shudhu Depth Pro te detail kichuta matter kore.")
+q = pp[(pp.offset == "quadrant") & (pp.zoom == 2.0)].groupby("model")[["model_error", "centred_guess_error"]].median()
+P(f"<b>Principal point:</b> 2x quadrant crop e principal point image width er ordhek shore jay. MoGe-2 er error "
+  f"{f2(q.model_error.get('moge2-s', np.nan), 3)}, UniDepthV2 {f2(q.model_error.get('unidepth2-s', np.nan), 3)}, "
+  f"\"shob shomoy centre\" bolle {f2(q.centred_guess_error.get('moge2-s', np.nan), 3)}. Duita model-i shore jawa dhore na.")
+if len(crossfit):
+    rows = [["Model", "Dataset", "ê (label chhara)", "3x as is", "3x + ZoomFix", "Target (1x, ekoi pixel)"]]
+    for _, r in crossfit.iterrows():
+        rows.append([ps.LABEL.get(r.model, r.model), A.PRETTY_DS[r.dataset], f2(r.exponent), f2(r.absrel_zoomed, 3),
+                     f2(r.absrel_fixed, 3), f2(r.absrel_unzoomed_same_pixels, 3)])
+    table(rows, [3 * cm, 2.6 * cm, 2.8 * cm, 2.3 * cm, 2.6 * cm, 3 * cm])
+    P("<b>ZoomFix:</b> zoom factor jana thakle (phone EXIF) depth ke s^ê diye gun kori; ê label chhara ordhek chhobi "
+      "te mapa, baki ordheke score. DA-V2-S e KITTI, NYU, DIODE-in e zoom er error er 1/3 theke 2/3 shore jay. "
+      "DIODE-out e mean bare, karon kichu chhobite agei boro error (heavy tail), scale up korle ta aro bare. "
+      "Eta ekta stop-gap, camera-aware model er bikolpo na.")
 
 # ------------------------------------------------------------------ 9
-P("9. Shotti negative result", "h1")
+P("10. Shotti negative result", "h1")
 bullets(["Theory er \"soft\" prediction (scene e depth beshi chhoriye thakle α kombe) data te pawa jay nai "
          "(camera model e ρ ≈ 0).",
          "Label-free score shadharon accuracy predict kore na, shudhu zoom e accuracy.",
@@ -258,7 +320,7 @@ bullets(["Theory er \"soft\" prediction (scene e depth beshi chhoriye thakle α 
          "Stale-K result notun na (Kim & Lee 2026 er kaj ke support kore)."])
 
 # ------------------------------------------------------------------ 10
-P("10. Agerkar kaj ar amader notun ongsho", "h1")
+P("11. Agerkar kaj ar amader notun ongsho", "h1")
 table([["Paper", "Ki koreche", "Amader sathe tofat"],
        ["Zhong et al., ICCV 2023", "crop-resize equivariance, self-consistency loss", "camera/metric nai; amra α, β, theory, "
                                                                                      "notun model, shortcut + EFT+B"],
@@ -274,22 +336,20 @@ P("<b>Amader notun ongsho:</b> (1) metric depth er zoom audit with α ar β; (2)
   "fix); (7) model ladder (DA3, VGGT, UniK3D shoho).")
 
 # ------------------------------------------------------------------ 11
-P("11. Code", "h1")
+P("12. Code", "h1")
 bullets(["GitHub (private): github.com/rabeyanoor/zoom-equivariance",
-         "25 ta unit test (zoom geometry, audit toy model, analysis, ZoomFix), ruff lint, GitHub Actions CI",
+         f"{n_tests} ta unit test (zoom geometry, audit toy model, analysis, ZoomFix), ruff lint, GitHub Actions CI",
          "Vectorised analysis (loop er cheye 150 gun druto, test e hubohu ek)",
          "verify_results.py: protita CSV te shob zoom, duplicate nai, shob model ekoi chhobi",
          "Paper er shob number make_paper_numbers.py diye CSV theke, haate kichu lekha hoy na",
          "Protita Kaggle run er log logs/kaggle/ e"])
 
 # ------------------------------------------------------------------ 12
-P("12. Baki kaj", "h1")
+P("13. Baki kaj", "h1")
 table([["Kaj", "Obostha"],
-       ["audit-a2: final 7 model (same-pixel reference, principal point, ZoomFix column)", "Kaggle e cholche"],
-       ["Model ladder c1 (DA-V2-L, MoGe-2-B/L, UniDepthV2-B/L, UniK3D-L)", "Kaggle e cholche"],
-       ["Model ladder c2 (DA3 ×3, Metric3D-L, VGGT)", "GPU slot er opekkha"],
-       ["EFT ablation: blur-only, EFT+B λ = 3", "GPU slot er opekkha"],
-       ["Abstract, intro, results, conclusion asol number diye", "result ashle"],
+       ["Shob Kaggle run (main audit, ladder c1 + c2, controls, ZoomFix, EFT ablation)", "shesh"],
+       ["Paper (8 page + references) ar supplement, shob number script theke", "shesh, draft"],
+       ["Lekha ta abar pora, choto kora, figure polish", "baki"],
        ["(Optional) phone e 1x/2x/5x zoom chhobi, tape diye mapa dure", "tumi korbe"],
        ["Overleaf e PDF, supervisor review, CVPR submit (~7–16 Nov)", "shesh e"]],
       [11.3 * cm, 5 * cm])
