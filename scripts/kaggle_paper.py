@@ -19,7 +19,8 @@ data = ROOT / "kaggle" / "build" / "paper_data"
 if data.exists():
     shutil.rmtree(data)
 for p in sorted(paper.rglob("*")):
-    if p.is_file() and "kit" not in p.parts and p.suffix in {".tex", ".sty", ".bst", ".bib", ".pdf"} and p.name != "main.pdf":
+    built = {"main.pdf", "supp.pdf"}
+    if p.is_file() and "kit" not in p.parts and p.suffix in {".tex", ".sty", ".bst", ".bib", ".pdf"} and p.name not in built:
         dst = data / p.relative_to(paper)
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(p, dst)
@@ -37,9 +38,13 @@ def sh(c):
 sh("apt-get -qq update && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "
    "texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-science latexmk > /dev/null")
 rc = sh("cd /tmp/paper && latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex > build.log 2>&1")
+# the supplement reads main.aux for its cross-references, so it is built second
+rc_supp = sh("cd /tmp/paper && latexmk -pdf -interaction=nonstopmode -halt-on-error supp.tex > build_supp.log 2>&1")
+sh("cd /tmp/paper && grep -nE '^!|Warning.*undefined|Overfull' build_supp.log | head -40")
 sh("cd /tmp/paper && grep -nE '^!|Warning.*undefined|Overfull|Citation .* undefined|Reference .* undefined' build.log | head -80")
 sh("cp /tmp/paper/main.pdf /tmp/paper/build.log /tmp/paper/main.log /kaggle/working/ 2>/dev/null")
-print("latexmk exit code", rc, flush=True)
+sh("cp /tmp/paper/supp.pdf /tmp/paper/build_supp.log /tmp/paper/supp.log /kaggle/working/ 2>/dev/null")
+print("latexmk exit code", rc, "supplement", rc_supp, flush=True)
 '''
 out = ROOT / "kaggle" / "build" / "paper"
 out.mkdir(parents=True, exist_ok=True)

@@ -54,7 +54,7 @@ zoom-equivariance/
 ├── logs/
 │   ├── kaggle/             one text log per Kaggle kernel run (kept, never overwritten)
 │   └── local/              push queue and download logs
-├── paper/                  CVPR LaTeX: main.tex, sec/, gen/ (generated numbers), main.bib
+├── paper/                  CVPR LaTeX: main.tex, supp.tex (supplement), sec/, gen/ (generated numbers), main.bib
 └── third_party/            UniDepth, Metric3D repos (not in git)
 ```
 
@@ -92,6 +92,8 @@ cd notebooks
 .venv/bin/python scripts/make_paper_numbers.py     # -> paper/gen/
 ```
 
-The paper compiles on Overleaf: upload the `paper/` folder and set `main.tex` as the main file.
+The paper compiles on Overleaf: upload the `paper/` folder and set `main.tex` as the main file. Compile
+`main.tex` first, then `supp.tex`, which takes its cross-references from `main.aux`. Without LaTeX on the
+laptop, `scripts/kaggle_paper.py` builds both on a Kaggle CPU kernel.
 
 Credentials: the Kaggle CLI reads `~/.kaggle/kaggle.json`. No keys are stored in this repo or in the logs.

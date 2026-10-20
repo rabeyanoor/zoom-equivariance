@@ -51,4 +51,6 @@ an exact copy of the teacher and sees the same input, so its loss and gradient a
 and it stays the frozen model (we verified this). The \emph{blur-only} control instead keeps the
 anchor and the blur term and drops the zoom term, with the same images, steps, flips and
 optimiser. We also report EFT+B with a three times stronger anchor ($\lambda=3$) to probe the
-trade-off with accuracy on unzoomed images. All variants are scored with the same code.
+trade-off with accuracy on unzoomed images, and a variant in the style of Zhong \etal~\cite{zhong2023equivariance}
+whose target is the student's own stop-gradient prediction on the unzoomed image instead of the frozen
+teacher. All variants are scored with the same code.

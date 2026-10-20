@@ -1,0 +1,144 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage[review]{cvpr}
+\input{preamble}
+\usepackage{xr}
+\externaldocument{main}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,mathtools}
+
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
+
+\def\paperID{*****}
+\def\confName{CVPR}
+\def\confYear{2027}
+
+% same generated numbers as the main paper
+\input{gen/numbers}
+\newcommand{\maybefig}[1]{\IfFileExists{fig/#1.pdf}{\includegraphics[width=\linewidth]{fig/#1.pdf}}{\fbox{\small figure #1 pending}}}
+\renewcommand{\thesection}{\Alph{section}}
+% S-prefixed numbers, so they cannot be mistaken for the main paper's
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+
+\title{Zoom In, Scale Out: Metric Depth Models Do Not Respect a Digital Zoom\\[2pt]
+\large Supplementary Material}
+
+\author{Anonymous CVPR submission}
+
+\begin{document}
+\maketitle
+\sloppy
+
+Section and table numbers without a letter refer to the main paper. Every number here is generated
+from the same result files as the main paper (\texttt{scripts/}\allowbreak\texttt{make\_paper\_numbers.py}).
+
+\section{Qualitative example on NYUv2}
+
+\begin{figure}[h]
+  \centering
+  \maybefig{figS_teaser_nyu}
+  \caption{The layout of \cref{fig:teaser} on an NYUv2 test image: depth at $1\times$, $2\times$ and
+  $3\times$ digital zoom on one colour scale in metres. The number in each panel is the median depth over
+  the pixels inside the $3\times$ crop, the same physical points in every column.}
+  \label{fig:supp_nyu}
+\end{figure}
+
+\section{The depth exponent per dataset}
+
+\Cref{tab:alpha_ds} and \cref{fig:supp_alpha_ds} split the pooled $\alpha$ of \cref{tab:audit} by
+dataset. On every set each pixels-only model has a larger $\alpha$ than each camera-predicting model
+(ZoeDepth and MoGe-2-S tie on DIODE-indoor), and Metric3D v2 with the true camera stays near zero. The
+pixels-only models shrink most on KITTI and NYUv2, where DA-V2-S even exceeds pure apparent-size
+behaviour ($\alpha>1$).
+
+\input{gen/table_alpha_by_dataset}
+
+\begin{figure}[t]
+  \centering
+  \maybefig{figS_alpha_per_dataset}
+  \caption{Median $\alpha$ per model and dataset.}
+  \label{fig:supp_alpha_ds}
+\end{figure}
+
+\section{Off-centre crops and the principal point}
+
+Zooms about the four quadrant centres (50 images per set from KITTI and NYUv2) give $\alpha$ of the same
+order as centred zooms (\cref{fig:supp_offc}). For such crops the zoom law moves the principal point
+by $(c_x-x_0+\tfrac12)\,W/w-\tfrac12$, half the image width at $2\times$. \Cref{fig:supp_pp} compares the
+principal point predicted by MoGe-2 and UniDepthV2 with the law: both errors lie on the curve of a
+predictor that always answers the image centre (\MogeTwoSPpQuadTwo{} and \UnidepthTwoSPpQuadTwo{} of
+the width at $2\times$, against \MogeTwoSPpGuessTwo).
+
+\begin{figure}[t]
+  \centering
+  \maybefig{figS_offcentre_alpha}
+  \caption{Median $\alpha$ by crop position.}
+  \label{fig:supp_offc}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \maybefig{figS_principal_point}
+  \caption{Principal-point error (fraction of the image width) under quadrant zooms. Dotted: the error
+  of always answering the image centre.}
+  \label{fig:supp_pp}
+\end{figure}
+
+\section{ZoomFix per dataset}
+
+\Cref{tab:zoomfix} gives the cross-fitted ZoomFix of \cref{sec:results} per dataset. The label-free
+exponent tracks the dataset: it is above 1 for DA-V2-S on KITTI and NYUv2, where the pooled $\alpha$ hides
+a stronger shrink. The MoGe-2-S entry for DIODE-outdoor is dominated by a few zoomed images with very
+large errors (the zoomed AbsRel is \MogeTwoSFixDiodeOutZoomed{} against \MogeTwoSFixDiodeOutTarget{}
+unzoomed), which a global factor cannot repair.
+
+\input{gen/table_zoomfix}
+
+\section{Fine-tuning details}
+
+\paragraph{Variants.} All variants start from the same DA-V2-S checkpoint and differ only in the loss:
+EFT (anchor + zoom term), EFT+B (+ blur term), EFT+B with $\lambda=3$, blur-only (anchor + blur term),
+and the Zhong \etal-style target (anchor + zoom term, with the student's own stop-gradient prediction on
+the unzoomed image as target). Each is trained once per domain (KITTI raw outdoor, NYUv2 train indoor)
+with the settings of \cref{sec:eft}.
+
+\paragraph{Training curves.} \Cref{fig:supp_train} shows the zoom and anchor terms over training
+(running mean over 100 steps). The anchor term is exactly zero at the first step, since the student is a
+copy of the teacher; it jumps as soon as the zoom term moves the weights and then falls through training
+(EFT outdoor: mean 0.10 over the first 100 steps, 0.04 over the last 100), as the model learns to
+satisfy both terms.
+
+\begin{figure}[t]
+  \centering
+  \maybefig{figS_eft_training}
+  \caption{Zoom loss (solid) and anchor loss (dashed) of the fine-tuning variants, outdoor and indoor
+  heads. Blur-only has no zoom term.}
+  \label{fig:supp_train}
+\end{figure}
+
+\section{Models and compute}
+
+\paragraph{Checkpoints.} Hugging Face ids unless noted.
+{\footnotesize\raggedright
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item DA-V2: \texttt{depth-anything/Depth-Anything-V2-} \texttt{Metric-\{Indoor,Outdoor\}-\{Small,Base,Large\}-hf}
+\item ZoeDepth: \texttt{Intel/zoedepth-nyu-kitti}
+\item Depth Pro: \texttt{apple/DepthPro-hf}
+\item MoGe-2: \texttt{Ruicheng/moge-2-\{vits,vitb,vitl\}-normal}
+\item UniDepthV2: \texttt{lpiccinelli/unidepth-v2-} \texttt{\{vits14,vitb14,vitl14\}}
+\item UniK3D: \texttt{lpiccinelli/unik3d-vitl}
+\item DA3: \texttt{depth-anything/DA3NESTED-GIANT-} \texttt{LARGE-1.1}, \texttt{DA3METRIC-LARGE}, \texttt{DA3-LARGE-1.1}
+\item VGGT: \texttt{facebook/VGGT-1B}
+\item Metric3D v2: \texttt{metric3d\_vit\_\{small,large\}} (official torch hub entry)
+\end{itemize}}
+
+\paragraph{Compute.} All audits and fine-tuning runs ran as Kaggle notebooks with one GPU each; the
+analysis runs on a laptop CPU. The code release contains the kernel builders, the run logs and every
+result CSV, and \texttt{scripts/verify\_results.py} checks that all models saw the same images and all
+zoom rows are complete.
+
+\end{document}

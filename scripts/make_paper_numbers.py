@@ -230,6 +230,32 @@ for m in MAIN:
         z = z[(z.kind == "zoom") & (z.zoom == 3.0)]
         put(key(m, "fix", ds, "targetMedian"), z.abs_rel_base.median() if len(z) else np.nan, "{:.3f}")
 
+# per-dataset ZoomFix table (supplement)
+rows = []
+for m in [x for x in MAIN if len(fix) and x in set(fix.model)]:
+    cells = []
+    for ds in ["kitti", "nyu", "diode-in", "diode-out"]:
+        r = fix[(fix.model == m) & (fix.dataset == ds)]
+        if len(r):
+            r = r.iloc[0]
+            cells.append(f"{fmt(r.exponent)} & {fmt(r.absrel_zoomed, 3)} & {fmt(r.absrel_fixed, 3)} & "
+                         f"{fmt(r.absrel_unzoomed_same_pixels, 3)}")
+        else:
+            cells.append("-- & -- & -- & --")
+    rows.append(f"{A.PRETTY[m]} & " + " & ".join(cells) + r" \\")
+write_table("table_zoomfix", [
+    r"\begin{table*}[t]\centering\scriptsize",
+    r"\caption{ZoomFix per dataset at $3\times$, cross-fitted: the exponent $\hat e$ is measured without labels on "
+    r"half of the images and the correction scored on the other half. AbsRel of the zoomed prediction as is, after "
+    r"multiplying by $s^{\hat e}$, and of the unzoomed prediction on the same pixels (the target).}\label{tab:zoomfix}",
+    r"\setlength{\tabcolsep}{3pt}",
+    r"\begin{tabular}{l cccc cccc cccc cccc}\toprule",
+    r"& \multicolumn{4}{c}{KITTI} & \multicolumn{4}{c}{NYUv2} & \multicolumn{4}{c}{DIODE-in} & "
+    r"\multicolumn{4}{c}{DIODE-out} \\",
+    r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}\cmidrule(lr){10-13}\cmidrule(lr){14-17}",
+    r"Model" + r" & $\hat e$ & as is & fixed & target" * 4 + r" \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}\end{table*}"])
+
 # ------------------------------------------------------------------ principal point under off-centre zooms
 off = A.load("*__offc.csv") if list(A.RESULTS.glob("*__offc.csv")) else pd.DataFrame()
 ppt = A.principal_point(off) if len(off) else pd.DataFrame()

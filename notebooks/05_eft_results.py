@@ -57,7 +57,8 @@ def train_log(tag, dom):
 
 fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.4), sharey=True)
 for ax, dom in zip(axes, ("outdoor", "indoor")):
-    for tag, m in (("eft", "dav2-s-eft"), ("eftb", "dav2-s-eftb"), ("eftb3", "dav2-s-eftb3"), ("blur", "dav2-s-blur")):
+    for tag, m in (("eft", "dav2-s-eft"), ("eftb", "dav2-s-eftb"), ("eftb3", "dav2-s-eftb3"), ("zhong", "dav2-s-zhong"),
+                   ("blur", "dav2-s-blur")):
         log = train_log(tag, dom)
         if log is None:
             continue
