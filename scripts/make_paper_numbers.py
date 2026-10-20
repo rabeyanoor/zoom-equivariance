@@ -219,6 +219,16 @@ for m in MAIN:
     put(key(m, "fixAbsrel"), g.absrel_fixed.mean() if len(g) else np.nan, "{:.3f}")
     put(key(m, "fixZoomed"), g.absrel_zoomed.mean() if len(g) else np.nan, "{:.3f}")
     put(key(m, "fixTarget"), g.absrel_unzoomed_same_pixels.mean() if len(g) else np.nan, "{:.3f}")
+    # per dataset: a pooled mean hides that the fix can hurt where the zoom changes depth unevenly
+    for ds in ["kitti", "nyu", "diode-in", "diode-out"]:
+        r = g[g.dataset == ds] if len(g) else pd.DataFrame()
+        for col, name in [("absrel_zoomed", "Zoomed"), ("absrel_fixed", "Absrel"), ("absrel_unzoomed_same_pixels", "Target")]:
+            put(key(m, "fix", ds, name), r[col].iloc[0] if len(r) else np.nan, "{:.3f}")
+        # the same-pixel unzoomed error as a median, to show where a heavy tail drives the mean
+        f = A.RESULTS / f"{m}__{ds}__fix.csv"
+        z = pd.read_csv(f) if f.exists() else pd.DataFrame(columns=["kind", "zoom", "abs_rel_base"])
+        z = z[(z.kind == "zoom") & (z.zoom == 3.0)]
+        put(key(m, "fix", ds, "targetMedian"), z.abs_rel_base.median() if len(z) else np.nan, "{:.3f}")
 
 # ------------------------------------------------------------------ principal point under off-centre zooms
 off = A.load("*__offc.csv") if list(A.RESULTS.glob("*__offc.csv")) else pd.DataFrame()

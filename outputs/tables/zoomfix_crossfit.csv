@@ -1,0 +1,13 @@
+model,dataset,alpha_fit,exponent,absrel_zoomed,absrel_fixed,absrel_unzoomed_same_pixels
+dav2-s,diode-in,0.742,0.75,0.5983,0.3648,0.2628
+dav2-s,diode-out,0.6647,0.6875,0.5575,0.6608,0.6051
+dav2-s,kitti,1.2304,1.25,0.7578,0.3836,0.1489
+dav2-s,nyu,1.1685,1.125,0.6749,0.4946,0.2046
+depthpro,diode-in,0.1848,0.1875,0.3994,0.4211,0.2009
+depthpro,diode-out,-0.0191,0.125,0.6355,0.6376,0.6647
+depthpro,kitti,0.3232,0.3125,0.2581,0.2775,0.1603
+depthpro,nyu,0.4292,0.4375,0.4492,0.2232,0.1214
+moge2-s,diode-in,0.4375,0.4375,0.493,0.3639,0.2568
+moge2-s,diode-out,0.3488,0.375,3.0368,4.3962,0.379
+moge2-s,kitti,0.4287,0.4375,0.5363,0.2617,0.2553
+moge2-s,nyu,0.1626,0.125,0.2716,0.2267,0.1292

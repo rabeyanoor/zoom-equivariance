@@ -64,7 +64,10 @@ moves depth by only \DavTwoSBlur\% for DA-V2-S and at most \UnidepthTwoSBlur\% f
 \emph{optical} $2\times$ zoom with real detail changes the depth of DA-V2-S by a factor of
 \DavTwoSOptical, the same zoom done digitally by \DavTwoSDigitalLr, while bilinear resampling and JPEG
 compression change it by \DavTwoSBilinear{} and \DavTwoSJpeg.
-% TODO(results): one sentence on optical vs digital once audit-d is in.
+Real detail does not rescue the model: the optical zoom shrinks depth almost as much as the digital one.
+Depth Pro is the only model where the lost detail matters (\DepthproOptical{} optical, \DepthproDigitalLr{}
+digital), and Metric3D v2 with the true $K'$ stays near 1 under every control (\MetricThreedSOptical,
+\MetricThreedSDigitalLr, \MetricThreedSJpeg).
 
 \input{gen/table_controls}
 
@@ -104,9 +107,13 @@ degrade most under zoom, not which model is more accurate.
 \paragraph{A training-free fix when the zoom is known.}
 Phones record a digital zoom ratio, and apps know their own crops. Since $\alpha$ needs no labels, a
 user can measure it on their own photos and multiply the depth of zoomed images by $s^{\hat\alpha}$.
-We evaluate this cross-fitted: $\hat\alpha$ is measured on half of a dataset's images and the
-correction scored on the other half. For DA-V2-S at $3\times$ the AbsRel goes from \DavTwoSFixZoomed{}
-to \DavTwoSFixAbsrel{}, against \DavTwoSFixTarget{} for the unzoomed prediction on the same pixels.
-A single global factor cannot undo everything: the zoomed prediction is also distorted in shape
-(\cref{sec:audit}), which the remaining gap reflects.
-% TODO(results): check once audit-a2 (fix columns) is in.
+We evaluate this cross-fitted: $\hat\alpha$ is measured without labels on half of a dataset's images and
+the correction scored on the other half. For DA-V2-S at $3\times$ it removes between a third and two thirds of
+the zoom error on KITTI (AbsRel \DavTwoSFixKittiZoomed{} to \DavTwoSFixKittiAbsrel, against
+\DavTwoSFixKittiTarget{} for the unzoomed prediction on the same pixels), NYUv2 (\DavTwoSFixNyuZoomed{} to
+\DavTwoSFixNyuAbsrel) and DIODE-indoor (\DavTwoSFixDiodeInZoomed{} to \DavTwoSFixDiodeInAbsrel). On
+DIODE-outdoor the mean error rises (\DavTwoSFixDiodeOutZoomed{} to \DavTwoSFixDiodeOutAbsrel). The cause is
+a heavy tail: even unzoomed, the mean AbsRel there (\DavTwoSFixDiodeOutTarget) is far above the median
+(\DavTwoSFixDiodeOutTargetMedian), and scaling depth up amplifies the images that are already
+over-estimated, while the typical image improves. Depth Pro, whose $\alpha$ is already small, barely changes. A single global factor cannot undo a zoom that also distorts shape (\cref{sec:audit});
+it is a stop-gap for deployed pixels-only models, not a replacement for a camera-aware one.
