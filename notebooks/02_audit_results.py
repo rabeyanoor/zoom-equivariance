@@ -94,19 +94,43 @@ ps.save(fig, "fig2_depth_and_focal_vs_zoom")
 # (lateral sizes preserved), and a model that ignores the camera at (0, 1).
 
 # %%
-LABEL_OFFSET = {"unidepth2-s": (-12, -11), "moge2-s": (4, 4), "depthpro": (4, -9)}  # avoid overlaps
+# One path per family, small to large (marker size grows with the model), one label per family.
+FAMILIES = {"MoGe-2": ["moge2-s", "moge2-b", "moge2-l"], "UniDepthV2": ["unidepth2-s", "unidepth2-b", "unidepth2-l"]}
+SINGLE = ["depthpro", "unik3d-l", "da3-nested"]
+LABEL_AT = {"MoGe-2": ("moge2-b", (-4, 7), "right"), "UniDepthV2": ("unidepth2-s", (-5, 4), "right"),
+            "depthpro": ("depthpro", (6, -2), "left"), "unik3d-l": ("unik3d-l", (6, -3), "left"),
+            "da3-nested": ("da3-nested", (6, -2), "left")}
+SIZE = {"s": 22, "b": 38, "l": 58}
 fig, ax = plt.subplots(figsize=(3.6, 3.2))
 b = np.linspace(0, 1.05, 10)
 ax.plot(b, 1 - b, color="0.5", lw=1, ls="--")
-ax.text(0.08, 0.98, r"$\alpha+\beta=1$" + "\n(apparent size)", fontsize=7, color="0.4", va="top")
+ax.text(0.04, 1.02, r"$\alpha+\beta=1$ (apparent size)", fontsize=7, color="0.4", va="top")
 ax.scatter([1], [0], marker="*", s=120, color="k", zorder=5)
 ax.annotate("ideal", (1, 0), textcoords="offset points", xytext=(-22, 6), fontsize=7)
-for m in [m for m in MAIN + LADDER if m in pooled.index]:
-    r = pooled.loc[m]
-    if np.isfinite(r.beta) and np.isfinite(r.alpha):
-        ax.scatter(r.beta, r.alpha, color=ps.colour(m), s=36, edgecolor="k", lw=0.4, zorder=4)
-        ax.annotate(ps.LABEL.get(m, m), (r.beta, r.alpha), textcoords="offset points",
-                    xytext=LABEL_OFFSET.get(m, (4, 3)), fontsize=6.5)
+
+
+def point(m):
+    r = pooled.loc[m] if m in pooled.index else None
+    return (r.beta, r.alpha) if r is not None and np.isfinite(r.beta) and np.isfinite(r.alpha) else None
+
+
+for fam, members in FAMILIES.items():
+    pts = [(m, point(m)) for m in members if point(m) is not None]
+    for (_, p0), (m1, p1) in zip(pts, pts[1:]):
+        ax.annotate("", p1, p0, arrowprops=dict(arrowstyle="-|>", color=ps.colour(m1), lw=1, shrinkA=4, shrinkB=5,
+                                                mutation_scale=7), zorder=3)
+    for m, (x, y) in pts:
+        ax.scatter(x, y, color=ps.colour(m), s=SIZE[m.split("-")[-1]], edgecolor="k", lw=0.4, zorder=4)
+for m in SINGLE:
+    if point(m) is not None:
+        ax.scatter(*point(m), color=ps.colour(m), s=58 if m != "depthpro" else 38, edgecolor="k", lw=0.4, zorder=4)
+for name, (anchor, off, ha) in LABEL_AT.items():
+    if point(anchor) is not None:
+        colour = ps.colour(FAMILIES[name][-1]) if name in FAMILIES else ps.colour(anchor)  # darkest shade reads best
+        ax.annotate(ps.LABEL.get(name, name), point(anchor), textcoords="offset points", xytext=off, fontsize=6.5,
+                    ha=ha, color=colour)
+ax.text(0.98, 0.98, "marker size: S < B < L\narrow: small to large", transform=ax.transAxes, fontsize=6, color="0.4",
+        ha="right", va="top")
 ax.set(xlabel=r"$\beta$ (focal exponent)", ylabel=r"$\alpha$ (depth exponent)", xlim=(-0.05, 1.1), ylim=(-0.15, 1.1))
 fig.tight_layout()
 ps.save(fig, "fig3_alpha_beta_plane")

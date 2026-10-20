@@ -53,7 +53,8 @@ MoGe-2. The ambiguity explains the direction of the failure, not which images es
   \centering
   \IfFileExists{fig/fig3_alpha_beta_plane.pdf}{\includegraphics[width=0.78\linewidth]{fig/fig3_alpha_beta_plane.pdf}}{\fbox{pending}}
   \caption{Camera-predicting models in the $(\beta,\alpha)$ plane. Dashed: $\alpha+\beta=1$, where
-  lateral sizes are preserved (apparent-size reasoning). The ideal model is at $(1,0)$.}
+  lateral sizes are preserved (apparent-size reasoning). The ideal model is at $(1,0)$. Arrows join the
+  sizes of one family, small to large; each model on its own sample (\cref{tab:ladder}).}
   \label{fig:abplane}
 \end{figure}
 
@@ -79,11 +80,22 @@ size helps the pixels-only family but does not remove the effect: $\alpha$ falls
 than half the depth at $3\times$. MoGe-2 is flat across sizes (\MogeTwoSAlphaShared, \MogeTwoBAlphaShared,
 \MogeTwoLAlphaShared), with a focal exponent stuck near \MogeTwoLBetaShared. UniDepthV2 improves with size
 (\UnidepthTwoSAlphaShared{} to \UnidepthTwoLAlphaShared, $\beta$ from \UnidepthTwoSBetaShared{} to
-\UnidepthTwoLBetaShared), and UniK3D-L, the newest camera-predicting model, comes closest
+\UnidepthTwoLBetaShared), and UniK3D-L comes closest
 ($\alpha=\UnikThreedLAlphaShared$, $\beta=\UnikThreedLBetaShared$). None reaches the level of a model that
 is given the correct camera (Metric3D v2, $\alpha=\MetricThreedSAlphaShared$). Scale and newer camera heads
 narrow the gap; they do not close it.
-% TODO(results): add DA3 and VGGT once audit-c2 is in.
+
+Size alone is not the answer. On the \nSmallShared{} images it shares with the main models, the largest
+model in the study, DA3-Nested (\DaThreeNestedParams M parameters), shrinks depth with
+$\alpha=\DaThreeNestedAlphaSmallShared$, more than Depth Pro, MoGe-2-S and UniDepthV2-S
+(\DepthproAlphaSmallShared, \MogeTwoSAlphaSmallShared, \UnidepthTwoSAlphaSmallShared) and close to the
+pixels-only ZoeDepth (\ZoedepthAlphaSmallShared); its focal follows the zoom only partly
+($\beta=\DaThreeNestedBetaSmallShared$) and, on its own sample, $\alpha+\beta=\DaThreeNestedAlphaPlusBeta$, again the
+apparent-size line. Given the true camera, both DA3-Metric-L and Metric3D v2-L keep depth
+($\alpha=\DaThreeMetricLAlphaSmallShared$ and \MetricThreedLAlphaSmallShared). Of the two relative-depth
+models, VGGT-1B tracks the focal change well ($\beta=\VggtBetaSmallShared$) and DA3-L does not
+(\DaThreeLBetaSmallShared). What decides the behaviour is whether the camera enters the model, not how
+large the model is.
 
 \input{gen/table_ladder}
 

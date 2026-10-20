@@ -114,33 +114,54 @@ write_table("table1", [
     *rows, r"\bottomrule\end{tabular}\end{table*}"])
 
 # ------------------------------------------------------------------ Table 3 (model ladder)
-# the ladder runs use a smaller sample, so the fair comparison is on the images every model saw
+# the ladder runs use a smaller sample, so the fair comparison is on the images every model saw;
+# the 50-image runs (DA3, VGGT, Metric3D-L) would shrink that set to a few dozen images, so the paired
+# column covers the models with at least 100 images per set
 ladder_models = [x for x in MAIN + LADDER if x in pooled.index and not x.endswith("staleK")]
-seen = pi[pi.model.isin(ladder_models)].groupby(["dataset", "name"]).model.nunique()
-shared = seen[seen == len(ladder_models)].index
-sh = pi.set_index(["dataset", "name"])
+n_img = pi.groupby("model").name.size()
+paired = [m for m in ladder_models if n_img.get(m, 0) >= 400]
+seen = pi[pi.model.isin(paired)].groupby(["dataset", "name"]).model.nunique()
+shared = seen[seen == len(paired)].index
+sh = pi[pi.model.isin(paired)].set_index(["dataset", "name"])
 sh = sh[sh.index.isin(shared)].groupby("model")[["alpha", "beta"]].median()
 put("nLadderShared", len(shared), "{:d}")
 for m in ladder_models:
     put(key(m, "alphaShared"), sh.alpha.get(m, np.nan))
     put(key(m, "betaShared"), sh.beta.get(m, np.nan))
+# the 50-image runs, paired with the main models on the images they share
+small = [m for m in ladder_models if m not in paired]
+main_here = [m for m in MAIN if m in ladder_models]
+seen = pi[pi.model.isin(small + main_here)].groupby(["dataset", "name"]).model.nunique()
+shared_small = seen[seen == len(small + main_here)].index
+sm = pi[pi.model.isin(small + main_here)].set_index(["dataset", "name"])
+sm = sm[sm.index.isin(shared_small)].groupby("model")[["alpha", "beta"]].median()
+put("nSmallShared", len(shared_small), "{:d}")
+for m in small + main_here:
+    put(key(m, "alphaSmallShared"), sm.alpha.get(m, np.nan))
+    put(key(m, "betaSmallShared"), sm.beta.get(m, np.nan))
+params_file = ROOT / "outputs" / "results" / "params.json"
+params = pd.read_json(params_file, typ="series") if params_file.exists() else pd.Series(dtype=float)
+for m in ladder_models:
+    put(key(m, "params"), params.get(m, np.nan) / 1e6, "{:,.0f}")
 rows = []
 for m in ladder_models:
     r = pooled.loc[m]
     group = A.GROUP.get(m, "").replace("pixels only", "pixels").replace("predicts camera", "pred. K") \
         .replace("takes camera (true K)", "takes K")
-    rows.append(f"{A.PRETTY.get(m, m)} & {group} & {fmt(r.alpha)} & {fmt(r.beta)} & {int(r.n)} & "
+    size = f"{params[m] / 1e6:,.0f}M" if m in params else "--"
+    rows.append(f"{A.PRETTY.get(m, m)} & {group} & {size} & {fmt(r.alpha)} & {fmt(r.beta)} & "
                 f"{fmt(sh.alpha.get(m, np.nan))} & {fmt(sh.beta.get(m, np.nan))} \\\\")
 write_table("table_ladder", [
     r"\begin{table}[t]\centering\small",
-    r"\caption{Model ladder: larger variants and newer families. Left: each model on its own sample. Right: all "
-    r"models on the \nLadderShared{} images that every one of them saw (paired). DA3-L and VGGT normalise depth per "
-    r"scene, so only $\beta$ is defined for them. pred.\ K: predicts the camera; takes K: given the true "
-    r"camera.}\label{tab:ladder}",
+    r"\caption{Model ladder: larger variants and newer families. Left: each model on its own sample (200 images "
+    r"per set for the main models, 100 for the larger variants and UniK3D, 50 for DA3, VGGT and Metric3D v2-L). "
+    r"Right: the models with at least 100 images per set on the \nLadderShared{} images that all of them saw "
+    r"(paired). DA3-L and VGGT normalise depth per scene, so only $\beta$ is defined for them. pred.\ K: predicts "
+    r"the camera; takes K: given the true camera.}\label{tab:ladder}",
     r"\setlength{\tabcolsep}{3pt}",
-    r"\begin{tabular}{llccccc}\toprule",
-    r"& & \multicolumn{3}{c}{own sample} & \multicolumn{2}{c}{shared} \\ \cmidrule(lr){3-5}\cmidrule(lr){6-7}",
-    r"Model & Group & $\alpha$ & $\beta$ & images & $\alpha$ & $\beta$ \\ \midrule",
+    r"\begin{tabular}{llrcccc}\toprule",
+    r"& & & \multicolumn{2}{c}{own sample} & \multicolumn{2}{c}{shared} \\ \cmidrule(lr){4-5}\cmidrule(lr){6-7}",
+    r"Model & Group & Params & $\alpha$ & $\beta$ & $\alpha$ & $\beta$ \\ \midrule",
     *rows, r"\bottomrule\end{tabular}\end{table}"])
 
 # ------------------------------------------------------------------ per-dataset alpha
@@ -154,9 +175,10 @@ for m in [x for x in MAIN if x in present]:
 write_table("table_alpha_by_dataset", [
     r"\begin{table}[t]\centering\small",
     r"\caption{Depth exponent $\alpha$ per dataset (median over images).}\label{tab:alpha_ds}",
-    r"\begin{tabular}{lcccc}\toprule",
+    r"\setlength{\tabcolsep}{3pt}",
+    r"\resizebox{\linewidth}{!}{\begin{tabular}{lcccc}\toprule",
     "Model & " + " & ".join(A.PRETTY_DS[d] for d in A.DATASETS) + r" \\ \midrule",
-    *lines, r"\bottomrule\end{tabular}\end{table}"])
+    *lines, r"\bottomrule\end{tabular}}\end{table}"])
 
 # ------------------------------------------------------------------ zoom-squash: alpha vs depth spread
 stats_f = A.RESULTS / "scene_stats.csv"
