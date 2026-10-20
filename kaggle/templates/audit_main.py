@@ -6,7 +6,8 @@ import sys
 import time
 from pathlib import Path
 
-WORK = Path("/kaggle/working")
+# the same file also runs as a Colab notebook (scripts/colab_build.py)
+WORK = Path("/kaggle/working") if Path("/kaggle").exists() else Path("/content/out")
 PROJ = Path("/kaggle/temp/ze") if Path("/kaggle/temp").exists() else Path("/tmp/ze")
 RAW = PROJ / "data" / "raw"
 
