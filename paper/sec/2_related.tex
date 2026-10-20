@@ -2,66 +2,59 @@
 \label{sec:related}
 
 \paragraph{Metric depth and the camera.}
-Single-image metric depth has to resolve the focal length, since the same pixels are
-consistent with a wide-angle view of a near scene and a telephoto view of a far one.
-Early work fed the focal length to the network~\cite{he2018focal} or made convolutions
-camera-aware~\cite{facil2019camconvs}; FS-Depth~\cite{wei2023fsdepth} additionally augments the
-focal lengths of training sets by cropping, with depth labels. Metric3D~\cite{yin2023metric3d,hu2024metric3dv2}
-maps every training image to a canonical camera and needs $K$ at test time;
-Depth Any Camera~\cite{guo2025dac} and ZeroDepth~\cite{guizilini2023zerodepth} likewise
-condition on the camera. A second family predicts the camera from pixels:
+To predict metric depth from one image, a model has to deal with the focal length. Early work gave the
+focal length to the network~\cite{he2018focal} or made the convolutions camera-aware~\cite{facil2019camconvs}.
+FS-Depth~\cite{wei2023fsdepth} also augments focal lengths by cropping, with depth labels.
+Today's models fall into three groups. Some \emph{take the camera}: Metric3D~\cite{yin2023metric3d,hu2024metric3dv2}
+maps every image to a canonical camera and needs $K$ at test time, and Depth Any Camera~\cite{guo2025dac}
+and ZeroDepth~\cite{guizilini2023zerodepth} are also conditioned on it. Some \emph{predict the camera}:
 Depth Pro~\cite{bochkovskii2025depthpro} estimates the field of view,
-UniDepth~\cite{piccinelli2024unidepth,piccinelli2025unidepthv2} predicts per-pixel rays, and
-MoGe-2~\cite{wang2025moge2} recovers a metric point map together with intrinsics.
-A third family regresses metric depth without any camera input or output, \eg the metric
-heads of Depth Anything~\cite{yang2024da,yang2024dav2} and ZoeDepth~\cite{bhat2023zoedepth}.
-Large training mixtures with many cameras~\cite{ma2026metricanything} are meant to make
-camera inference robust. We provide a test of whether it is, and our three groups follow
-this taxonomy.
+UniDepth~\cite{piccinelli2024unidepth,piccinelli2025unidepthv2} predicts a ray per pixel, and
+MoGe-2~\cite{wang2025moge2} returns a metric point map with intrinsics. The rest use \emph{pixels only},
+such as the metric heads of Depth Anything~\cite{yang2024da,yang2024dav2} and ZoeDepth~\cite{bhat2023zoedepth}.
+Training on many cameras~\cite{ma2026metricanything} is meant to make camera inference robust. Our audit
+tests whether it is, and our three model groups follow these three families.
 
 \paragraph{Depth cues.}
-DepthCues~\cite{danier2025depthcues} probes which monocular cues, among them relative and familiar
-size, large vision models pick up. Our exponent $\alpha$ measures how much a metric depth model leans
-on apparent size in particular, and the zoom--squash ambiguity explains why that cue cannot see a zoom.
+DepthCues~\cite{danier2025depthcues} probes which monocular cues large vision models pick up, among them
+relative and familiar size. Our exponent $\alpha$ measures one cue in particular, apparent size, and our
+cue intervention (\cref{sec:cues}) changes it directly while keeping everything else fixed.
 
 \paragraph{Single-image calibration.}
-Perspective Fields~\cite{jin2023perspectivefields} and related methods predict the camera from
-local perspective cues, which is the cue our zoom--squash analysis says a model must use.
-We do not propose a calibration method; we measure whether depth models that implicitly or
-explicitly calibrate respond to the one camera change whose effect is known exactly.
+Perspective Fields~\cite{jin2023perspectivefields} and related methods predict the camera from local
+perspective cues, which is the kind of cue the zoom--squash ambiguity says a model must use. InFlux~\cite{liang2025influx}
+is a benchmark for video cameras whose intrinsics change over time, for example by zooming, and shows that
+most calibration methods struggle with it. We do not propose a calibration method. We ask whether depth
+models respond correctly to the one camera change whose effect is known exactly, without any ground truth.
 
 \paragraph{Crops and equivariance.}
-Zhong \etal~\cite{zhong2023equivariance} are the closest to us. They show that supervised depth
-and normal predictors are not equivariant to crop-and-resize, \ie the prediction on a crop is not
-the crop of the prediction, and they restore it with an averaging step and a self-consistency loss,
-which also improves accuracy on NYUv2 when fine-tuning on unlabeled images. Their analysis
-treats the output as a map that should simply be cropped; it does not involve the camera. For
-\emph{metric} models the same requirement has a physical reading: a crop is a zoom, the focal length
-must scale by $s$, and a model that reasons from apparent size violates it in a specific,
-predictable way. We measure this with exponents for depth and focal, explain it with the
-zoom--squash ambiguity, and test camera-predicting models that did not exist in 2023. Our
-fine-tuning (\cref{sec:eft}) is a self-consistency objective in the spirit of
-\cite{zhong2023equivariance}, adapted to metric depth with a frozen teacher; we do not claim the
-loss as new, and we compare it with a fine-tuning baseline that has no zoom term.
-Kim and Lee~\cite{kim2026mismatch} study the deployment gap of camera-conditioned metric models
-when crop, resize or padding changes the intrinsics but the pipeline passes the stale ones,
-and propose a mismatch-aware camera module. Our stale-$K$ experiment with Metric3D v2 is an
-instance of this setting; we include it to place camera-conditioned models next to the other two
-groups on one scale, not as a new finding.
-PlaneDepth~\cite{wang2023planedepth} observes that resize-and-crop augmentation breaks the plane
-geometry assumed by self-supervised depth and corrects the planes for it.
-KPE~\cite{prakash2024kpe} shows that crops introduce a perspective ambiguity in
-object-level 3D inference and adds the crop location as an input. Multi-crop human mesh
-recovery~\cite{nie2024multicrop} enforces camera consistency between crops of one person.
-NERO~\cite{zhao2023nero} visualises non-equivariance of models along transformation orbits.
-Closest in spirit, recent work exposes the horizontal-orientation bias of depth models and
-makes them robust to camera roll~\cite{tang2026roll}. Zoom differs from roll in one important
-way: a roll leaves the camera's intrinsics unchanged, whereas a zoom changes them, so the correct
-output is not ``the same map, rotated'' but a specific change of the metric prediction.
+Zhong \etal~\cite{zhong2023equivariance} are the closest to us. They show that supervised depth and normal
+predictors are not equivariant to crop-and-resize: the prediction on a crop is not the crop of the
+prediction. They fix it with test-time averaging and a self-consistency loss on unlabeled images. Their
+view treats the output as a map that should simply be cropped, and the camera does not appear. For
+\emph{metric} models the same requirement has a physical meaning. A crop is a zoom, the focal length must
+grow by $s$, and a model that reads apparent size breaks the rule in a specific and predictable way. We
+measure this with two exponents, explain it with the zoom--squash ambiguity, split it into its causes, and
+test camera-predicting models that did not exist in 2023. Our fine-tuning (\cref{sec:eft}) follows the
+self-consistency idea of~\cite{zhong2023equivariance} with a frozen teacher. We do not claim the loss as new,
+and we compare against their stop-gradient target.
+Kim and Lee~\cite{kim2026mismatch} study camera-conditioned metric models when a crop, resize or padding
+changes the intrinsics but the pipeline still passes the old ones, and they propose a mismatch-aware camera
+module. Our stale-$K$ run with Metric3D v2 is one case of this setting. We include it only to put
+camera-conditioned models on the same scale as the other two groups.
+Other work looks at crops in different tasks. PlaneDepth~\cite{wang2023planedepth} notes that resize-and-crop
+augmentation breaks the plane geometry of self-supervised depth. KPE~\cite{prakash2024kpe} shows that crops
+cause a perspective ambiguity for object-level 3D and feeds the crop position to the network. Multi-crop
+human mesh recovery~\cite{nie2024multicrop} keeps the camera consistent between crops of one person.
+NERO~\cite{zhao2023nero} visualises how models break equivariance along a transformation. A recent paper
+makes depth models robust to camera roll~\cite{tang2026roll}. A roll does not change the intrinsics, but a
+zoom does, so the right output under a zoom is not ``the same map, transformed'' but a specific change of
+the metric prediction.
 
 \paragraph{Label-free evaluation and adaptation.}
-Self-Geometry~\cite{youn2026selfgeometry} adapts 3D foundation models at test time with
-multi-view geometric constraints, and Re-Depth Anything~\cite{bhattarai2025redepth} refines depth by
-self-supervised re-lighting. A self-consistency score is not an accuracy score: a model can be
-consistently wrong. We therefore always report the label-free exponents next to errors against
-ground truth, and test directly whether the former predict the latter (\cref{sec:results}).
+Self-Geometry~\cite{youn2026selfgeometry} adapts 3D foundation models at test time with multi-view
+constraints, Re-Depth Anything~\cite{bhattarai2025redepth} refines depth by self-supervised re-lighting, and
+test-time adaptation has been used for depth completion~\cite{park2024ttadepth}. A self-consistency score is
+not an accuracy score, since a model can be consistently wrong. We therefore always report the label-free
+exponents next to errors against ground truth, and we test when the first predicts the second
+(\cref{sec:results}).

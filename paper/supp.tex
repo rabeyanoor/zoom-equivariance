@@ -24,7 +24,7 @@
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\thefigure}{S\arabic{figure}}
 
-\title{Zoom In, Scale Out: Metric Depth Models Do Not Respect a Digital Zoom\\[2pt]
+\title{Zoom In, Scale Out: Metric Depth Models Mistake a Digital Zoom for a Closer Scene\\[2pt]
 \large Supplementary Material}
 
 \author{Anonymous CVPR submission}
@@ -34,7 +34,7 @@
 \sloppy
 
 Section and table numbers without a letter refer to the main paper. Every number here is generated
-from the same result files as the main paper (\texttt{scripts/}\allowbreak\texttt{make\_paper\_numbers.py}).
+from the same result files as the main paper.
 
 \section{Qualitative example on NYUv2}
 
@@ -137,8 +137,7 @@ satisfy both terms.
 \end{itemize}}
 
 \paragraph{Compute.} All audits and fine-tuning runs ran as Kaggle notebooks with one GPU each; the
-analysis runs on a laptop CPU. The code release contains the kernel builders, the run logs and every
-result CSV, and \texttt{scripts/verify\_results.py} checks that all models saw the same images and all
-zoom rows are complete.
+analysis runs on a laptop CPU. The cue split ran on Kaggle CPU kernels. A check script confirms that all
+models saw the same images and that every zoom row is complete.
 
 \end{document}

@@ -116,6 +116,16 @@ accuracy on unzoomed images (\proxyRhoOne). Part of the association is mechanica
 depth is also a growing error, so we read it narrowly: without labels, the audit tells which model will
 degrade most under zoom, not which model is more accurate.
 
+\paragraph{Flagging images to distrust.}
+The same score also works per image. For each model and dataset we rank the images by their own
+inconsistency at $2\times$ and keep only the most consistent ones. If the score carries information, the
+mean AbsRel at $2\times$ of the kept images should fall faster than with a random order. It does in
+\riskBelowOne{} of \riskPairs{} model--dataset pairs. On average the area under the risk--coverage curve
+is \riskAurc{} of the random baseline (1 = no better than random): \RiskNyu{} on NYUv2, \RiskDiodeIn{} on
+DIODE-indoor, and a weaker \RiskKitti{} on KITTI and \RiskDiodeOut{} on DIODE-outdoor. The two pairs above
+1 are both on DIODE-outdoor (DA-V2-S and UniDepthV2-S). So a user can run the zoom check on their own photos and set aside the images where the model is
+least sure of the scale, without any labels.
+
 \paragraph{A training-free fix when the zoom is known.}
 Phones record a digital zoom ratio, and apps know their own crops. Since $\alpha$ needs no labels, a
 user can measure it on their own photos and multiply the depth of zoomed images by $s^{\hat\alpha}$.

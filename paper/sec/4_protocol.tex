@@ -39,6 +39,22 @@ down-sampled image, up-sampled. Both have identical intrinsics and output size a
 the down-sampled camera's own prediction on the same pixels. We also repeat the $2\times$ zoom with
 bilinear instead of bicubic resampling, and compress the unzoomed image to JPEG quality 75.
 
+\paragraph{Splitting a zoom into its causes.}
+\label{par:cues}
+A digital zoom changes two things at once. It throws away the context around the crop, and it makes
+everything inside the crop $s$ times larger. To see which one moves the depth, we build two more images
+from each photo (\cref{fig:cueexample}). \emph{Paste}: the $2\times$ crop stays at its own place and size,
+and the rest of the frame is filled with the image's mean colour. The camera is unchanged, so the model
+gets the original $K$, and only the context is gone. \emph{Shrink}: the whole image is made $2\times$
+smaller and placed in the middle of a plain canvas, with its own intrinsics (the inverse of
+\cref{eq:law}). Everything is still visible, only smaller. We then compare, on the same pixels, the paste
+with the original (\emph{context} effect), the zoom with the paste (\emph{magnification} effect: same
+content, $2\times$ larger), the zoom with the original, and the shrink with the original. A model that
+respects the camera keeps depth in all four. A model that reads apparent size gives ratios of 1, 0.5, 0.5
+and 2. The plain border is itself unusual, so we read the paste and shrink as interventions on the cue,
+not as natural images. These runs use 100 images per set for the four fast models, and 50 for Depth Pro
+and DA3-Metric-L.
+
 \paragraph{Scope of the claim.}
 For a model that does not receive the camera, a crop changes the visible context, and its output may
 legitimately change where the content is ambiguous (\cref{sec:law}). The audit therefore measures how
@@ -60,4 +76,4 @@ factor.
 \paragraph{Sanity check of the pipeline.}
 Projecting random 3D points with $K$, applying the crop-and-resize to the pixel coordinates,
 and projecting with $K'$ agree to $<10^{-3}$\,px for all zooms and crop centres, and a constant
-depth map survives the zoom/unzoom round trip exactly (notebook~01 in the code release).
+depth map survives the zoom/unzoom round trip exactly.

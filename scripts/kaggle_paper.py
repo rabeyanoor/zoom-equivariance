@@ -19,7 +19,7 @@ data = ROOT / "kaggle" / "build" / "paper_data"
 if data.exists():
     shutil.rmtree(data)
 for p in sorted(paper.rglob("*")):
-    built = {"main.pdf", "supp.pdf"}
+    built = {"main.pdf", "supp.pdf", "main_named.pdf"}
     if p.is_file() and "kit" not in p.parts and p.suffix in {".tex", ".sty", ".bst", ".bib", ".pdf"} and p.name not in built:
         dst = data / p.relative_to(paper)
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -42,9 +42,12 @@ rc = sh("cd /tmp/paper && latexmk -pdf -interaction=nonstopmode -halt-on-error m
 rc_supp = sh("cd /tmp/paper && latexmk -pdf -interaction=nonstopmode -halt-on-error supp.tex > build_supp.log 2>&1")
 sh("cd /tmp/paper && grep -nE '^!|Warning.*undefined|Overfull' build_supp.log | head -40")
 sh("cd /tmp/paper && grep -nE '^!|Warning.*undefined|Overfull|Citation .* undefined|Reference .* undefined' build.log | head -80")
+# the same paper with the author shown (main_named.tex), for arXiv or the camera-ready copy
+rc_named = sh("cd /tmp/paper && latexmk -pdf -interaction=nonstopmode -halt-on-error main_named.tex > build_named.log 2>&1")
 sh("cp /tmp/paper/main.pdf /tmp/paper/build.log /tmp/paper/main.log /kaggle/working/ 2>/dev/null")
+sh("cp /tmp/paper/main_named.pdf /kaggle/working/ 2>/dev/null")
 sh("cp /tmp/paper/supp.pdf /tmp/paper/build_supp.log /tmp/paper/supp.log /kaggle/working/ 2>/dev/null")
-print("latexmk exit code", rc, "supplement", rc_supp, flush=True)
+print("latexmk exit code", rc, "named", rc_named, "supplement", rc_supp, flush=True)
 '''
 out = ROOT / "kaggle" / "build" / "paper"
 out.mkdir(parents=True, exist_ok=True)

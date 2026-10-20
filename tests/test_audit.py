@@ -69,3 +69,26 @@ def test_controls_apparent_size_model():
     for k in ("optical", "digital_lr", "bilinear"):
         assert abs(rows[k]["log_ratio_self"] - np.log(0.5)) < 0.02
     assert abs(rows["jpeg"]["log_ratio_self"]) < 1e-6
+
+
+def test_shrink_K_undoes_zoom_K():
+    import zoom
+
+    small, box = audit.shrink_image(SAMPLE["img"], 2.0)
+    Ks = audit.shrink_K(K, box, (60, 200))
+    np.testing.assert_allclose(zoom.zoom_K(Ks, box, (60, 200)), K, atol=1e-9)
+
+
+def test_cues_equivariant_model_keeps_depth():
+    rows = {r["kind"]: r for r in audit.cue_rows(Equivariant(), SAMPLE, 80)}
+    assert set(rows) == {"context", "magnify", "zoom", "shrink"}
+    for r in rows.values():
+        assert abs(r["log_ratio_self"]) < 1e-6
+
+
+def test_cues_apparent_size_model_reacts_to_magnification_only():
+    rows = {r["kind"]: r for r in audit.cue_rows(ApparentSize(), SAMPLE, 80)}
+    assert abs(rows["context"]["log_ratio_self"]) < 1e-6
+    assert abs(rows["magnify"]["log_ratio_self"] - np.log(0.5)) < 0.02
+    assert abs(rows["zoom"]["log_ratio_self"] - np.log(0.5)) < 0.02
+    assert abs(rows["shrink"]["log_ratio_self"] - np.log(2.0)) < 0.02

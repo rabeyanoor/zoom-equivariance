@@ -2,8 +2,8 @@
 
     python scripts/save_logs.py
 
-- Kaggle kernel logs (JSON lines with time stamps) from outputs/kaggle/*/  ->  logs/kaggle/<kernel>.txt
-- local logs (push queue, downloads) are written straight to logs/local/ by the scripts
+- Kaggle kernel logs (JSON lines with time stamps) from outputs/kaggle/*/  ->  logs/kaggle/<kernel>.log
+- local logs (push queue, downloads) are written straight to logs/local/ by the scripts (kept on the laptop, not in git)
 A log that already exists is never overwritten: a new version gets a numbered name.
 """
 import json
@@ -23,7 +23,7 @@ def free_name(folder, stem, ext):
 
 
 def same_as_existing(folder, stem, text):
-    return any(f.read_text() == text for f in folder.glob(f"{stem}*.txt"))
+    return any(f.read_text() == text for f in folder.glob(f"{stem}*.log"))
 
 
 def kaggle_to_text(path):
@@ -48,7 +48,7 @@ def main():
         stem = log.stem
         if same_as_existing(LOGS / "kaggle", stem, text):
             continue
-        free_name(LOGS / "kaggle", stem, ".txt").write_text(text)
+        free_name(LOGS / "kaggle", stem, ".log").write_text(text)
         n += 1
     print(n, "logs saved to", LOGS)
 

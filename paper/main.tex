@@ -1,6 +1,7 @@
 \documentclass[10pt,twocolumn,letterpaper]{article}
 
-\usepackage[review]{cvpr}
+% anonymous review copy by default; main_named.tex defines \finalcopy for the version with the author
+\ifdefined\finalcopy\usepackage{cvpr}\else\usepackage[review]{cvpr}\fi
 \input{preamble}
 \usepackage{booktabs}
 \usepackage{multirow}
@@ -17,9 +18,13 @@
 % all numbers in the text come from the audit CSVs via scripts/make_paper_numbers.py
 \input{gen/numbers}
 
-\title{Zoom In, Scale Out: Metric Depth Models Do Not Respect a Digital Zoom}
+\title{Zoom In, Scale Out: Metric Depth Models Mistake a Digital Zoom for a Closer Scene}
 
+\ifdefined\finalcopy
+\author{Rabeya Noor\\ {\tt\small rabeyanoor.dev@gmail.com}}
+\else
 \author{Anonymous CVPR submission}
+\fi
 
 \begin{document}
 \maketitle

@@ -3,7 +3,6 @@ name = "zoom-equivariance"
 version = "0.1.0"
 description = "Testing and enforcing digital-zoom equivariance in metric depth models"
 requires-python = ">=3.10"
-license = { text = "MIT" }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

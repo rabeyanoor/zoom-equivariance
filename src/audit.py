@@ -154,8 +154,84 @@ def zoom_rows(model, sample, max_depth, zooms=ZOOMS, center=(0.5, 0.5), stale_K=
     return rows
 
 
+def paste_crop(img, box):
+    """The crop at its own place and scale on a plain canvas (the image's mean colour).
+
+    The camera does not change, so K stays the same; only the context around the crop is gone.
+    """
+    x0, y0, cw, ch = box
+    out = np.empty_like(img)
+    out[:] = img.reshape(-1, img.shape[-1]).mean(0).astype(img.dtype)
+    out[y0:y0 + ch, x0:x0 + cw] = img[y0:y0 + ch, x0:x0 + cw]
+    return out
+
+
+def shrink_image(img, s):
+    """The whole image made s times smaller and centred on a plain canvas: a zoom *out* that
+    keeps all the context. Returns the image and the box where the shrunk image sits."""
+    h, w = img.shape[:2]
+    box = zoom.zoom_box(h, w, s)
+    x0, y0, cw, ch = box
+    out = np.empty_like(img)
+    out[:] = img.reshape(-1, img.shape[-1]).mean(0).astype(img.dtype)
+    out[y0:y0 + ch, x0:x0 + cw] = zoom.resize_image(img, (ch, cw))
+    return out, box
+
+
+def shrink_K(K, box, in_hw):
+    """Intrinsics of shrink_image: the inverse map of zoom_K on that box."""
+    x0, y0, cw, ch = box
+    H, W = in_hw
+    sx, sy = cw / W, ch / H
+    K = np.array(K, dtype=np.float64).copy()
+    K[0, 0] *= sx
+    K[1, 1] *= sy
+    K[0, 2] = (K[0, 2] + 0.5) * sx - 0.5 + x0
+    K[1, 2] = (K[1, 2] + 0.5) * sy - 0.5 + y0
+    return K
+
+
+def cue_rows(model, sample, max_depth, s=2.0):
+    """Split a digital zoom into the two things it changes, one at a time, with the right K each:
+
+    context : the crop pasted at its own place and scale (context gone, pixels and camera the same);
+    magnify : the zoomed image against the pasted crop (same content, s times larger);
+    zoom    : the full digital zoom, the sum of the two in log depth;
+    shrink  : the whole image s times smaller on a canvas (smaller, all context kept).
+
+    A model that respects the camera keeps the depth of every pixel in all four.
+    """
+    img, gt, K = sample["img"], sample["depth"], sample["K"]
+    h, w = img.shape[:2]
+    box = zoom.zoom_box(h, w, s)
+    base = model.predict(img, K)
+    d_base = zoom.crop(base["depth"], box)
+    Kz = zoom.zoom_K(K, box, (h, w))
+    zoomed = model.predict(zoom.zoom_image(img, box), Kz)
+    d_zoom = zoom.unzoom_depth(zoomed["depth"], box)
+    pasted = model.predict(paste_crop(img, box), K)
+    d_paste = zoom.crop(pasted["depth"], box)
+    small, sbox = shrink_image(img, s)
+    Ks = shrink_K(K, sbox, (h, w))
+    shrunk = model.predict(small, Ks)
+    d_shrink = zoom.resize_depth(zoom.crop(shrunk["depth"], sbox), (h, w))
+    gt_box = zoom.crop(gt, box)
+    rows = []
+    for kind, d, ref, out, ref_out, fx_gt, g in (
+            ("context", d_paste, d_base, pasted, base, float(K[0, 0]), gt_box),
+            ("magnify", d_zoom, d_paste, zoomed, pasted, float(Kz[0, 0]), gt_box),
+            ("zoom", d_zoom, d_base, zoomed, base, float(Kz[0, 0]), gt_box),
+            ("shrink", d_shrink, base["depth"], shrunk, base, float(Ks[0, 0]), gt)):
+        lr, shape = self_consistency(d, ref)
+        r = dict(name=sample["name"], kind=kind, zoom=s, cx=0.5, cy=0.5, sec=np.nan, log_ratio_self=lr,
+                 shape_err=shape, fx=out["fx"], fx_base=ref_out["fx"], fx_gt=fx_gt)
+        r.update(depth_errors(d, g, max_depth))
+        rows.append(r)
+    return rows
+
+
 def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), stale_K=False, log_every=10, suffix="",
-        controls_only=False, fine_fix=False):
+        controls_only=False, fine_fix=False, cues=False):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     tag = f"{model_name}{'-staleK' if stale_K else ''}__{dataset}{suffix}"
@@ -173,7 +249,9 @@ def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), sta
         sample = load(i)
         todo = [c for c in centers if (sample["name"], c[0], c[1]) not in done]
         for c in todo:
-            if controls_only:
+            if cues:
+                rows = cue_rows(model, sample, datasets.MAX_DEPTH[dataset])
+            elif controls_only:
                 rows = control_rows(model, sample, datasets.MAX_DEPTH[dataset], c)
             else:
                 # the blur control only needs to run once per image

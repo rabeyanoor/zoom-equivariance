@@ -8,3 +8,7 @@ __pycache__/
 .ipynb_checkpoints/
 *.zip
 *.tar.gz
+# kept on the laptop, not in the repo
+docs/
+logs/local/
+paper/*.pdf

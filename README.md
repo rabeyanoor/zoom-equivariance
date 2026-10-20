@@ -1,6 +1,6 @@
 # Zoom equivariance of metric depth models
 
-**Working title:** *Zoom In, Scale Out: Metric Depth Models Do Not Respect a Digital Zoom*.
+**Title:** *Zoom In, Scale Out: Metric Depth Models Mistake a Digital Zoom for a Closer Scene*. Author: Rabeya Noor.
 Target venue is CVPR 2027 (abstract ~7-10 Nov 2026, paper ~12-16 Nov 2026).
 
 A crop followed by a resize is an exact digital zoom: the focal length is multiplied by s and the depth stays the same. We use that law in three ways:
@@ -11,19 +11,18 @@ A crop followed by a resize is an exact digital zoom: the focal length is multip
    - EFT is self-consistency in the spirit of Zhong et al., ICCV 2023.
    - EFT+B adds a blur-invariance term. It closes the "blurry means zoomed" shortcut we found.
 
-`docs/research_overview_bn.md` explains the whole project in Bangla.
+A Bangla overview of the project (`docs/`) is kept on the laptop and is not part of the repo.
 
 ## Folder layout
 
 ```
 zoom-equivariance/
 ├── README.md
-├── docs/                   research overview (Bangla), prior-work notes
 ├── src/                    library code (imported by scripts and notebooks)
 │   ├── zoom.py             exact crop/resize geometry, zoom_K, blur control
 │   ├── models.py           one predict(img, K) interface for 7 models + fine-tuned variants
 │   ├── datasets.py         KITTI val selection, NYUv2 test (654), DIODE val indoor/outdoor
-│   ├── audit.py            per image x zoom: self-consistency, focal, errors vs GT
+│   ├── audit.py            per image x zoom: self-consistency, focal, errors vs GT; cue split
 │   ├── eft.py              EFT / EFT+B / anchor-only trainer
 │   └── analysis.py         alpha/beta fits, bootstrap CIs, summaries
 ├── scripts/                command-line jobs
@@ -42,7 +41,8 @@ zoom-equivariance/
 │   ├── 03_label_free_proxy      does the label-free score predict real error?
 │   ├── 04_off_centre_and_stale_K
 │   ├── 05_eft_results           frozen vs anchor-only vs EFT vs EFT+B
-│   └── 06_figure1               teaser figure
+│   ├── 06_figure1               teaser figure
+│   └── 07_cue_split             lost context vs magnification
 ├── kaggle/
 │   ├── templates/          kernel bodies (audit_main.py, eft_main.py)
 │   └── build/              generated kernels, one folder each (not in git)
@@ -53,14 +53,14 @@ zoom-equivariance/
 │   └── kaggle/             raw downloads per kernel (not in git)
 ├── logs/
 │   ├── kaggle/             one text log per Kaggle kernel run (kept, never overwritten)
-│   └── local/              push queue and download logs
-├── paper/                  CVPR LaTeX: main.tex, supp.tex (supplement), sec/, gen/ (generated numbers), main.bib
+│   └── local/              push queue and download logs (laptop only, not in git)
+├── paper/                  CVPR LaTeX: main.tex (anonymous), main_named.tex (with author), supp.tex, sec/, gen/, main.bib
 └── third_party/            UniDepth, Metric3D repos (not in git)
 ```
 
 ## Kaggle kernels
 
-Each run's log is kept in `logs/kaggle/<kernel>.txt`.
+Each run's log is kept in `logs/kaggle/<kernel>.log`.
 
 | Kernel | What |
 |---|---|
@@ -70,6 +70,7 @@ Each run's log is kept in `logs/kaggle/<kernel>.txt`.
 | `zoom-equivariance-eft` | EFT training + frozen vs EFT |
 | `zoom-equivariance-eft-baseline` | anchor-only and EFT+B training, scores all four |
 | `zoom-equivariance-stats` | GT depth spread + Figure 1 maps (CPU) |
+| `zoom-equivariance-audit-cues`, `-cues2`, `-cues3` | cue split (context vs magnification), CPU |
 
 ## Workflow
 
@@ -93,7 +94,8 @@ cd notebooks
 ```
 
 The paper compiles on Overleaf: upload the `paper/` folder and set `main.tex` as the main file. Compile
-`main.tex` first, then `supp.tex`, which takes its cross-references from `main.aux`. Without LaTeX on the
+`main.tex` first, then `supp.tex`, which takes its cross-references from `main.aux`. `main.tex` is the
+anonymous copy for review; `main_named.tex` is the same paper with the author, for arXiv after review. Without LaTeX on the
 laptop, `scripts/kaggle_paper.py` builds both on a Kaggle CPU kernel.
 
 Credentials: the Kaggle CLI reads `~/.kaggle/kaggle.json`. No keys are stored in this repo or in the logs.

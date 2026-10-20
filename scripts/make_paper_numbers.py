@@ -210,6 +210,53 @@ for ds in A.DATASETS:
     g = pairs[pairs.dataset == ds]
     put(key("proxy", ds), spearmanr(g.abs_alpha, g.absrel3).statistic if len(g) > 3 else np.nan)
 
+# ------------------------------------------------------------------ selective prediction (notebook 03)
+rc_f = ROOT / "outputs" / "tables" / "proxy_risk_coverage.csv"
+rc = pd.read_csv(rc_f) if rc_f.exists() else pd.DataFrame(columns=["model", "dataset", "rel_aurc"])
+rc = rc[rc.model.isin(MAIN) & (rc.model != "metric3d-s-staleK")]
+put("riskPairs", len(rc), "{:d}")
+put("riskBelowOne", int((rc.rel_aurc < 1).sum()), "{:d}")
+put("riskAurc", rc.rel_aurc.mean())
+for ds in A.DATASETS:
+    put(key("risk", ds), rc[rc.dataset == ds].rel_aurc.mean())
+
+# ------------------------------------------------------------------ cue split: context loss vs magnification
+CUE_MODELS = ["dav2-s", "zoedepth", "moge2-s", "unidepth2-s", "depthpro", "da3-metric-l"]
+CUE_KINDS = ["context", "magnify", "zoom", "shrink"]
+cue_files = list(A.RESULTS.glob("*__cues.csv"))
+cues = pd.concat([pd.read_csv(f) for f in cue_files], ignore_index=True) if cue_files else \
+    pd.DataFrame(columns=["model", "kind", "name", "log_ratio_self", "fx", "fx_base"])
+rows = []
+for m in CUE_MODELS:
+    g = cues[cues.model == m]
+    put(key(m, "cue", "images"), g.name.nunique(), "{:d}")
+    cells = []
+    for c in CUE_KINDS:
+        v = g[g.kind == c].log_ratio_self
+        ratio = float(np.exp(v.median())) if len(v) else np.nan
+        put(key(m, "cue", c), ratio)
+        cells.append(fmt(ratio))
+    lz = g[g.kind == "zoom"].log_ratio_self.median() if len(g) else np.nan
+    lm = g[g.kind == "magnify"].log_ratio_self.median() if len(g) else np.nan
+    put(key(m, "cue", "share"), 100 * lm / lz if len(g) and lz != 0 else np.nan, "{:.0f}")
+    sh = g[g.kind == "shrink"]
+    focal = float(np.exp(np.median(np.log(sh.fx / sh.fx_base)))) if len(sh) and sh.fx.notna().any() else np.nan
+    put(key(m, "cue", "shrink", "focal"), focal)
+    cells.append(fmt(focal) if np.isfinite(focal) else "--")
+    if len(g):
+        rows.append(f"{A.PRETTY.get(m, m)} & " + " & ".join(cells) + r" \\")
+write_table("table_cues", [
+    r"\begin{table}[t]\centering\small",
+    r"\caption{Splitting a $2\times$ zoom into its two parts, median depth ratio on the same pixels (1 = unchanged). "
+    r"\emph{Context}: the crop pasted at its own place and size on a plain canvas. \emph{Magnify}: the zoomed image "
+    r"against that pasted crop. \emph{Zoom}: both together. \emph{Shrink}: the whole image made $2\times$ smaller on a "
+    r"canvas. A model that reads apparent size gives 1, 0.5, 0.5 and 2. Last column: the predicted focal on the shrunk "
+    r"image (correct: 0.5).}\label{tab:cues}",
+    r"\setlength{\tabcolsep}{3.5pt}",
+    r"\begin{tabular}{lccccc}\toprule",
+    r"Model & context & magnify & zoom & shrink & focal, shrink \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}\end{table}"])
+
 # ------------------------------------------------------------------ controls: optical vs digital, interpolation, JPEG
 ctrl_files = list(A.RESULTS.glob("*__ctrl.csv"))
 ctrl = A.load("*__ctrl.csv") if ctrl_files else pd.DataFrame(columns=["model", "kind", "log_ratio_self"])

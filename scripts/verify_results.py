@@ -36,6 +36,18 @@ images_by_set = {}
 for f in sorted(A.RESULTS.glob("*__*.csv")):
     df = A.repair_cx(pd.read_csv(f))
     tag = f.stem
+    if "__cues" in tag:
+        # cue split: the four interventions of audit.cue_rows for every image
+        kinds = df.groupby("name").kind.apply(lambda v: tuple(sorted(v)))
+        expected = ("context", "magnify", "shrink", "zoom")
+        check((kinds == expected).all(), f"{tag}: {int((kinds != expected).sum())} images without all four cue rows")
+        # the zoom row is the sum of context and magnify in log depth (same pixels, same medians)
+        w = df.pivot_table(index="name", columns="kind", values="log_ratio_self")
+        check(df.duplicated(["name", "kind"]).sum() == 0, f"{tag}: duplicated cue rows")
+        manifest.append(dict(file=f.name, model=tag.split("__")[0], dataset=tag.split("__")[1],
+                             images=df.name.nunique(), centres=1, rows=len(df),
+                             cue_sum_gap=round(float((w.zoom - w.context - w.magnify).abs().median()), 4)))
+        continue
     if "__ctrl" in tag:
         # control runs: one row per control kind and image
         kinds = df.groupby("name").kind.apply(lambda v: tuple(sorted(v)))
