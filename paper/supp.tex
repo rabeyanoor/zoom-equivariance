@@ -24,7 +24,7 @@
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\thefigure}{S\arabic{figure}}
 
-\title{Zoom In, Scale Out: Metric Depth Models Mistake a Digital Zoom for a Closer Scene\\[2pt]
+\title{Zoom In, Scale Out: When Metric Depth Models Mistake Digital Zoom for Scene Motion\\[2pt]
 \large Supplementary Material}
 
 \author{Anonymous CVPR submission}
@@ -64,6 +64,114 @@ behaviour ($\alpha>1$).
   \label{fig:supp_alpha_ds}
 \end{figure}
 
+\section{How well the power law fits}
+
+Per image, the median RMS residual of $\log$ depth ratio around $-\alpha\log s$ is \fitRmsMedian{} over the main
+models. The exponent is not constant over $s$: fitted on $s\le1.5$ and on $s\ge2$ separately, it is
+\DavTwoSAlphaSmall{} and \DavTwoSAlphaLarge{} for DA-V2-S, \DepthproAlphaSmall{} and \DepthproAlphaLarge{} for
+Depth Pro, \MogeTwoSAlphaSmall{} and \MogeTwoSAlphaLarge{} for MoGe-2-S, and \UnidepthTwoSAlphaSmall{} and
+\UnidepthTwoSAlphaLarge{} for UniDepthV2-S (medians over images). The camera-predicting models follow small zooms
+better than large ones; a single $\alpha$ over $[1,3]$ averages these.
+
+\section{A calibration-only reference}\label{sec:supp_geocalib}
+
+GeoCalib~\cite{veicht2024geocalib} predicts the camera but no depth. Run on the same zooms of the same
+\geocalibImages{} images, its focal exponent is $\beta=\geocalibBeta$ (median over images; \GeocalibKittiBeta{} on
+KITTI, \GeocalibNyuBeta{} on NYUv2, \GeocalibDiodeInBeta{} on DIODE-in, \GeocalibDiodeOutBeta{} on DIODE-out),
+against the ideal $\beta=1$, and its median focal error on the unzoomed images is a factor \geocalibFocalErr. A model
+built only for calibration also under-scales the focal under zoom, so the under-scaling of the depth models' focal
+heads ($\beta=\DepthproBeta$ for Depth Pro, \MogeTwoSBeta{} for MoGe-2-S) is not specific to depth estimation.
+
+\section{Objects of familiar size and surfaces}\label{sec:supp_regions}
+
+If a model fixed scale from the usual size of known objects, its depth on those objects should follow the zoom
+less than its depth on walls, floors and roads. We split each image with SegFormer-B5 trained on
+ADE20K~\cite{xie2021segformer} into object classes (people, cars, chairs, beds, \etc) and surface classes (wall,
+floor, road, ceiling, \etc), and fit $\alpha$ per region from the $2\times$ and $3\times$ zooms on the 200
+images per set. On the \DavTwoSRegionPairs{} images with both kinds of region, the median $\alpha$ on objects and
+surfaces is \DavTwoSRegionObject{} and \DavTwoSRegionSurface{} for DA-V2-S, \DepthproRegionObject{} and
+\DepthproRegionSurface{} for Depth Pro, and \MogeTwoSRegionObject{} and \MogeTwoSRegionSurface{} for MoGe-2-S.
+Objects follow the zoom slightly \emph{more}, not less (median paired difference \DavTwoSRegionDiff,
+\DepthproRegionDiff{} and \MogeTwoSRegionDiff; larger on objects in \DavTwoSRegionObjectLarger\%,
+\DepthproRegionObjectLarger\% and \MogeTwoSRegionObjectLarger\% of images; Wilcoxon $p=\DavTwoSRegionP$,
+\DepthproRegionP{} and \MogeTwoSRegionP). We find no sign that familiar objects anchor the scale; the difference
+is small and the response is nearly uniform over the image.
+
+\section{Bigger and newer models}
+
+\Cref{tab:ladder} extends the audit to larger variants and to Depth Anything~3 (DA3),
+UniK3D and VGGT
+(100 images per set; 50 for the DA3 and VGGT runs). On the \nLadderShared{} images that every model saw,
+size helps the pixels-only family but does not remove the effect: $\alpha$ falls from \DavTwoSAlphaShared{}
+(DA-V2-S) to \DavTwoBAlphaShared{} (B) and \DavTwoLAlphaShared{} (L), so the large model still returns less
+than half the depth at $3\times$. MoGe-2 is flat across sizes (\MogeTwoSAlphaShared, \MogeTwoBAlphaShared,
+\MogeTwoLAlphaShared), with a focal exponent stuck near \MogeTwoLBetaShared. UniDepthV2 improves with size
+(\UnidepthTwoSAlphaShared{} to \UnidepthTwoLAlphaShared, $\beta$ from \UnidepthTwoSBetaShared{} to
+\UnidepthTwoLBetaShared), and UniK3D-L comes closest
+($\alpha=\UnikThreedLAlphaShared$, $\beta=\UnikThreedLBetaShared$). None reaches the level of a model that
+is given the correct camera (Metric3D v2, $\alpha=\MetricThreedSAlphaShared$). Scale and newer camera heads
+narrow the gap; they do not close it.
+
+Size alone is not the answer. On the \nSmallShared{} images it shares with the main models, the largest
+model in the study, DA3-Nested (\DaThreeNestedParams M parameters), shrinks depth with
+$\alpha=\DaThreeNestedAlphaSmallShared$, more than Depth Pro, MoGe-2-S and UniDepthV2-S
+(\DepthproAlphaSmallShared, \MogeTwoSAlphaSmallShared, \UnidepthTwoSAlphaSmallShared) and close to the
+pixels-only ZoeDepth (\ZoedepthAlphaSmallShared); its focal follows the zoom only partly
+($\beta=\DaThreeNestedBetaSmallShared$) and, on its own sample, $\alpha+\beta=\DaThreeNestedAlphaPlusBeta$, again the
+apparent-size line. Given the true camera, both DA3-Metric-L and Metric3D v2-L keep depth
+($\alpha=\DaThreeMetricLAlphaSmallShared$ and \MetricThreedLAlphaSmallShared). Of the two relative-depth
+models, VGGT-1B tracks the focal change well ($\beta=\VggtBetaSmallShared$) and DA3-L does not
+(\DaThreeLBetaSmallShared). What decides the behaviour is whether the camera enters the model, not how
+large the model is.
+
+\input{gen/table_ladder}
+
+\section{What the label-free score is good for}\label{sec:supp_label}
+
+\paragraph{When does the label-free score predict error?}
+The \proxyPairs{} model--dataset pairs share models and datasets, so we resample both together for
+the intervals. $|\alpha|$ rank-correlates with AbsRel at $3\times$ (Spearman \proxyRhoThree; 95\% interval
+[\proxyRhoThreeLo, \proxyRhoThreeHi] when pairs are resampled, but [\proxyRhoThreeTwoWayLo,
+\proxyRhoThreeTwoWayHi] when models and datasets are, so this is not established). Part of that association is
+mechanical, since a shrinking depth is also a growing error. Subtracting the unzoomed prediction's error on the
+same pixels removes the error a model has anyway: $|\alpha|$ then rank-correlates with the added error
+(\proxyRhoDeltaThreeTwoWay, [\proxyRhoDeltaThreeTwoWayLo, \proxyRhoDeltaThreeTwoWayHi]). Within KITTI, NYUv2 and
+DIODE-indoor the plain correlation is \ProxyKitti, \ProxyNyu{} and \ProxyDiodeIn, and within DIODE-outdoor
+\ProxyDiodeOut, where errors are dominated by UniDepthV2. The score does not predict accuracy on unzoomed images
+(\proxyRhoOne). We read this narrowly: without labels, the audit tells which model will
+degrade most under zoom, not which model is more accurate.
+
+\paragraph{Flagging images to distrust.}
+The same score also works per image. For each model and dataset we rank the images by their own
+inconsistency at $2\times$ and keep only the most consistent ones. If the score carries information, the
+mean AbsRel at $2\times$ of the kept images should fall faster than with a random order. It does in
+\riskBelowOne{} of \riskPairs{} model--dataset pairs. On average the area under the risk--coverage curve
+is \riskAurc{} of the random baseline (1 = no better than random): \RiskNyu{} on NYUv2, \RiskDiodeIn{} on
+DIODE-indoor, and a weaker \RiskKitti{} on KITTI and \RiskDiodeOut{} on DIODE-outdoor. The two pairs above
+1 are both on DIODE-outdoor (DA-V2-S and UniDepthV2-S). So a user can run the zoom check on their own photos and set aside the images where the model is
+least sure of the scale, without any labels.
+
+\paragraph{A training-free fix when the zoom is known (ZoomFix).}
+Phones record a digital zoom ratio, and apps know their own crops. Since $\alpha$ needs no labels, a
+user can measure it on their own photos and multiply the depth of zoomed images by $s^{\hat\alpha}$.
+We evaluate this cross-fitted: $\hat\alpha$ is measured without labels on half of a dataset's images and
+the correction scored on the other half. For DA-V2-S at $3\times$ it removes between a third and two thirds of
+the zoom error on KITTI (AbsRel \DavTwoSFixKittiZoomed{} to \DavTwoSFixKittiAbsrel, against
+\DavTwoSFixKittiTarget{} for the unzoomed prediction on the same pixels), NYUv2 (\DavTwoSFixNyuZoomed{} to
+\DavTwoSFixNyuAbsrel) and DIODE-indoor (\DavTwoSFixDiodeInZoomed{} to \DavTwoSFixDiodeInAbsrel). On
+DIODE-outdoor the mean error rises (\DavTwoSFixDiodeOutZoomed{} to \DavTwoSFixDiodeOutAbsrel). The cause is
+a heavy tail: even unzoomed, the mean AbsRel there (\DavTwoSFixDiodeOutTarget) is far above the median
+(\DavTwoSFixDiodeOutTargetMedian), and scaling depth up amplifies the images that are already
+over-estimated, while the typical image improves. Depth Pro, whose $\alpha$ is already small, barely changes. A single global factor cannot undo a zoom that also distorts shape (\cref{sec:audit});
+it is a stop-gap for deployed pixels-only models, not a replacement for a camera-aware one.
+
+\section{Depth range of the scene}
+
+A softer reading of the zoom--squash ambiguity would be that scenes with a larger depth range, where the squash
+should be more visible, are easier. The within-dataset rank correlation between $\alpha$ and the
+inter-quartile range of log depth is \DepthproSpreadRho{} for Depth Pro and \MogeTwoSSpreadRho{} for MoGe-2, so
+this is not supported.
+
 \section{Off-centre crops and the principal point}
 
 Zooms about the four quadrant centres (50 images per set from KITTI and NYUv2) give $\alpha$ of the same
@@ -90,7 +198,7 @@ the width at $2\times$, against \MogeTwoSPpGuessTwo).
 
 \section{ZoomFix per dataset}
 
-\Cref{tab:zoomfix} gives the cross-fitted ZoomFix of \cref{sec:results} per dataset. The label-free
+\Cref{tab:zoomfix} gives the cross-fitted ZoomFix of \cref{sec:supp_label} per dataset. The label-free
 exponent tracks the dataset: it is above 1 for DA-V2-S on KITTI and NYUv2, where the pooled $\alpha$ hides
 a stronger shrink. The MoGe-2-S entry for DIODE-outdoor is dominated by a few zoomed images with very
 large errors (the zoomed AbsRel is \MogeTwoSFixDiodeOutZoomed{} against \MogeTwoSFixDiodeOutTarget{}
@@ -98,7 +206,35 @@ unzoomed), which a global factor cannot repair.
 
 \input{gen/table_zoomfix}
 
+\section{EFT-S per domain}
+
+\paragraph{Training from a cache.} Because $c$ is one number per view, each term of the loss depends only on the
+distribution of the residual $\log\hat D_0(\text{view})-\log\hat D_0(I)$ over the crop. We store 100 quantiles of
+that residual and the token features for 4{,}000 random zoom and blur views per domain, drawn as for EFT+B
+from the same training images, from a single pass of the frozen model. The head is then fitted on this cache
+(60 epochs, AdamW, learning rate $10^{-3}$, batch 64) in about a minute on a CPU.
+
+\paragraph{Results.} \Cref{tab:scale} gives the per-dataset numbers of the scale-only variant EFT-S discussed in
+\cref{sec:eftresults}, next to the frozen model and EFT+B. Without the blur term, blur alone moves its KITTI depth by
+\DavTwoSScalenbKittiBlur\% (\DavTwoSScaleKittiBlur\% with it): EFT-S finds the same blur shortcut as EFT.
+
+\input{gen/table_scale}
+
 \section{Fine-tuning details}
+
+\paragraph{Training drives.} The training kernel asserts that its seven KITTI drives are disjoint from the 13 drives
+of the evaluation selection.
+
+\paragraph{Training seeds.} EFT+B was trained with \eftbSeeds{} seeds (image order, flips, zoom boxes, blur strengths and the torch random
+state). Unzoomed AbsRel over seeds is $\EftbSeedsKittiAbsrelOneMean\pm\EftbSeedsKittiAbsrelOneSd$ on
+KITTI, $\EftbSeedsNyuAbsrelOneMean\pm\EftbSeedsNyuAbsrelOneSd$ on NYUv2,
+$\EftbSeedsDiodeInAbsrelOneMean\pm\EftbSeedsDiodeInAbsrelOneSd$ on DIODE-in and
+$\EftbSeedsDiodeOutAbsrelOneMean\pm\EftbSeedsDiodeOutAbsrelOneSd$ on DIODE-out (frozen: \DavTwoSFixedKittiAbsrelOne,
+\DavTwoSFixedNyuAbsrelOne, \DavTwoSFixedDiodeInAbsrelOne, \DavTwoSFixedDiodeOutAbsrelOne). The tables report seed 0.
+
+\paragraph{Anchor weight.} A three times stronger anchor gives KITTI AbsRel \DavTwoSEftbThreeKittiAbsrelOne{} and NYUv2
+AbsRel \DavTwoSEftbThreeNyuAbsrelOne{} at $\alpha=\DavTwoSEftbThreeKittiAlpha$ and \DavTwoSEftbThreeNyuAlpha: it does not
+buy the KITTI accuracy back and costs NYUv2, so the trade-off is not a matter of tuning the weight.
 
 \paragraph{Variants.} All variants start from the same DA-V2-S checkpoint and differ only in the loss:
 EFT (anchor + zoom term), EFT+B (+ blur term), EFT+B with $\lambda=3$, blur-only (anchor + blur term),
@@ -120,6 +256,34 @@ satisfy both terms.
   \label{fig:supp_train}
 \end{figure}
 
+\section{Confounder controls}
+
+\Cref{tab:controls} gives the optical-versus-digital, bilinear and JPEG controls discussed in
+\cref{sec:results}. Depth Pro shrinks less with real detail (\DepthproOptical{} optical, \DepthproDigitalLr{}
+digital), MoGe-2-S slightly more (\MogeTwoSOptical, \MogeTwoSDigitalLr), and Metric3D v2 with the true $K'$ stays
+near 1 under every control (\MetricThreedSOptical, \MetricThreedSDigitalLr, \MetricThreedSJpeg). On
+DIODE-outdoor, UniDepthV2-S over-estimates the scale by more than $2\times$ on \udDiodeOutOverTwo\% of the images.
+
+\input{gen/table_controls}
+
+\section{Fine-tuning curves}
+
+\begin{figure}[t]
+  \centering
+  \maybefig{fig5_finetuning}
+  \caption{Depth ratio (top) and AbsRel (bottom) against the zoom factor for the frozen and fine-tuned
+  models. AbsRel at different zooms is measured on different pixels (the crop); $\alpha$, not AbsRel, is
+  the equivariance measure: on NYUv2 the frozen model over-estimates depth at $1\times$, so the shrink at
+  moderate zoom happens to lower its error.}
+  \label{fig:eft}
+\end{figure}
+
+\section{Sanity check of the pipeline}
+
+Projecting random 3D points with $K$, applying the crop-and-resize to the pixel coordinates,
+and projecting with $K'$ agree to $<10^{-3}$\,px for all zooms and crop centres, and a constant
+depth map survives the zoom/unzoom round trip exactly.
+
 \section{Models and compute}
 
 \paragraph{Checkpoints.} Hugging Face ids unless noted.
@@ -134,10 +298,14 @@ satisfy both terms.
 \item DA3: \texttt{depth-anything/DA3NESTED-GIANT-} \texttt{LARGE-1.1}, \texttt{DA3METRIC-LARGE}, \texttt{DA3-LARGE-1.1}
 \item VGGT: \texttt{facebook/VGGT-1B}
 \item Metric3D v2: \texttt{metric3d\_vit\_\{small,large\}} (official torch hub entry)
+\item Camera intervention (\cref{sec:camint}): MoGe-2-S and UniDepthV2-S with the checkpoints above, given the
+true zoomed camera (MoGe-2: \texttt{fov\_x}; UniDepthV2: the \texttt{camera} argument of \texttt{infer})
 \end{itemize}}
 
 \paragraph{Compute.} All audits and fine-tuning runs ran as Kaggle notebooks with one GPU each; the
 analysis runs on a laptop CPU. The cue split ran on Kaggle CPU kernels. A check script confirms that all
 models saw the same images and that every zoom row is complete.
+
+{\small\bibliographystyle{ieeenat_fullname}\bibliography{main}}
 
 \end{document}

@@ -1,0 +1,11 @@
+\begin{table}[t]\centering\small
+\caption{The same camera-predicting network with its own focal and given the true (zoomed) camera. $\alpha$: depth exponent. Scale: median over images of $|\operatorname{median}_p \log \hat D/D^{*}|$ at $1\times$ (0 = correct metric scale). \emph{exact}: the model's metres are its own focal times a camera-free output, so the given-camera depth follows exactly from the audit; \emph{rerun}: run again with the camera as input, on the same images as the plain run.}\label{tab:camera}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{llrcccc}\toprule
+& & & \multicolumn{2}{c}{own focal} & \multicolumn{2}{c}{true camera} \\ \cmidrule(lr){4-5}\cmidrule(lr){6-7}
+Model & how & images & $\alpha$ & scale & $\alpha$ & scale \\ \midrule
+Depth Pro & exact & 800 & 0.31 & 0.136 & -0.03 & 0.189 \\
+DA3-Nested & exact & 200 & 0.56 & 0.099 & -0.04 & 0.309 \\
+MoGe-2-S & rerun & 800 & 0.36 & 0.214 & -0.08 & 0.146 \\
+UniDepthV2-S & rerun & 800 & 0.34 & 0.138 & 0.13 & 0.104 \\
+\bottomrule\end{tabular}\end{table}

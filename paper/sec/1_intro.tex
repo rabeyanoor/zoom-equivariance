@@ -15,11 +15,15 @@ focal length grows by the zoom factor $s$, the principal point moves in a known 
 is still in view keeps its metric depth (\cref{sec:law}). So a model that understands the camera should
 keep its depth and multiply its focal estimate by $s$. Phones do this kind of digital zoom all the time,
 and so do gallery apps, screenshots and detection crops.
+Earlier work showed that depth maps are not crop-equivariant~\cite{zhong2023equivariance} and that
+camera-conditioned models fail when a crop leaves the intrinsics stale~\cite{kim2026mismatch}. Missing is a
+matched-intrinsics audit of modern metric models: with the crop's camera updated correctly, how do models that
+ignore, infer, or receive the camera change their metric depth and focal prediction?
 
 We ask four questions.
 \begin{itemize}\setlength{\itemsep}{0pt}
   \item[\textbf{Q1}] Do current metric depth models keep the depth of the same points under a digital
-        zoom, and scale their focal by $s$?
+        zoom, and do models that predict focal length scale it by $s$?
   \item[\textbf{Q2}] Do models that are given, predict, or ignore the camera fail in different ways, and
         can geometry explain how?
   \item[\textbf{Q3}] Which part of a zoom causes the failure: the lost context around the crop, or the
@@ -28,33 +32,34 @@ We ask four questions.
 \end{itemize}
 
 \paragraph{What we find.}
-No image-only model passes (Q1). Depth Anything V2 shrinks depth almost like $1/s$
-($\alpha=\DavTwoSAlpha$). Models with a camera head close only part of the gap, and their focal grows
-far less than $s$ (\cref{fig:curves}). The failures follow one pattern (Q2). We show that a zoomed photo
-is pixel for pixel the same as an ordinary photo of the scene squashed along the viewing direction. We
-call this the \emph{zoom--squash ambiguity}. Size cues cannot tell the two apart, and models that read
-size end up on the line $\alpha+\beta=1$. Depth Pro sits on this line image by image. Models that are
-given the camera are fine with the right intrinsics, and with stale ones they get exactly $+1$ in
-$\alpha$. A new cue experiment answers Q3 (\cref{sec:cues}). We paste the crop back at its own size, so
-only the context is gone, and compare this with the full zoom. CUEFINDING For Q4, a self-consistency
-objective in the spirit of~\cite{zhong2023equivariance} learns a shortcut, ``blurry means zoomed''. A
-blur-invariance term removes it and brings $\alpha$ close to zero on the training domains. We report the
-cost on unzoomed and unseen images in full.
+No tested model that must infer or ignores the camera fully respects the zoom law (Q1): Depth Anything V2
+shrinks depth almost like $1/s$ ($\alpha=\DavTwoSAlpha$), and models with a camera head close only part of the
+gap while their focal grows far less than $s$ (\cref{fig:curves}). The failures follow one pattern (Q2): a
+zoomed photo is pixel for pixel an ordinary photo of the scene squashed along the viewing direction, the
+\emph{zoom--squash ambiguity}, and models that read size end up on the line $\alpha+\beta=1$, where Depth Pro
+sits image by image. Giving the network the true camera locates the failure: Depth Pro and DA3-Nested become
+equivariant ($\alpha=\DepthproCamGivenAlpha$ and \DaThreeNestedCamGivenAlpha), so their focal head carries the
+whole error (\cref{tab:camera}). For pixels-only models the magnified content, not the lost context, drives the
+effect on every dataset (Q3). For Q4, a self-consistency objective in the spirit of~\cite{zhong2023equivariance}
+learns a shortcut, ``blurry means zoomed''; a blur-invariance term removes it and brings $\alpha$ close to zero
+on the training domains, at a cost we report in full.
 
 \paragraph{Contributions.}
 \begin{enumerate}\setlength{\itemsep}{0pt}
   \item A label-free \textbf{digital-zoom audit} for metric depth with exact geometry and two exponents,
         one for depth and one for focal. It comes with controls for interpolation, detail loss,
-        compression, crop position, and optical against digital zoom (\cref{sec:audit}).
+        compression, crop position, and optical against digital zoom (\cref{sec:audit}). We also test what the
+        label-free score predicts: degradation under zoom, not accuracy in general.
   \item The \textbf{zoom--squash ambiguity} and the $\alpha+\beta=1$ line, a testable account of the main
         failure. We check it on three model groups and a ladder of models up to Depth Anything~3 and VGGT
         (\cref{sec:law,sec:results}).
-  \item A \textbf{cue intervention} that splits a zoom into context loss and magnification and measures
-        each one on its own (\cref{sec:cues}).
-  \item A study of \textbf{what the label-free score is good for}: it predicts which model will degrade
-        under zoom, and it can flag the images to distrust. It does not predict accuracy in general
-        (\cref{sec:results}).
+  \item Two \textbf{interventions} that locate the failure. Giving the same network the true camera shows
+        that the focal head, not the depth network, carries the error of Depth Pro and DA3-Nested, and that
+        their depth fits their own focal better than the true one, whereas MoGe-2 and UniDepthV2 gain in both
+        equivariance and accuracy (\cref{sec:camint,tab:camera}). Splitting a zoom into context loss and
+        magnification shows that magnification drives the pixels-only models (\cref{sec:cues,tab:cues}).
   \item A careful test of \textbf{label-free correction}: self-consistency fine-tuning, the blur shortcut
-        it learns, EFT+B that removes it, a training-free fix for known zoom factors, and the accuracy cost
-        on unseen data (\cref{sec:eft,sec:eftresults}).
+        it learns, EFT+B that removes it, a scale-only variant (EFT-S) that trains in a minute on a CPU,
+        a training-free fix for known zoom factors, and the accuracy cost on unseen data
+        (\cref{sec:eft,sec:eftresults}).
 \end{enumerate}

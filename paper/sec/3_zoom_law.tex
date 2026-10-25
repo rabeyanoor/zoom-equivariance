@@ -14,7 +14,7 @@ and likewise for $y$ (the half pixels come from pixel centres).
 Every pixel that survives the crop sees the same 3D point, so its metric depth is unchanged.
 For a centred crop with $s_x=s_y=s$ we call $s$ the \emph{zoom factor}.
 \cref{eq:law} needs no assumption about the scene, the model or the data;
-our implementation reproduces it to floating-point precision (\cref{sec:audit}).
+our implementation reproduces it to below $10^{-3}$\,px (supplement).
 
 \paragraph{What a correct model must do.}
 Let a model map an image to a depth map $\hat D(I)$ and, optionally, a focal estimate
@@ -27,8 +27,7 @@ $\hat f(I)$. Zoom equivariance asks
 for all pixels $p$ inside $b$. Neither side involves ground truth.
 
 \paragraph{Two exponents.}
-Real models do not satisfy \cref{eq:equiv}, but over $s\in[1,3]$ we find their behaviour is
-summarised well by two power laws,
+Real models do not satisfy \cref{eq:equiv}; over $s\in[1,3]$ we summarise their behaviour by two power laws,
 \begin{equation}
   \frac{\hat D(\mathcal{Z}_b I)}{\hat D(I)} \approx s^{-\alpha}, \qquad
   \frac{\hat f(\mathcal{Z}_b I)}{\hat f(I)} \approx s^{\beta},
@@ -36,7 +35,9 @@ summarised well by two power laws,
 \end{equation}
 fitted per image by least squares in log-log space through the origin
 (the depth ratio is the median over the pixels in $b$).
-An equivariant model has $\alpha=0$ and $\beta=1$.
+An equivariant model has $\alpha=0$ and $\beta=1$. The fit is an approximation: the median residual is
+\fitRmsMedian{} in log depth, and $\alpha$ grows with the zoom (Depth Pro \DepthproAlphaSmall{} for $s\le1.5$,
+\DepthproAlphaLarge{} for $s\ge2$; supplement).
 A model that ignores the zoom in its camera estimate has $\beta=0$.
 
 \paragraph{Three invariants.}
@@ -63,16 +64,14 @@ A point $(X,Y,Z)$ seen with focal $sf$ projects to $u = sf\,X/Z + c = f\,X/(Z/s)
 \emph{A zoomed photo of a scene is pixel-for-pixel the unzoomed photo of the same scene
 squashed along the viewing axis by $s$.}
 \end{quote}
+This is the classical focal--depth ambiguity of a single view~\cite{he2018focal}, written as an exact, testable
+statement about a zoom; it is not a new ambiguity.
 The squashed scene has the same lateral sizes, so every object has a plausible width; only its
 extent \emph{in depth} is wrong (a 4.5\,m car becomes 2.25\,m long at $s=2$), and so are the
 angles between surfaces. Telling the two apart needs priors on 3D shape (aspect ratios in
 depth, right angles, the rate at which parallel lines converge), not priors on size.
-One consequence is a hard limit: for a fronto-parallel plane the squash changes nothing, so
+One consequence is a hard limit: a fronto-parallel plane squashed along the viewing axis is still a fronto-parallel plane, so
 \emph{no} estimator can be equivariant on such scenes without being told the camera.
-A softer reading would be that equivariance improves with the depth range of the scene, where the
-squash should be more visible. We tested this and did not find it (\cref{sec:results}): the
-ambiguity explains the failure mode, but scene depth range is not what decides how much of it a
-model overcomes.
 The ambiguity also explains why the third invariant is the natural failure mode: believing the
 squashed scene means $\alpha=1$ with $\beta=0$, a point on the line $\alpha+\beta=1$.
 Note that the line only guarantees lateral consistency; along it, depth and shape are wrong

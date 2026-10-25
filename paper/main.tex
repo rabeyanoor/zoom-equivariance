@@ -15,10 +15,10 @@
 \def\confName{CVPR}
 \def\confYear{2027}
 
-% all numbers in the text come from the audit CSVs via scripts/make_paper_numbers.py
+% Audit metrics and result tables come from the CSVs via scripts/make_paper_numbers.py; protocol settings are stated in text.
 \input{gen/numbers}
 
-\title{Zoom In, Scale Out: Metric Depth Models Mistake a Digital Zoom for a Closer Scene}
+\title{Zoom In, Scale Out: When Metric Depth Models Mistake Digital Zoom for Scene Motion}
 
 \ifdefined\finalcopy
 \author{Rabeya Noor\\ {\tt\small rabeyanoor.dev@gmail.com}}
@@ -37,6 +37,15 @@
 \input{sec/6_eft}
 \input{sec/7_eft_results}
 \input{sec/8_conclusion}
+\section*{LLM Usage Statement}
+OpenAI Codex assisted with literature searches and source comparison, inspection of existing result CSVs
+and audit checks, and editing the Introduction, Related Work, Results, EFT setup note, and Conclusion.
+It did not train depth models or generate benchmark predictions. Anthropic Claude (Claude Code) wrote and ran
+code for the camera intervention, part of the EFT-S evaluation, the calibration baseline, the semantic-region
+analysis, the focal-head fine-tuning (EFT-F), the SR-RAW optical-zoom and complete-test-set runs, the additional fine-tuning seeds and the supplementary statistics (two-way bootstrap, power-law fit),
+checked bibliography entries against arXiv, publisher and DOI records, and edited all sections, including
+moving material to the supplement. The
+author is responsible for checking all cited sources, results, and claims in the submitted version.
 {
     \small
     \bibliographystyle{ieeenat_fullname}

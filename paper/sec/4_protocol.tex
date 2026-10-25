@@ -31,19 +31,16 @@ view. A subset of 50 images per set from KITTI and NYUv2 is also zoomed about th
 quadrant centres, where the principal point moves out of the image centre.
 
 \paragraph{Optical versus digital zoom.}
-A digital zoom changes the camera \emph{and} loses detail; a real (optical) zoom only changes the
-camera. We separate the two with a resolution trick. Treat a $2\times$ down-sampled copy of each
-image as the camera. Its \emph{optical} $2\times$ zoom is the same field of view cut from the
-full-resolution image, with real detail; its \emph{digital} $2\times$ zoom is a crop of the
-down-sampled image, up-sampled. Both have identical intrinsics and output size and are compared with
-the down-sampled camera's own prediction on the same pixels. We also repeat the $2\times$ zoom with
-bilinear instead of bicubic resampling, and compress the unzoomed image to JPEG quality 75.
+A digital zoom changes the camera \emph{and} loses detail. Treating a $2\times$ down-sampled copy of each image
+as the camera, its \emph{optical} $2\times$ zoom is the same field of view cut from the full-resolution image,
+with real detail, and its \emph{digital} $2\times$ zoom a crop of the down-sampled image, up-sampled; both have
+identical intrinsics. We also test bilinear resampling and JPEG quality 75.
 
 \paragraph{Splitting a zoom into its causes.}
-\label{par:cues}
+\label{sec:cues}
 A digital zoom changes two things at once. It throws away the context around the crop, and it makes
 everything inside the crop $s$ times larger. To see which one moves the depth, we build two more images
-from each photo (\cref{fig:cueexample}). \emph{Paste}: the $2\times$ crop stays at its own place and size,
+from each photo. \emph{Paste}: the $2\times$ crop stays at its own place and size,
 and the rest of the frame is filled with the image's mean colour. The camera is unchanged, so the model
 gets the original $K$, and only the context is gone. \emph{Shrink}: the whole image is made $2\times$
 smaller and placed in the middle of a plain canvas, with its own intrinsics (the inverse of
@@ -52,14 +49,21 @@ with the original (\emph{context} effect), the zoom with the paste (\emph{magnif
 content, $2\times$ larger), the zoom with the original, and the shrink with the original. A model that
 respects the camera keeps depth in all four. A model that reads apparent size gives ratios of 1, 0.5, 0.5
 and 2. The plain border is itself unusual, so we read the paste and shrink as interventions on the cue,
-not as natural images. These runs use 100 images per set for the four fast models, and 50 for Depth Pro
-and DA3-Metric-L.
+not as natural images. We run the split for DA-V2-S, ZoeDepth, MoGe-2-S and UniDepthV2-S (100 images per
+set), Depth Pro and DA3-Metric-L (50 per set), and for DA-V2-S before and after fine-tuning (\cref{sec:eft}).
+
+\paragraph{Giving the camera back.}
+\label{sec:camint}
+To locate the failure of a camera-predicting model, we give the same network the true zoomed camera $K'$ of
+\cref{eq:law}. For Depth Pro and DA3-Nested, whose metres are their own focal estimate times a camera-free
+output, this is an exact rescaling of the audit's predictions. MoGe-2 takes the true horizontal field of view in
+place of the one it recovers from its point map, and UniDepthV2 conditions its decoder on the rays of $K'$; we
+rerun both on the same 200 images per set as their plain runs.
 
 \paragraph{Scope of the claim.}
-For a model that does not receive the camera, a crop changes the visible context, and its output may
-legitimately change where the content is ambiguous (\cref{sec:law}). The audit therefore measures how
-far each model is from the law and in which direction; it is not a claim that every image-only
-estimator can or should reach $\alpha=0$ on every image.
+For a model without the camera, a crop changes the visible context, and its output may legitimately change
+where the content is ambiguous (\cref{sec:law}). The audit measures how far each model is from the law and in
+which direction, not whether every image-only estimator can reach $\alpha=0$ on every image.
 
 \paragraph{Metrics.}
 \textbf{Label-free:} the exponents $\alpha$ and $\beta$ of \cref{eq:exponents}, and the depth
@@ -72,8 +76,3 @@ whole scenes (cluster bootstrap); paired comparisons use Wilcoxon signed-rank te
 correction. We also report a shape error, the median absolute deviation of
 $\log \hat D_s/\hat D_1$ from its median, which is zero when a zoom changes depth by a single global
 factor.
-
-\paragraph{Sanity check of the pipeline.}
-Projecting random 3D points with $K$, applying the crop-and-resize to the pixel coordinates,
-and projecting with $K'$ agree to $<10^{-3}$\,px for all zooms and crop centres, and a constant
-depth map survives the zoom/unzoom round trip exactly.

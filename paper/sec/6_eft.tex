@@ -19,24 +19,21 @@ with a zoom term (first) and an anchor (second), where $b$ is a random box with 
 centre, $\mathcal{U}_b$ resamples the zoomed prediction onto the crop grid, and
 $\cdot|_b$ crops. The teacher's prediction on the \emph{unzoomed} image is the target for
 the zoomed one, so the student has to discover from the pixels that a zoom happened and
-undo the size-based shortcut. The anchor keeps the student on the teacher for ordinary images.
+undo the size-based shortcut.
 No depth labels and no intrinsics are used.
 
 \paragraph{Setup.}
 We tune Depth Anything V2 metric Small (24.8M parameters), the outdoor head on the frames of
 seven KITTI raw drives that are disjoint from the 13 drives of the KITTI val selection (3{,}323
-images; the kernel asserts the disjointness), and the indoor head on the RGB of the 795
+images), and the indoor head on the RGB of the 795
 official NYUv2 training images. AdamW, learning rate $5\cdot10^{-5}$ (head) and
 $5\cdot10^{-6}$ (backbone), batch 4, 3{,}000 steps, $\lambda=1$, horizontal flips, input height
-392\,px, mixed precision on one T4 GPU. DIODE is never used for training: it measures whether the
-model learned what a zoom looks like in general or only in KITTI and NYUv2. Frozen and tuned
-models are evaluated with identical preprocessing.
+392\,px, mixed precision on one T4 GPU. DIODE is never used for training. The frozen baseline is re-evaluated through the same fixed 392-px input
+as the tuned models, so its $\alpha$ and error can differ from \cref{tab:audit}.
 
 \paragraph{The resolution shortcut and EFT+B.}
-A digital zoom does two things at once: it narrows the field of view and it removes detail
-(each output pixel is interpolated from fewer input pixels). A student trained with
-\cref{eq:eft} alone can therefore learn to detect a zoom from \emph{sharpness} instead of
-geometry. The blur control of \cref{sec:audit} exposes exactly this (\cref{sec:eftresults}).
+A digital zoom also removes detail, so a student trained with \cref{eq:eft} alone can learn to detect a
+zoom from \emph{sharpness} instead of geometry. The blur control of \cref{sec:audit} exposes exactly this (\cref{sec:eftresults}).
 EFT+B adds a third term that removes the shortcut:
 \begin{equation}
   \mathcal{L}_{\text{B}} = \mathcal{L} + \mu\,\big\| \log \hat D_\theta(\mathcal{B}_{s'} I) - \log \hat D_0(I)\big\|_1,
@@ -45,12 +42,18 @@ where $\mathcal{B}_{s'}$ down-samples by an independent $s'\sim\operatorname{Log
 up-samples back. A blurred image has the field of view of the original, so its target is the
 unzoomed depth; detail loss alone is no longer evidence of a zoom. We use $\mu=1$.
 
-\paragraph{Baselines and ablations.} Any fine-tuning changes a model, so improvements could come
-from the training itself. An anchor-only run is not a valid control here: the student starts as
-an exact copy of the teacher and sees the same input, so its loss and gradient are exactly zero
-and it stays the frozen model (we verified this). The \emph{blur-only} control instead keeps the
-anchor and the blur term and drops the zoom term, with the same images, steps, flips and
-optimiser. We also report EFT+B with a three times stronger anchor ($\lambda=3$) to probe the
-trade-off with accuracy on unzoomed images, and a variant in the style of Zhong \etal~\cite{zhong2023equivariance}
-whose target is the student's own stop-gradient prediction on the unzoomed image instead of the frozen
-teacher. All variants are scored with the same code.
+\paragraph{EFT-S: correcting only the scale.}
+The zoom error of the frozen model is almost one number per image. At $3\times$ the log depth of the crop
+moves by \fixedShiftThree{} (median absolute value), while its shape, the median absolute deviation of the
+log ratio from its median (\cref{sec:audit}), changes by only \fixedShapeThree. EFT-S therefore keeps
+DA-V2-S frozen and learns one log-scale per image, $\hat D = \hat D_0(I)\,e^{c(I)}$, with the EFT+B objective.
+$c$ is a two-layer MLP (198{,}657 parameters) on the last-layer class token and mean patch token of the frozen
+ViT; its last layer starts at zero, so training starts from the frozen model, and the depth shape is the
+frozen model's by construction. Since $c$ is one number per view, the head can be fitted from a cache of frozen-model outputs in about a
+minute on a CPU (supplement). EFT-S is a cheap check of
+how far a scale correction alone goes; it cannot fix the shape part of the zoom error.
+
+\paragraph{Baselines and ablations.} An anchor-only run is not a valid control: the student starts as an
+exact copy of the teacher, so its loss and gradient are exactly zero (we verified this). The \emph{blur-only}
+control keeps the anchor and the blur term and drops the zoom term, with everything else unchanged. We also report EFT+B with a three times stronger anchor ($\lambda=3$) and a Zhong
+\etal-style~\cite{zhong2023equivariance} variant whose target is the student's own stop-gradient prediction.

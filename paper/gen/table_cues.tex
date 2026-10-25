@@ -1,6 +1,16 @@
 \begin{table}[t]\centering\small
-\caption{Splitting a $2\times$ zoom into its two parts, median depth ratio on the same pixels (1 = unchanged). \emph{Context}: the crop pasted at its own place and size on a plain canvas. \emph{Magnify}: the zoomed image against that pasted crop. \emph{Zoom}: both together. \emph{Shrink}: the whole image made $2\times$ smaller on a canvas. A model that reads apparent size gives 1, 0.5, 0.5 and 2. Last column: the predicted focal on the shrunk image (correct: 0.5).}\label{tab:cues}
+\caption{Splitting a $2\times$ zoom into its two parts, median depth ratio on the same pixels (1 = unchanged). \emph{Context}: the crop pasted at its own place and size on a plain canvas. \emph{Magnify}: the zoomed image against that pasted crop. \emph{Zoom}: both together. \emph{Shrink}: the whole image made $2\times$ smaller on a canvas. A model that reads apparent size gives 1, 0.5, 0.5 and 2. $^{*}$Predicted focal on the shrunk image (correct: 0.5). Lower block: DA-V2-S at the fine-tuning input size, frozen and tuned with EFT+B and EFT-S (\cref{sec:eft}).}\label{tab:cues}
 \setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{lccccc}\toprule
-Model & context & magnify & zoom & shrink & focal, shrink \\ \midrule
+Model & context & magnify & zoom & shrink & focal$^{*}$ \\ \midrule
+DA-V2-S & 0.96 & 0.58 & 0.55 & 1.76 & -- \\
+ZoeDepth & 0.95 & 0.66 & 0.64 & 1.47 & -- \\
+MoGe-2-S & 1.06 & 0.75 & 0.79 & 1.32 & 0.75 \\
+UniDepthV2-S & 0.75 & 1.07 & 0.79 & 1.09 & 0.64 \\
+Depth Pro & 1.04 & 0.84 & 0.84 & 1.16 & 0.70 \\
+DA3-Metric-L & 0.79 & 1.34 & 1.03 & 0.78 & -- \\
+\midrule
+frozen & 1.01 & 0.54 & 0.56 & 1.79 & -- \\
+EFT+B & 1.03 & 0.86 & 0.89 & 1.52 & -- \\
+EFT-S & 1.17 & 0.71 & 0.87 & 1.88 & -- \\
 \bottomrule\end{tabular}\end{table}

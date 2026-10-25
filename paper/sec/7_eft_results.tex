@@ -11,20 +11,20 @@ the tuned model moves depth by \DavTwoSEftKittiBlur\% on KITTI when the image is
 With the blur-invariance term the shortcut is gone (\DavTwoSEftbKittiBlur\% on KITTI,
 \DavTwoSEftbNyuBlur\% on NYUv2) and $\alpha$ drops further, to \DavTwoSEftbKittiAlpha{} and
 \DavTwoSEftbNyuAlpha. On the two datasets never used in training it is \DavTwoSEftbDiodeInAlpha{} and
-\DavTwoSEftbDiodeOutAlpha{} (frozen: \DavTwoSFixedDiodeInAlpha{} and \DavTwoSFixedDiodeOutAlpha), so the
-model learns part of what a zoom looks like in general.
+\DavTwoSEftbDiodeOutAlpha{} (frozen: \DavTwoSFixedDiodeInAlpha{} and \DavTwoSFixedDiodeOutAlpha). Over \eftbSeeds{} training seeds
+$\alpha$ is $\EftbSeedsKittiAlphaMean\pm\EftbSeedsKittiAlphaSd$, $\EftbSeedsNyuAlphaMean\pm\EftbSeedsNyuAlphaSd$,
+$\EftbSeedsDiodeInAlphaMean\pm\EftbSeedsDiodeInAlphaSd$ and $\EftbSeedsDiodeOutAlphaMean\pm\EftbSeedsDiodeOutAlphaSd$
+(mean $\pm$ sd, same order).
 
 \paragraph{The cost.}
-Equivariance is not free here. AbsRel on unzoomed KITTI images rises from \DavTwoSFixedKittiAbsrelOne{}
+AbsRel on unzoomed KITTI images rises from \DavTwoSFixedKittiAbsrelOne{}
 to \DavTwoSEftbKittiAbsrelOne{}, and on DIODE-outdoor from \DavTwoSFixedDiodeOutAbsrelOne{} to
-\DavTwoSEftbDiodeOutAbsrelOne{}, while NYUv2 improves (\DavTwoSFixedNyuAbsrelOne{} to
-\DavTwoSEftbNyuAbsrelOne). A three times stronger anchor does not buy the KITTI accuracy back
-(\DavTwoSEftbThreeKittiAbsrelOne) and costs NYUv2 (\DavTwoSEftbThreeNyuAbsrelOne), at the same $\alpha$
-(\DavTwoSEftbThreeKittiAlpha, \DavTwoSEftbThreeNyuAlpha); the trade-off is not a matter of tuning the
-weight.
+\DavTwoSEftbDiodeOutAbsrelOne{} (higher for every seed), while NYUv2 is about unchanged
+(\DavTwoSFixedNyuAbsrelOne{} to $\EftbSeedsNyuAbsrelOneMean\pm\EftbSeedsNyuAbsrelOneSd$ over seeds). A three times stronger anchor does not buy the KITTI accuracy back
+(\DavTwoSEftbThreeKittiAbsrelOne) at the same $\alpha$ (\DavTwoSEftbThreeKittiAlpha).
 
 \paragraph{What does the work.}
-Two controls isolate the ingredients. Blur augmentation alone, without the zoom term, leaves most of the
+Blur augmentation alone, without the zoom term, leaves most of the
 effect in place ($\alpha$ \DavTwoSBlurKittiAlpha{} on KITTI, \DavTwoSBlurNyuAlpha{} on NYUv2): seeing
 low-detail images is not what teaches the model the camera. Replacing the frozen teacher with the
 student's own stop-gradient prediction, as in Zhong \etal~\cite{zhong2023equivariance}, reaches a
@@ -33,12 +33,11 @@ similar $\alpha$ (\DavTwoSZhongKittiAlpha, \DavTwoSZhongNyuAlpha) but drifts: th
 (\DavTwoSZhongKittiAbsrelOne{} on KITTI, \DavTwoSZhongNyuAbsrelOne{} on NYUv2). The frozen teacher, the
 zoom term and the blur term are each needed.
 
-\begin{figure}[t]
-  \centering
-  \maybefig{fig5_finetuning}
-  \caption{Depth ratio (top) and AbsRel (bottom) against the zoom factor for the frozen and fine-tuned
-  models. AbsRel at different zooms is measured on different pixels (the crop); $\alpha$, not AbsRel, is
-  the equivariance measure: on NYUv2 the frozen model over-estimates depth at $1\times$, so the shrink at
-  moderate zoom happens to lower its error.}
-  \label{fig:eft}
-\end{figure}
+\paragraph{Correcting only the scale.}
+EFT-S leaves the frozen network untouched and learns one number per image (per-domain table in the supplement). It reaches
+$\alpha=\DavTwoSScaleNyuAlpha$ on NYUv2 at no cost on unzoomed images (AbsRel \DavTwoSScaleNyuAbsrelOne, frozen
+\DavTwoSFixedNyuAbsrelOne), and on the two unseen datasets it transfers better than EFT+B
+($\alpha=\DavTwoSScaleDiodeInAlpha$ and \DavTwoSScaleDiodeOutAlpha, against \DavTwoSEftbDiodeInAlpha{} and
+\DavTwoSEftbDiodeOutAlpha). On KITTI it is weaker ($\alpha=\DavTwoSScaleKittiAlpha$ against
+\DavTwoSEftbKittiAlpha), and on KITTI and DIODE-outdoor it costs more unzoomed accuracy than EFT+B
+(\DavTwoSScaleKittiAbsrelOne{} and \DavTwoSScaleDiodeOutAbsrelOne).

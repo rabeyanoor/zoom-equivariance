@@ -2,22 +2,11 @@
 \label{sec:conclusion}
 
 \paragraph{Limitations.}
-A digital zoom is an exact camera change, but a real zoom lens also adds distortion and changes focus. Our
-optical-zoom control separates detail loss from the camera change, but it is still a resampled image. For a
-model without camera input, a crop also removes context, so $\alpha=0$ is a target and not a promise on
-every image (\cref{sec:audit}). The cue split uses images with a plain border, which no model saw in
-training, so it shows which cue a model reacts to but not how it behaves on natural photos with less
-context. The label-free score predicts which model degrades under zoom and helps flag images, but it does
-not predict accuracy in general, and it is weakest on DIODE-outdoor. EFT+B buys equivariance with some
-accuracy on unzoomed and unseen images in our setting. It shows that the law can train a model. It is not a
-drop-in replacement. Stale intrinsics in camera-conditioned models are a known deployment problem~\cite{kim2026mismatch},
-and we only place them on the same scale as the other groups.
+Real zoom lenses add distortion, and our optical-zoom control is still resampled. Without camera input a crop
+also removes context, so $\alpha=0$ is a target, not a promise. The cue split uses unnatural plain borders. The camera intervention is exact only
+for Depth Pro and DA3-Nested; MoGe-2 takes only the horizontal field of view. The label-free score does not predict accuracy in general. EFT+B buys equivariance with some accuracy on
+unzoomed and unseen images; it shows that the law can train a model, not a drop-in replacement.
 
 \paragraph{Conclusion.}
-A crop is the simplest camera change there is, and its effect is known exactly. Metric depth models that
-are not given the camera mostly miss it. They read depth from apparent size, which a zoom changes in the
-same way as moving closer, and the zoom--squash ambiguity explains why size cannot tell the difference.
-Splitting the zoom shows that magnification, not lost context, does most of the damage. Two exponents make
-all of this visible without labels and put every model on one scale. They also show what a fix must avoid,
-since a model can learn to spot a zoom from blur instead of geometry. We hope the zoom check becomes a
-routine test for any model that claims to output metres.
+Metric depth models without the camera mostly read a crop as moving closer. The zoom check needs no labels and
+should be a routine test for models that output metres.
