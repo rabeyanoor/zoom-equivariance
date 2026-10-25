@@ -538,7 +538,7 @@ write_table("table_eftf", [
     r"\caption{EFT-F: Depth Pro with only its focal head tuned on unlabeled KITTI and NYUv2 training images (the "
     r"depth network is unchanged). Same 200 images per set; median $\alpha$, $\beta$, mean AbsRel at $1\times$ and "
     r"$3\times$; ideal $\alpha=0$, $\beta=1$.}\label{tab:eftf}",
-    r"\setlength{\tabcolsep}{2.5pt}",
+    r"\footnotesize\setlength{\tabcolsep}{2pt}",
     r"\begin{tabular}{lcccccccc}\toprule",
     r"& \multicolumn{2}{c}{$\alpha$} & \multicolumn{2}{c}{$\beta$} & \multicolumn{2}{c}{Abs$_{1\times}$} & "
     r"\multicolumn{2}{c}{Abs$_{3\times}$} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}",
@@ -601,7 +601,7 @@ write_table("table_srraw", [
     r"\caption{Real optical zoom (SR-RAW~\cite{zhang2019zoom}): the same static scene shot at several focal lengths "
     r"($s\le3.2$), against the same zoom done digitally from the widest shot. Median over sequences; ideal "
     r"$\alpha=0$, $\beta=1$.}\label{tab:srraw}",
-    r"\setlength{\tabcolsep}{3pt}",
+    r"\setlength{\tabcolsep}{2.5pt}",
     r"\begin{tabular}{lrcccc}\toprule",
     r"& & \multicolumn{2}{c}{$\alpha$} & \multicolumn{2}{c}{$\beta$} \\ \cmidrule(lr){3-4}\cmidrule(lr){5-6}",
     r"Model & seq. & optical & digital & optical & digital \\ \midrule",

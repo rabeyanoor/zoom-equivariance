@@ -26,8 +26,7 @@ focal estimate grows by only \UnidepthTwoSFocalThree--\DepthproFocalThree{} at $
 $3$. Metric3D with the correct $K'$ is close to the law ($\alpha=\MetricThreedSAlpha$, a slight
 over-correction), and with the stale $K$ its exponent is $\alpha=\MetricThreedSStaleKAlpha$, larger by
 \staleDiff{} per image as derived in \cref{sec:law}. On the same pixels, the AbsRel of DA-V2-S grows from \DavTwoSBaseThree{} unzoomed to \DavTwoSAbsrelThree{}
-at $3\times$. Intervals in \cref{tab:audit} resample whole scenes (\nScenes{} in total). UniDepthV2-S's high pooled
-AbsRel comes from DIODE-outdoor, which it places too far (see below).
+at $3\times$. Intervals in \cref{tab:audit} resample whole scenes (\nScenes{} in total).
 
 \begin{figure}[t]
   \centering
@@ -76,7 +75,7 @@ saw, size helps the pixels-only family but does not remove the effect ($\alpha$ 
 \DavTwoBAlphaShared{} and \DavTwoLAlphaShared{} for DA-V2-S, B and L); MoGe-2 is flat across sizes and UniK3D-L
 comes closest ($\alpha=\UnikThreedLAlphaShared$). The largest model in the study, DA3-Nested
 (\DaThreeNestedParams M parameters), shrinks depth with $\alpha=\DaThreeNestedAlphaSmallShared$ on the \nSmallShared{} images it shares with the
-main models (\DaThreeNestedAlpha{} on all \DaThreeNestedCamImages{} of its images), close to the
+main models, close to the
 pixels-only ZoeDepth (\ZoedepthAlphaSmallShared), while DA3-Metric-L and Metric3D v2-L, which are given the
 camera, keep it (\DaThreeMetricLAlphaSmallShared{} and \MetricThreedLAlphaSmallShared). What decides the
 behaviour is whether the camera enters the model, not how large the model is.
@@ -100,8 +99,7 @@ one, so a focal estimate is not simply a camera measurement that can be swapped 
 UniDepthV2 also accept the camera as input, and for them the true camera helps on both counts: $\alpha$ falls
 from \MogeTwoSCamOwnAlpha{} to \MogeTwoSCamGivenAlpha{} and from \UnidepthTwoSCamOwnAlpha{} to
 \UnidepthTwoSCamGivenAlpha, and the unzoomed scale error from \MogeTwoSCamOwnScale{} to \MogeTwoSCamGivenScale{}
-and from \UnidepthTwoSCamOwnScale{} to \UnidepthTwoSCamGivenScale. UniDepthV2, whose decoder is conditioned on the
-camera rays, keeps part of its zoom error even with the true rays. Its large error on DIODE-outdoor
+and from \UnidepthTwoSCamOwnScale{} to \UnidepthTwoSCamGivenScale. UniDepthV2-S's large error on DIODE-outdoor
 (\cref{tab:audit}) is a scale over-estimate (median factor \udDiodeOutScale), which the official inference code
 reproduces.
 \input{gen/table_camera}
@@ -118,11 +116,8 @@ raises their depth (DA-V2-S \DavTwoSCueShrink, against 2 for apparent size alone
 mechanism. MoGe-2-S behaves like the pixels-only models (magnify \MogeTwoSCueMagnify, below 1 on
 \MogeTwoSCueMagnifyBelowOne{} of 4 datasets). UniDepthV2-S reacts to the lost context instead (context
 \UnidepthTwoSCueContext, below 1 on \UnidepthTwoSCueContextBelowOne{} of 4; magnify \UnidepthTwoSCueMagnify).
-Depth Pro follows magnification on KITTI and NYUv2 but not on DIODE (pooled \DepthproCueMagnify). All three
-shrink their focal on the shrunk image less than the correct factor 0.5 (\MogeTwoSCueShrinkFocal,
-\UnidepthTwoSCueShrinkFocal, \DepthproCueShrinkFocal). DA3-Metric-L, which is given the camera, moves in opposite
-directions under the two edits (\DaThreeMetricLCueContext{} and \DaThreeMetricLCueMagnify), which nearly cancel
-in the full zoom (\DaThreeMetricLCueZoom). 
+Depth Pro follows magnification on KITTI and NYUv2 but not on DIODE (pooled \DepthproCueMagnify); DA3-Metric-L
+is discussed in the supplement.
 \input{gen/table_cues}
 
 \paragraph{What the label-free score is good for.}
@@ -132,5 +127,4 @@ on the same pixels (Spearman \proxyRhoDeltaThreeTwoWay, 95\% interval
 unzoomed images (\proxyRhoOne): without labels, the audit tells which model will degrade most under zoom, not which model is more
 accurate. When the zoom factor is known, multiplying the depth by $s^{\hat\alpha}$, with $\hat\alpha$
 measured without labels on other images, removes between a third and two thirds of the $3\times$ zoom error of
-DA-V2-S on KITTI, NYUv2 and DIODE-indoor, but not on the heavy-tailed DIODE-outdoor. All three analyses are
-detailed in the supplement, with a per-image risk--coverage test.
+DA-V2-S on KITTI, NYUv2 and DIODE-indoor, but not on the heavy-tailed DIODE-outdoor. Details, and a per-image risk--coverage test, are in the supplement.

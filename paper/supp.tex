@@ -114,7 +114,7 @@ narrow the gap; they do not close it.
 
 Size alone is not the answer. On the \nSmallShared{} images it shares with the main models, the largest
 model in the study, DA3-Nested (\DaThreeNestedParams M parameters), shrinks depth with
-$\alpha=\DaThreeNestedAlphaSmallShared$, more than Depth Pro, MoGe-2-S and UniDepthV2-S
+$\alpha=\DaThreeNestedAlphaSmallShared$ (\DaThreeNestedAlpha{} on all \DaThreeNestedCamImages{} of its images), more than Depth Pro, MoGe-2-S and UniDepthV2-S
 (\DepthproAlphaSmallShared, \MogeTwoSAlphaSmallShared, \UnidepthTwoSAlphaSmallShared) and close to the
 pixels-only ZoeDepth (\ZoedepthAlphaSmallShared); its focal follows the zoom only partly
 ($\beta=\DaThreeNestedBetaSmallShared$) and, on its own sample, $\alpha+\beta=\DaThreeNestedAlphaPlusBeta$, again the
@@ -125,6 +125,12 @@ models, VGGT-1B tracks the focal change well ($\beta=\VggtBetaSmallShared$) and 
 large the model is.
 
 \input{gen/table_ladder}
+
+\paragraph{Cue split, further notes.} On the shrunk image, MoGe-2-S, UniDepthV2-S and Depth Pro all shrink their
+focal less than the correct factor 0.5 (\MogeTwoSCueShrinkFocal, \UnidepthTwoSCueShrinkFocal,
+\DepthproCueShrinkFocal). DA3-Metric-L, which is given the camera, moves in opposite directions under the two
+edits of \cref{tab:cues} (\DaThreeMetricLCueContext{} and \DaThreeMetricLCueMagnify), which nearly cancel in the
+full zoom (\DaThreeMetricLCueZoom).
 
 \section{What the label-free score is good for}\label{sec:supp_label}
 
