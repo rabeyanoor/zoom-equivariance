@@ -1,5 +1,10 @@
 line-length = 130
 [lint]
 select = ["E", "F", "W", "I"]
+[lint.per-file-ignores]
+# notebooks: sys.path setup comes before the project imports
+"notebooks/*" = ["E402", "I001", "F821", "E501", "E741"]  # display() is a Jupyter builtin
+"kaggle/templates/*" = ["E501"]
 [lint.isort]
-known-local-folder = ["zoom", "models", "datasets", "audit", "eft", "analysis", "test_audit"]
+known-local-folder = ["zoom", "models", "datasets", "audit", "eft", "eft_focal", "analysis", "regions", "srraw", "plotstyle",
+                      "test_audit"]

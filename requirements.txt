@@ -12,6 +12,8 @@ einops
 timm
 mmengine            # Metric3D config (see models._mmcv_shim)
 git+https://github.com/microsoft/MoGe.git
+git+https://github.com/cvg/GeoCalib#egg=geocalib   # calibration-only reference
+gdown               # SR-RAW download (Google Drive)
 # UniDepth: pip install --no-deps -e third_party/UniDepth (clone github.com/lpiccinelli-eth/UniDepth)
 jupyter
 jupytext

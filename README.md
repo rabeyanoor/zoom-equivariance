@@ -1,101 +1,105 @@
 # Zoom equivariance of metric depth models
 
-**Title:** *Zoom In, Scale Out: Metric Depth Models Mistake a Digital Zoom for a Closer Scene*. Author: Rabeya Noor.
-Target venue is CVPR 2027 (abstract ~7-10 Nov 2026, paper ~12-16 Nov 2026).
+Code, results and paper for *Zoom In, Scale Out: When Metric Depth Models Mistake Digital Zoom for Scene Motion*
+(CVPR 2027 submission, under double-blind review: do not link this repository from the paper).
 
-A crop followed by a resize is an exact digital zoom: the focal length is multiplied by s and the depth stays the same. We use that law in three ways:
+A centred crop followed by a resize is an exact digital zoom: the focal length is multiplied by the zoom
+factor s and the depth of the scene does not change. Fitting the predicted depth and focal to powers of s gives
+two label-free exponents per image:
 
-1. **Label-free audit.** We measure how far 7 metric depth models are from the law with two exponents. α is the depth exponent (ideal 0). β is the focal exponent (ideal 1).
-2. **Theory.** We derive the α+β=1 lateral invariant and the zoom–squash ambiguity: a zoomed photo looks the same as a photo of the scene squashed along the depth axis.
-3. **Fine-tuning on unlabeled images.**
-   - EFT is self-consistency in the spirit of Zhong et al., ICCV 2023.
-   - EFT+B adds a blur-invariance term. It closes the "blurry means zoomed" shortcut we found.
+- **α**, the depth exponent: depth ∝ s^-α, ideal 0;
+- **β**, the focal exponent: focal ∝ s^β, ideal 1.
 
-A Bangla overview of the project (`docs/`) is kept on the laptop and is not part of the repo.
+The repository measures both for current metric depth models, explains where the error comes from, and corrects it
+without depth labels.
 
-## Folder layout
+| Part | What it does | Code |
+|---|---|---|
+| Audit | α, β, errors against ground truth under zooms 1–3× on KITTI, NYUv2, DIODE | `src/audit.py`, `scripts/run_audit.py` |
+| Camera intervention | the same networks given the true focal; α+β = 1+α_K for Depth Pro and DA3-Nested | `scripts/make_paper_numbers.py` |
+| Cue split | a 2× zoom split into lost context and magnification | `src/audit.py` (`--cues`) |
+| Semantic regions | α on objects of familiar size vs walls/floors/roads (SegFormer-B5, ADE20K) | `src/regions.py` |
+| Calibration reference | GeoCalib's focal exponent under the same zooms | `src/models.py` (`geocalib`) |
+| Real optical zoom | α and β on SR-RAW, static scenes shot at several focal lengths, against the same zoom done digitally | `src/srraw.py` |
+| EFT / EFT+B | fine-tuning DA-V2-S with a zoom self-consistency loss (+ blur invariance) | `src/eft.py`, `scripts/train_eft.py` |
+| EFT-S | frozen network + one learned log-scale per image | `scripts/eft_scale.py` |
+| EFT-F | Depth Pro's focal head tuned with a focal-consistency loss; depth network untouched | `src/eft_focal.py`, `scripts/train_eft_focal.py` |
+
+## Layout
 
 ```
 zoom-equivariance/
-├── README.md
-├── src/                    library code (imported by scripts and notebooks)
-│   ├── zoom.py             exact crop/resize geometry, zoom_K, blur control
-│   ├── models.py           one predict(img, K) interface for 7 models + fine-tuned variants
-│   ├── datasets.py         KITTI val selection, NYUv2 test (654), DIODE val indoor/outdoor
-│   ├── audit.py            per image x zoom: self-consistency, focal, errors vs GT; cue split
-│   ├── eft.py              EFT / EFT+B / anchor-only trainer
-│   └── analysis.py         alpha/beta fits, bootstrap CIs, summaries
-├── scripts/                command-line jobs
-│   ├── run_audit.py        the audit (heavy: Kaggle GPU)
-│   ├── train_eft.py        fine-tuning (Kaggle GPU)
-│   ├── scene_stats.py      GT depth spread per image + Figure 1 maps (Kaggle CPU)
-│   ├── kaggle_build.py     packs src/ + scripts into one Kaggle kernel
-│   ├── kaggle_queue.sh     pushes waiting kernels when a GPU slot is free (max 2)
-│   ├── fetch_kernel.sh     downloads a finished kernel's output and keeps its log
-│   ├── save_logs.py        Kaggle JSON logs -> readable text in logs/
-│   ├── make_paper_numbers.py  every number/table in the paper, from the CSVs
-│   └── download.sh         local dataset download (not needed when using Kaggle)
-├── notebooks/              analysis, run one at a time (jupytext .py + executed .ipynb)
-│   ├── 01_zoom_geometry_check   our zoom code is exact (no model, no data)
-│   ├── 02_audit_results         Table 1, alpha/beta curves
-│   ├── 03_label_free_proxy      does the label-free score predict real error?
-│   ├── 04_off_centre_and_stale_K
-│   ├── 05_eft_results           frozen vs anchor-only vs EFT vs EFT+B
-│   ├── 06_figure1               teaser figure
-│   └── 07_cue_split             lost context vs magnification
-├── kaggle/
-│   ├── templates/          kernel bodies (audit_main.py, eft_main.py)
-│   └── build/              generated kernels, one folder each (not in git)
-├── outputs/
-│   ├── results/            final CSVs the notebooks read
-│   ├── eft/                fine-tuned checkpoints (.pt not in git) + training logs
-│   ├── figures/  tables/   produced by the notebooks
-│   └── kaggle/             raw downloads per kernel (not in git)
-├── logs/
-│   ├── kaggle/             one text log per Kaggle kernel run (kept, never overwritten)
-│   └── local/              push queue and download logs (laptop only, not in git)
-├── paper/                  CVPR LaTeX: main.tex (anonymous), main_named.tex (with author), supp.tex, sec/, gen/, main.bib
-└── third_party/            UniDepth, Metric3D repos (not in git)
+├── src/                  library code
+│   ├── zoom.py           exact crop/resize geometry and the zoomed intrinsics
+│   ├── datasets.py       KITTI val selection, NYUv2 test (654), DIODE val indoor/outdoor; fixed image samples
+│   ├── models.py         one predict(img, K) -> {depth, fx} interface for every model and fine-tuned variant
+│   ├── audit.py          per image and zoom: self-consistency, focal, errors against GT; controls; cue split
+│   ├── regions.py        per-region depth ratios from a semantic segmentation
+│   ├── srraw.py          real optical vs digital zoom on SR-RAW
+│   ├── eft.py            EFT / EFT+B / EFT-S trainers
+│   ├── eft_focal.py      EFT-F: focal-consistency loss on Depth Pro's focal head (cached frozen features)
+│   ├── analysis.py       α/β fits, bootstrap intervals, summaries
+│   └── plotstyle.py      figure style
+├── scripts/              command-line jobs (each one runs on its own; heavy ones on Kaggle)
+├── kaggle/templates/     kernel bodies; scripts/kaggle_build.py packs src/ + scripts into one kernel
+├── notebooks/            analysis notebooks (jupytext .py + executed .ipynb)
+├── tests/                unit tests (no model weights needed; CI runs them on every push)
+├── outputs/results/      every result CSV the paper is built from
+├── outputs/eft/          training logs (checkpoints are not in git)
+├── logs/kaggle/          one log per Kaggle kernel run
+└── paper/                LaTeX: main.tex (anonymous), main_named.tex, supp.tex, sec/, gen/ (generated)
 ```
 
-## Kaggle kernels
-
-Each run's log is kept in `logs/kaggle/<kernel>.log`.
-
-| Kernel | What |
-|---|---|
-| `zoom-equivariance-audit-a` | 6 models x 4 sets x 200 images |
-| `zoom-equivariance-audit-a2` | rerun of audit-a with the same-pixel reference column |
-| `zoom-equivariance-audit-b` | Depth Pro + off-centre zooms |
-| `zoom-equivariance-eft` | EFT training + frozen vs EFT |
-| `zoom-equivariance-eft-baseline` | anchor-only and EFT+B training, scores all four |
-| `zoom-equivariance-stats` | GT depth spread + Figure 1 maps (CPU) |
-| `zoom-equivariance-audit-cues`, `-cues2`, `-cues3` | cue split (context vs magnification), CPU |
-
-## Workflow
+## Setup
 
 ```bash
-# build and push (the queue pushes automatically when a slot frees)
-.venv/bin/python scripts/kaggle_build.py rabeya100x audit a2
-kaggle kernels push -p kaggle/build/audit_a2
-
-# when a kernel is done: download its output, keep the log
-scripts/fetch_kernel.sh audit-a2
-cp outputs/kaggle/audit-a2/results/*.csv outputs/results/
-
-# analysis, one notebook at a time
-cd notebooks
-../.venv/bin/jupytext --to ipynb 02_audit_results.py
-../.venv/bin/jupyter nbconvert --to notebook --execute --inplace \
-    --ExecutePreprocessor.kernel_name=zoom-eq 02_audit_results.ipynb
-
-# paper numbers and tables
-.venv/bin/python scripts/make_paper_numbers.py     # -> paper/gen/
+python -m venv .venv && . .venv/bin/activate
+pip install torch --index-url https://download.pytorch.org/whl/cpu   # or a CUDA build
+pip install -r requirements.txt
+git clone --depth 1 https://github.com/lpiccinelli-eth/UniDepth.git third_party/UniDepth
+pip install --no-deps -e third_party/UniDepth
+git clone --depth 1 https://github.com/YvanYin/Metric3D.git third_party/Metric3D
+pytest && ruff check .
 ```
 
-The paper compiles on Overleaf: upload the `paper/` folder and set `main.tex` as the main file. Compile
-`main.tex` first, then `supp.tex`, which takes its cross-references from `main.aux`. `main.tex` is the
-anonymous copy for review; `main_named.tex` is the same paper with the author, for arXiv after review. Without LaTeX on the
-laptop, `scripts/kaggle_paper.py` builds both on a Kaggle CPU kernel.
+## Reproducing
 
-Credentials: the Kaggle CLI reads `~/.kaggle/kaggle.json`. No keys are stored in this repo or in the logs.
+All heavy runs went through Kaggle kernels. `scripts/kaggle_build.py <user> <kind> <part>` writes one kernel
+that downloads the data, installs the models and runs a list of jobs; `kaggle kernels push -p kaggle/build/<kind>_<part>`
+starts it. Pass the Kaggle credentials as the `KAGGLE_USERNAME` / `KAGGLE_KEY` environment variables; no key is
+stored in this repository.
+
+| Kernel (`kind part`) | What it runs |
+|---|---|
+| `audit a2`, `audit b` | main audit: 8 models × 4 sets × 200 images (b: Depth Pro, off-centre zooms) |
+| `audit c1`, `audit c2` | larger and newer models (DA3, UniK3D, VGGT, …) |
+| `audit d` | optical-vs-digital, interpolation and JPEG controls; fine ZoomFix grid |
+| `audit fulla`, `audit fullb` | main models on the complete test sets |
+| `eft`, `eft baseline`, `eft ablate`, `eft seeds` | EFT, EFT+B, controls, three training seeds |
+| `tpu main` | cue split and EFT-S on the CPU cores of a TPU VM |
+| `tpu camgpu` | MoGe-2 / UniDepthV2 given the true camera; Depth Pro cue split |
+| `tpu calib` | GeoCalib reference and semantic-region α |
+| `tpu focal` | EFT-F training and audit; SR-RAW real optical zoom |
+
+When a kernel is done:
+
+```bash
+kaggle kernels output <user>/zoom-equivariance-<kernel> -p /tmp/out
+cp /tmp/out/results/*.csv outputs/results/
+python scripts/make_paper_numbers.py      # every number and table of the paper -> paper/gen/
+python scripts/kaggle_paper.py <user>     # compiles the paper on a Kaggle CPU kernel (no local LaTeX needed)
+```
+
+Every number in the paper is a LaTeX macro written by `scripts/make_paper_numbers.py` from the CSVs in
+`outputs/results/`; none is typed by hand.
+
+## Data
+
+Only public data is used, downloaded by the kernels from the original sources:
+
+- KITTI depth selection (val) and raw drives disjoint from it (unlabeled training images): cvlibs.net/datasets/kitti
+- NYU Depth v2 labelled set and official split: cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html
+- DIODE val: diode-dataset.org
+- SR-RAW test set (Zhang et al., CVPR 2019; CC BY-NC 4.0): github.com/ceciliavision/zoom-learn-zoom
+
+Model weights come from their official Hugging Face or GitHub releases (see `src/models.py`).
