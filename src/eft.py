@@ -35,11 +35,58 @@ def to_input(img_u8, hw):
     return ((x - MEAN) / STD).to(DEVICE)
 
 
-def log_depth(model, x):
-    d = model(pixel_values=x).predicted_depth
+def log_depth_of(d):
+    """N x H x W or N x 1 x H x W depth -> N x 1 x H x W log depth."""
     if d.ndim == 3:
         d = d[:, None]
     return torch.log(d.clamp(min=1e-3))
+
+
+def log_depth(model, x):
+    return log_depth_of(model(pixel_values=x).predicted_depth)
+
+
+class ScaleAdapter(torch.nn.Module):
+    """EFT-S: the frozen model times one learned factor per image, D = D0(x) * exp(c(x)).
+
+    At 3x zoom the frozen DA-V2-S moves log depth by ~1.1 but changes its shape (log depth
+    after removing the median ratio) by only ~0.05, so the zoom error is almost one number per
+    image. c reads that number from the frozen ViT tokens (class token + mean patch token).
+    The depth shape is the frozen model's by construction; the last layer starts at zero, so
+    training starts from the frozen model exactly."""
+
+    def __init__(self, model, dim=None, hidden=256):
+        super().__init__()
+        self.base = model
+        for p in self.base.parameters():
+            p.requires_grad_(False)
+        dim = dim or model.config.backbone_config.hidden_size
+        self.head = torch.nn.Sequential(torch.nn.LayerNorm(2 * dim), torch.nn.Linear(2 * dim, hidden),
+                                        torch.nn.GELU(), torch.nn.Linear(hidden, 1))
+        torch.nn.init.zeros_(self.head[-1].weight)
+        torch.nn.init.zeros_(self.head[-1].bias)
+
+    def train(self, mode=True):
+        super().train(mode)
+        self.base.eval()  # frozen: no dropout or norm statistics change
+        return self
+
+    def base_and_scale(self, pixel_values):
+        """The frozen model's output and the learned log-scale c, one value per image (N x 1)."""
+        with torch.no_grad():
+            out = self.base(pixel_values=pixel_values, output_hidden_states=True)
+        return out, self.head(self.features(out.hidden_states[-1]))
+
+    @staticmethod
+    def features(tokens):
+        """What the head reads: the last layer's class token and mean patch token (N x 2*dim)."""
+        tokens = tokens.float()
+        return torch.cat([tokens[:, 0], tokens[:, 1:].mean(1)], -1)
+
+    def forward(self, pixel_values):
+        out, c = self.base_and_scale(pixel_values)
+        out.predicted_depth = out.predicted_depth * torch.exp(c).view(-1, *[1] * (out.predicted_depth.ndim - 1))
+        return out
 
 
 def random_box(h, w, rng, s_max=3.0):
@@ -100,11 +147,21 @@ class EFT:
         x, z = torch.cat(xs), torch.cat(zs)
 
         with torch.autocast(DEVICE.type, dtype=torch.float16, enabled=self.amp):
-            with torch.no_grad():
-                t = log_depth(self.teacher, x)
-            s_x = log_depth(self.student, x)
-            s_z = log_depth(self.student, z)
-            s_b = log_depth(self.student, torch.cat(bs)).float() if self.w_blur else None
+            if isinstance(self.student, ScaleAdapter):
+                # the teacher is the student's own frozen base, so one pass over all images gives both
+                # (and the frozen network runs once per image instead of twice)
+                out, c = self.student.base_and_scale(torch.cat([x, z, *bs]))
+                t_all = log_depth_of(out.predicted_depth.float())
+                s_all = t_all + c.float().view(-1, 1, 1, 1)
+                n = len(imgs)
+                t, s_x, s_z = t_all[:n], s_all[:n], s_all[n:2 * n]
+                s_b = s_all[2 * n:] if self.w_blur else None
+            else:
+                with torch.no_grad():
+                    t = log_depth(self.teacher, x)
+                s_x = log_depth(self.student, x)
+                s_z = log_depth(self.student, z)
+                s_b = log_depth(self.student, torch.cat(bs)).float() if self.w_blur else None
         t, s_x, s_z = t.float(), s_x.float(), s_z.float()
 
         ref = s_x.detach() if self.target == "student" else t
@@ -124,7 +181,7 @@ class EFT:
         torch.nn.utils.clip_grad_norm_(self.student.parameters(), 1.0)
         self.scaler.step(self.opt)
         self.scaler.update()
-        return float(l_zoom), float(l_anchor)
+        return float(l_zoom.detach()), float(l_anchor.detach())
 
 
 class FixedSizeDepth:

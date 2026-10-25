@@ -32,6 +32,10 @@ p.add_argument("--w-zoom", type=float, default=1.0, help="0 = anchor-only baseli
 p.add_argument("--w-blur", type=float, default=0.0, help="blur-invariance term (EFT+B)")
 p.add_argument("--target", default="teacher", choices=["teacher", "student"],
                help="student = Zhong et al. style self-consistency target")
+p.add_argument("--scale-only", action="store_true",
+               help="EFT-S: freeze the model, learn one log-scale correction per image (eft.ScaleAdapter)")
+p.add_argument("--lr-head", type=float, default=5e-5, help="1e-3 for the fresh EFT-S head")
+p.add_argument("--seed", type=int, default=0, help="image order, zoom boxes and torch init (0 = the paper runs)")
 p.add_argument("--tag", default="eft", help="checkpoint name: dav2-s-<tag>-<domain>.pt")
 p.add_argument("--s-max", type=float, default=3.0)
 p.add_argument("--out", default=str(ROOT / "outputs" / "eft"))
@@ -57,11 +61,14 @@ from transformers import AutoModelForDepthEstimation  # noqa: E402
 
 name = "Outdoor" if args.domain == "outdoor" else "Indoor"
 model = AutoModelForDepthEstimation.from_pretrained(f"depth-anything/Depth-Anything-V2-Metric-{name}-Small-hf")
+if args.scale_only:
+    model = eft.ScaleAdapter(model)
 h0, w0 = get(0).shape[:2]
-trainer = eft.EFT(model, eft.input_hw(h0, w0), w_anchor=args.w_anchor, w_zoom=args.w_zoom, w_blur=args.w_blur,
-                  s_max=args.s_max, target=args.target)
+torch.manual_seed(args.seed)
+trainer = eft.EFT(model, eft.input_hw(h0, w0), lr_head=args.lr_head, w_anchor=args.w_anchor, w_zoom=args.w_zoom,
+                  w_blur=args.w_blur, s_max=args.s_max, target=args.target, seed=args.seed)
 
-rng = np.random.default_rng(0)
+rng = np.random.default_rng(args.seed)
 log, t0 = [], time.time()
 for step in range(1, args.steps + 1):
     batch = [get(int(i)) for i in rng.integers(0, n_imgs, args.batch)]
