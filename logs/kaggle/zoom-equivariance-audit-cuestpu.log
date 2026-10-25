@@ -1,0 +1,150 @@
++ pip install -q transformers==5.20.1 mmengine einops timm h5py termcolor tabulate trimesh wandb
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+google-tunix 0.1.8 requires safetensors<0.8, but you have safetensors 0.8.0 which is incompatible.
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
++ pip install -q git+https://github.com/microsoft/MoGe.git
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
++ git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniDepth.git /tmp/ze/third_party/UniDepth
++ pip install -q --no-deps -e /tmp/ze/third_party/UniDepth
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
++ git clone -q --depth 1 https://github.com/YvanYin/Metric3D.git /tmp/ze/third_party/Metric3D
++ git clone -q --depth 1 https://github.com/ByteDance-Seed/Depth-Anything-3.git /tmp/ze/third_party/Depth-Anything-3
++ pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/Depth-Anything-3
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
++ git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniK3D.git /tmp/ze/third_party/UniK3D
++ pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/UniK3D
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
++ git clone -q --depth 1 https://github.com/facebookresearch/vggt.git /tmp/ze/third_party/vggt
++ pip install -q --no-deps --ignore-requires-python -e /tmp/ze/third_party/vggt
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
++ pip install -q omegaconf evo
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+depth-anything-3 0.0.0 requires e3nn, which is not installed.
+depth-anything-3 0.0.0 requires imageio, which is not installed.
+depth-anything-3 0.0.0 requires moviepy, which is not installed.
+depth-anything-3 0.0.0 requires moviepy==1.0.3, which is not installed.
+depth-anything-3 0.0.0 requires open3d, which is not installed.
+depth-anything-3 0.0.0 requires pillow-heif, which is not installed.
+depth-anything-3 0.0.0 requires plyfile, which is not installed.
+depth-anything-3 0.0.0 requires pre-commit, which is not installed.
+depth-anything-3 0.0.0 requires pycolmap, which is not installed.
+depth-anything-3 0.0.0 requires xformers, which is not installed.
+depth-anything-3 0.0.0 requires numpy<2, but you have numpy 2.5.3 which is incompatible.
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
++ cd /tmp/ze/data/raw/kitti && unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' && rm sel.zip
++ cd /tmp/ze/data/raw/diode && tar xzf val.tar.gz && rm val.tar.gz
+setup done in 5.0 min
++ /usr/local/bin/python scripts/run_audit.py dav2-s kitti nyu diode-in diode-out --n 100 --cues --out-tag cues --out /kaggle/working/results
+/usr/local/lib/python3.12/site-packages/torch_xla/experimental/gru.py:113: SyntaxWarning: invalid escape sequence '\_'
+  * **h_n**: tensor of shape :math:`(D * \text{num\_layers}, H_{out})` or
+/usr/local/lib/python3.12/site-packages/torch_xla/__init__.py:258: UserWarning: `tensorflow` can conflict with `torch-xla`. Prefer `tensorflow-cpu` when using PyTorch/XLA. To silence this warning, `pip uninstall -y tensorflow && pip install tensorflow-cpu`. If you are in a notebook environment such as Colab or Kaggle, restart your notebook runtime afterwards.
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]Loading weights: 100%|██████████| 287/287 [00:00<00:00, 6478.54it/s]
+dav2-s__kitti__cues: 10/100 images, 1.3 min
+dav2-s__kitti__cues: 20/100 images, 2.5 min
+dav2-s__kitti__cues: 30/100 images, 3.7 min
+dav2-s__kitti__cues: 40/100 images, 5.0 min
+dav2-s__kitti__cues: 50/100 images, 6.2 min
+dav2-s__kitti__cues: 60/100 images, 7.5 min
+dav2-s__kitti__cues: 70/100 images, 8.7 min
+dav2-s__kitti__cues: 80/100 images, 10.0 min
+dav2-s__kitti__cues: 90/100 images, 11.2 min
+dav2-s__kitti__cues: 100/100 images, 12.5 min
+wrote /kaggle/working/results/dav2-s__kitti__cues.csv
+Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]Loading weights: 100%|██████████| 287/287 [00:00<00:00, 6403.21it/s]
+dav2-s__nyu__cues: 10/100 images, 0.3 min
+dav2-s__nyu__cues: 20/100 images, 0.7 min
+dav2-s__nyu__cues: 30/100 images, 1.0 min
+dav2-s__nyu__cues: 40/100 images, 1.3 min
+dav2-s__nyu__cues: 50/100 images, 1.6 min
+dav2-s__nyu__cues: 60/100 images, 2.0 min
+dav2-s__nyu__cues: 70/100 images, 2.3 min
+dav2-s__nyu__cues: 80/100 images, 2.6 min
+dav2-s__nyu__cues: 90/100 images, 2.9 min
+dav2-s__nyu__cues: 100/100 images, 3.3 min
+wrote /kaggle/working/results/dav2-s__nyu__cues.csv
+Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]Loading weights: 100%|██████████| 287/287 [00:00<00:00, 7189.75it/s]
+dav2-s__diode-in__cues: 10/100 images, 0.3 min
+dav2-s__diode-in__cues: 20/100 images, 0.7 min
+dav2-s__diode-in__cues: 30/100 images, 1.0 min
+dav2-s__diode-in__cues: 40/100 images, 1.3 min
+dav2-s__diode-in__cues: 50/100 images, 1.7 min
+dav2-s__diode-in__cues: 60/100 images, 2.0 min
+dav2-s__diode-in__cues: 70/100 images, 2.3 min
+dav2-s__diode-in__cues: 80/100 images, 2.7 min
+dav2-s__diode-in__cues: 90/100 images, 3.0 min
+dav2-s__diode-in__cues: 100/100 images, 3.4 min
+wrote /kaggle/working/results/dav2-s__diode-in__cues.csv
+Loading weights:   0%|          | 0/287 [00:00<?, ?it/s]Loading weights: 100%|██████████| 287/287 [00:00<00:00, 6667.14it/s]
+dav2-s__diode-out__cues: 10/100 images, 0.3 min
+dav2-s__diode-out__cues: 20/100 images, 0.7 min
+dav2-s__diode-out__cues: 30/100 images, 1.0 min
+dav2-s__diode-out__cues: 40/100 images, 1.3 min
+dav2-s__diode-out__cues: 50/100 images, 1.7 min
+dav2-s__diode-out__cues: 60/100 images, 2.0 min
+dav2-s__diode-out__cues: 70/100 images, 2.3 min
+dav2-s__diode-out__cues: 80/100 images, 2.7 min
+dav2-s__diode-out__cues: 90/100 images, 3.0 min
+dav2-s__diode-out__cues: 100/100 images, 3.4 min
+wrote /kaggle/working/results/dav2-s__diode-out__cues.csv
++ /usr/local/bin/python scripts/run_audit.py zoedepth kitti nyu diode-in diode-out --n 100 --cues --out-tag cues --out /kaggle/working/results
+/usr/local/lib/python3.12/site-packages/torch_xla/__init__.py:258: UserWarning: `tensorflow` can conflict with `torch-xla`. Prefer `tensorflow-cpu` when using PyTorch/XLA. To silence this warning, `pip uninstall -y tensorflow && pip install tensorflow-cpu`. If you are in a notebook environment such as Colab or Kaggle, restart your notebook runtime afterwards.
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/647 [00:00<?, ?it/s]Loading weights: 100%|██████████| 647/647 [00:00<00:00, 7311.34it/s]
+zoedepth__kitti__cues: 10/100 images, 6.1 min
+zoedepth__kitti__cues: 20/100 images, 12.1 min
+zoedepth__kitti__cues: 30/100 images, 18.1 min
+zoedepth__kitti__cues: 40/100 images, 24.1 min
+zoedepth__kitti__cues: 50/100 images, 30.2 min
+zoedepth__kitti__cues: 60/100 images, 36.3 min
+zoedepth__kitti__cues: 70/100 images, 42.4 min
+zoedepth__kitti__cues: 80/100 images, 48.6 min
+zoedepth__kitti__cues: 90/100 images, 54.6 min
+zoedepth__kitti__cues: 100/100 images, 60.7 min
+wrote /kaggle/working/results/zoedepth__kitti__cues.csv
+Loading weights:   0%|          | 0/647 [00:00<?, ?it/s]Loading weights: 100%|██████████| 647/647 [00:00<00:00, 7406.71it/s]
+zoedepth__nyu__cues: 10/100 images, 1.6 min
+zoedepth__nyu__cues: 20/100 images, 3.2 min
+zoedepth__nyu__cues: 30/100 images, 4.8 min
+zoedepth__nyu__cues: 40/100 images, 6.4 min
+zoedepth__nyu__cues: 50/100 images, 8.0 min
+zoedepth__nyu__cues: 60/100 images, 9.6 min
+zoedepth__nyu__cues: 70/100 images, 11.2 min
+zoedepth__nyu__cues: 80/100 images, 12.8 min
+zoedepth__nyu__cues: 90/100 images, 14.3 min
+zoedepth__nyu__cues: 100/100 images, 16.0 min
+wrote /kaggle/working/results/zoedepth__nyu__cues.csv
+Loading weights:   0%|          | 0/647 [00:00<?, ?it/s]Loading weights: 100%|██████████| 647/647 [00:00<00:00, 6718.78it/s]
+zoedepth__diode-in__cues: 10/100 images, 1.6 min
+zoedepth__diode-in__cues: 20/100 images, 3.2 min
+zoedepth__diode-in__cues: 30/100 images, 4.8 min
+zoedepth__diode-in__cues: 40/100 images, 6.3 min
+zoedepth__diode-in__cues: 50/100 images, 7.9 min
+zoedepth__diode-in__cues: 60/100 images, 9.5 min
+zoedepth__diode-in__cues: 70/100 images, 11.1 min
+zoedepth__diode-in__cues: 80/100 images, 12.7 min

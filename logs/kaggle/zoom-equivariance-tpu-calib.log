@@ -1,0 +1,60 @@
+[{"stream_name":"stdout","time":0.849492299,"data":"+ pip install -q transformers==5.20.1 einops timm h5py wandb\n"}
+,{"stream_name":"stderr","time":18.491800179,"data":"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n"}
+,{"stream_name":"stderr","time":18.491832413,"data":"gradio 6.26.0 requires pillow\u003c13.0,\u003e=8.0, but you have pillow 13.0.0 which is incompatible.\n"}
+,{"stream_name":"stdout","time":18.708717441,"data":"+ pip install -q git+https://github.com/microsoft/MoGe.git\n"}
+,{"stream_name":"stderr","time":40.529390009,"data":"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n"}
+,{"stream_name":"stderr","time":40.529418809,"data":"dopamine-rl 4.1.2 requires gym\u003c=0.25.2, but you have gym 0.26.2 which is incompatible.\n"}
+,{"stream_name":"stdout","time":40.85367666,"data":"+ pip install -q git+https://github.com/cvg/GeoCalib#egg=geocalib\n"}
+,{"stream_name":"stdout","time":47.450732071,"data":"+ git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniDepth.git /tmp/ze/third_party/UniDepth\n"}
+,{"stream_name":"stdout","time":48.553216616,"data":"+ pip install -q --no-deps -e /tmp/ze/third_party/UniDepth\n"}
+,{"stream_name":"stdout","time":206.657824132,"data":"+ cd /tmp/ze/data/raw/kitti \u0026\u0026 unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' \u0026\u0026 rm sel.zip\n"}
+,{"stream_name":"stdout","time":215.237009535,"data":"+ cd /tmp/ze/data/raw/diode \u0026\u0026 tar xzf val.tar.gz \u0026\u0026 rm val.tar.gz\n"}
+,{"stream_name":"stdout","time":284.196154367,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0001.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0001.zip\n"}
+,{"stream_name":"stdout","time":286.649916218,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0009.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0009.zip\n"}
+,{"stream_name":"stdout","time":290.383892878,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0011.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0011.zip\n"}
+,{"stream_name":"stdout","time":291.660616832,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0018.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0018.zip\n"}
+,{"stream_name":"stdout","time":296.038914399,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0022.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0022.zip\n"}
+,{"stream_name":"stdout","time":300.521140077,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_26_drive_0057.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_26_drive_0057.zip\n"}
+,{"stream_name":"stdout","time":303.716406382,"data":"+ cd /tmp/ze/data/raw/kitti_raw \u0026\u0026 unzip -q -o 2011_09_30_drive_0020.zip '*/image_02/data/*' \u0026\u0026 rm 2011_09_30_drive_0020.zip\n"}
+,{"stream_name":"stdout","time":314.428267886,"data":"setup done in 5.2 min, 4 cores\n"}
+,{"stream_name":"stdout","time":314.428643321,"data":"[   0.0 min] start audit-geocalib-kitti: scripts/run_audit.py geocalib kitti --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":874.434536552,"data":"[   9.3 min] audit-geocalib-kitti: ok\n"}
+,{"stream_name":"stdout","time":874.434976165,"data":"[   9.3 min] start audit-geocalib-nyu: scripts/run_audit.py geocalib nyu --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":1194.438604789,"data":"[  14.7 min] audit-geocalib-nyu: ok\n"}
+,{"stream_name":"stdout","time":1194.438758873,"data":"[  14.7 min] start audit-geocalib-diode-in: scripts/run_audit.py geocalib diode-in --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":1574.443003649,"data":"[  21.0 min] audit-geocalib-diode-in: ok\n"}
+,{"stream_name":"stdout","time":1574.443367218,"data":"[  21.0 min] start audit-geocalib-diode-out: scripts/run_audit.py geocalib diode-out --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":1954.447336341,"data":"[  27.3 min] audit-geocalib-diode-out: ok\n"}
+,{"stream_name":"stdout","time":1954.447472582,"data":"[  27.3 min] start regions-dav2-s-kitti: scripts/run_regions.py dav2-s kitti --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":2214.450749555,"data":"[  31.7 min] regions-dav2-s-kitti: ok\n"}
+,{"stream_name":"stdout","time":2214.450890588,"data":"[  31.7 min] start regions-dav2-s-nyu: scripts/run_regions.py dav2-s nyu --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":2334.452828794,"data":"[  33.7 min] regions-dav2-s-nyu: ok\n"}
+,{"stream_name":"stdout","time":2334.453068535,"data":"[  33.7 min] start regions-dav2-s-diode-in: scripts/run_regions.py dav2-s diode-in --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":2454.454994764,"data":"[  35.7 min] regions-dav2-s-diode-in: ok\n"}
+,{"stream_name":"stdout","time":2454.455181963,"data":"[  35.7 min] start regions-dav2-s-diode-out: scripts/run_regions.py dav2-s diode-out --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":2574.45734452,"data":"[  37.7 min] regions-dav2-s-diode-out: ok\n"}
+,{"stream_name":"stdout","time":2574.457551523,"data":"[  37.7 min] start regions-moge2-s-kitti: scripts/run_regions.py moge2-s kitti --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":2774.459970344,"data":"[  41.0 min] regions-moge2-s-kitti: ok\n"}
+,{"stream_name":"stdout","time":2774.460169807,"data":"[  41.0 min] start regions-moge2-s-nyu: scripts/run_regions.py moge2-s nyu --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":2954.462577402,"data":"[  44.0 min] regions-moge2-s-nyu: ok\n"}
+,{"stream_name":"stdout","time":2954.462739674,"data":"[  44.0 min] start regions-moge2-s-diode-in: scripts/run_regions.py moge2-s diode-in --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":3154.465136707,"data":"[  47.3 min] regions-moge2-s-diode-in: ok\n"}
+,{"stream_name":"stdout","time":3154.46537089,"data":"[  47.3 min] start regions-moge2-s-diode-out: scripts/run_regions.py moge2-s diode-out --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":3374.468169815,"data":"[  51.0 min] regions-moge2-s-diode-out: ok\n"}
+,{"stream_name":"stdout","time":3374.468393415,"data":"[  51.0 min] start regions-depthpro-kitti: scripts/run_regions.py depthpro kitti --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":4314.477291202,"data":"[  66.7 min] regions-depthpro-kitti: ok\n"}
+,{"stream_name":"stdout","time":4314.477690231,"data":"[  66.7 min] start regions-depthpro-nyu: scripts/run_regions.py depthpro nyu --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":5234.486690466,"data":"[  82.0 min] regions-depthpro-nyu: ok\n"}
+,{"stream_name":"stdout","time":5234.486879966,"data":"[  82.0 min] start regions-depthpro-diode-in: scripts/run_regions.py depthpro diode-in --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":6174.495288265,"data":"[  97.7 min] regions-depthpro-diode-in: ok\n"}
+,{"stream_name":"stdout","time":6174.495559817,"data":"[  97.7 min] start regions-depthpro-diode-out: scripts/run_regions.py depthpro diode-out --n 200 --out /kaggle/working/results\n"}
+,{"stream_name":"stdout","time":7114.508241354,"data":"[ 113.3 min] regions-depthpro-diode-out: ok\n"}
+,{"stream_name":"stdout","time":7134.508481743,"data":"failed jobs: none\n"}
+,{"stream_name":"stdout","time":7134.508558274,"data":"all done in 118.9 min\n"}
+,{"stream_name":"stderr","time":7136.779547826,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":7136.779588758,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":7137.088213519,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":7137.088241015,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":7137.941460744,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":7139.040067616,"data":"[NbConvertApp] Writing 431189 bytes to __results__.html\n"}
+]

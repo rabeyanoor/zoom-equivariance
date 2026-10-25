@@ -1,0 +1,136 @@
+reusing /kaggle/input/notebooks/rabeya100x/zoom-equivariance-eft-baseline/eft/dav2-s-eftb-outdoor.pt
+reusing /kaggle/input/notebooks/rabeya100x/zoom-equivariance-eft-baseline/eft/dav2-s-eft-outdoor.pt
+reusing /kaggle/input/notebooks/rabeya100x/zoom-equivariance-eft-baseline/eft/dav2-s-eftb-indoor.pt
+reusing /kaggle/input/notebooks/rabeya100x/zoom-equivariance-eft-baseline/eft/dav2-s-anchor-indoor.pt
+reusing /kaggle/input/notebooks/rabeya100x/zoom-equivariance-eft-baseline/eft/dav2-s-eft-indoor.pt
+reusing /kaggle/input/notebooks/rabeya100x/zoom-equivariance-eft-baseline/eft/dav2-s-anchor-outdoor.pt
++ pip install -q transformers==5.20.1 einops timm h5py
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+google-tunix 0.1.8 requires safetensors<0.8, but you have safetensors 0.8.0 which is incompatible.
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
++ pip install -q git+https://github.com/microsoft/MoGe.git
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
++ git clone -q --depth 1 https://github.com/lpiccinelli-eth/UniDepth.git /tmp/ze/third_party/UniDepth
++ pip install -q --no-deps -e /tmp/ze/third_party/UniDepth
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
++ cd /tmp/ze/data/raw/kitti && unzip -q -o sel.zip 'depth_selection/val_selection_cropped/*' && rm sel.zip
++ cd /tmp/ze/data/raw/diode && tar xzf val.tar.gz && rm val.tar.gz
++ cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0001.zip '*/image_02/data/*' && rm 2011_09_26_drive_0001.zip
++ cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0009.zip '*/image_02/data/*' && rm 2011_09_26_drive_0009.zip
++ cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0011.zip '*/image_02/data/*' && rm 2011_09_26_drive_0011.zip
++ cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0018.zip '*/image_02/data/*' && rm 2011_09_26_drive_0018.zip
++ cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0022.zip '*/image_02/data/*' && rm 2011_09_26_drive_0022.zip
++ cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_26_drive_0057.zip '*/image_02/data/*' && rm 2011_09_26_drive_0057.zip
++ cd /tmp/ze/data/raw/kitti_raw && unzip -q -o 2011_09_30_drive_0020.zip '*/image_02/data/*' && rm 2011_09_30_drive_0020.zip
+setup done in 13.1 min, 224 cores
+[   0.0 min] start cues-depthpro-kitti: scripts/run_audit.py depthpro kitti --n 50 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-depthpro-nyu: scripts/run_audit.py depthpro nyu --n 50 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-depthpro-diode-in: scripts/run_audit.py depthpro diode-in --n 50 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-depthpro-diode-out: scripts/run_audit.py depthpro diode-out --n 50 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-moge2-s-kitti: scripts/run_audit.py moge2-s kitti --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-moge2-s-nyu: scripts/run_audit.py moge2-s nyu --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-moge2-s-diode-in: scripts/run_audit.py moge2-s diode-in --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-moge2-s-diode-out: scripts/run_audit.py moge2-s diode-out --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-unidepth2-s-kitti: scripts/run_audit.py unidepth2-s kitti --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-unidepth2-s-nyu: scripts/run_audit.py unidepth2-s nyu --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-unidepth2-s-diode-in: scripts/run_audit.py unidepth2-s diode-in --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-unidepth2-s-diode-out: scripts/run_audit.py unidepth2-s diode-out --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-zoedepth-diode-in: scripts/run_audit.py zoedepth diode-in --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-zoedepth-diode-out: scripts/run_audit.py zoedepth diode-out --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cache-outdoor-0: scripts/eft_scale.py cache outdoor --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --views 4000 --shard 0 --shards 8 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-outdoor-1: scripts/eft_scale.py cache outdoor --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --views 4000 --shard 1 --shards 8 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-outdoor-2: scripts/eft_scale.py cache outdoor --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --views 4000 --shard 2 --shards 8 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-outdoor-3: scripts/eft_scale.py cache outdoor --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --views 4000 --shard 3 --shards 8 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-outdoor-4: scripts/eft_scale.py cache outdoor --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --views 4000 --shard 4 --shards 8 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-outdoor-5: scripts/eft_scale.py cache outdoor --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --views 4000 --shard 5 --shards 8 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-outdoor-6: scripts/eft_scale.py cache outdoor --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --views 4000 --shard 6 --shards 8 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-outdoor-7: scripts/eft_scale.py cache outdoor --images 'data/raw/kitti_raw/*/*/image_02/data/*.png' --views 4000 --shard 7 --shards 8 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-indoor-0: scripts/eft_scale.py cache indoor --nyu-train --views 4000 --shard 0 --shards 4 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-indoor-1: scripts/eft_scale.py cache indoor --nyu-train --views 4000 --shard 1 --shards 4 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-indoor-2: scripts/eft_scale.py cache indoor --nyu-train --views 4000 --shard 2 --shards 4 --cache /kaggle/working/eft/cache
+[   0.0 min] start cache-indoor-3: scripts/eft_scale.py cache indoor --nyu-train --views 4000 --shard 3 --shards 4 --cache /kaggle/working/eft/cache
+[   0.0 min] start eval-dav2-s-fixed-kitti: scripts/run_audit.py dav2-s-fixed kitti --n 200 --out /kaggle/working/results
+[   0.0 min] start cues-dav2-s-fixed-kitti: scripts/run_audit.py dav2-s-fixed kitti --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-dav2-s-eftb-kitti: scripts/run_audit.py dav2-s-eftb kitti --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start eval-dav2-s-fixed-nyu: scripts/run_audit.py dav2-s-fixed nyu --n 200 --out /kaggle/working/results
+[   0.0 min] start cues-dav2-s-fixed-nyu: scripts/run_audit.py dav2-s-fixed nyu --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-dav2-s-eftb-nyu: scripts/run_audit.py dav2-s-eftb nyu --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start eval-dav2-s-fixed-diode-in: scripts/run_audit.py dav2-s-fixed diode-in --n 200 --out /kaggle/working/results
+[   0.0 min] start cues-dav2-s-fixed-diode-in: scripts/run_audit.py dav2-s-fixed diode-in --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start cues-dav2-s-eftb-diode-in: scripts/run_audit.py dav2-s-eftb diode-in --n 100 --cues --out-tag cues --out /kaggle/working/results
+[   0.0 min] start eval-dav2-s-fixed-diode-out: scripts/run_audit.py dav2-s-fixed diode-out --n 200 --out /kaggle/working/results
+[   0.0 min] start cues-dav2-s-fixed-diode-out: scripts/run_audit.py dav2-s-fixed diode-out --n 100 --cues --out-tag cues --out /kaggle/working/results
+[  19.0 min] cues-unidepth2-s-kitti: FAILED (1)
+[  19.0 min] cues-unidepth2-s-nyu: FAILED (1)
+[  19.0 min] cues-unidepth2-s-diode-in: FAILED (1)
+[  19.0 min] cues-unidepth2-s-diode-out: FAILED (1)
+[  19.0 min] start cues-dav2-s-eftb-diode-out: scripts/run_audit.py dav2-s-eftb diode-out --n 100 --cues --out-tag cues --out /kaggle/working/results
+[  23.0 min] cues-dav2-s-fixed-nyu: ok
+[  23.0 min] cues-dav2-s-eftb-nyu: ok
+[  23.0 min] cues-dav2-s-fixed-diode-in: ok
+[  23.0 min] cues-dav2-s-eftb-diode-in: ok
+[  41.3 min] eval-dav2-s-fixed-nyu: ok
+[  41.3 min] cues-dav2-s-fixed-diode-out: ok
+[  41.3 min] cues-dav2-s-eftb-diode-out: ok
+[  41.7 min] eval-dav2-s-fixed-diode-in: ok
+[  50.3 min] cues-dav2-s-fixed-kitti: ok
+[  51.7 min] cues-dav2-s-eftb-kitti: ok
+[  51.7 min] eval-dav2-s-fixed-diode-out: ok
+[  64.0 min] cache-indoor-1: ok
+[  64.3 min] cache-indoor-0: ok
+[  64.3 min] cache-indoor-2: ok
+[  64.3 min] cache-indoor-3: ok
+[  64.3 min] start fit-scale-indoor: scripts/eft_scale.py fit indoor --cache /kaggle/working/eft/cache --w-blur 1 --epochs 60 --tag scale --out /kaggle/working/eft
+[  64.3 min] start fit-scalenb-indoor: scripts/eft_scale.py fit indoor --cache /kaggle/working/eft/cache  --epochs 60 --tag scalenb --out /kaggle/working/eft
+[  65.0 min] fit-scalenb-indoor: ok
+[  65.0 min] start eval-dav2-s-scalenb-nyu: scripts/run_audit.py dav2-s-scalenb nyu --n 200 --out /kaggle/working/results
+[  65.0 min] start eval-dav2-s-scalenb-diode-in: scripts/run_audit.py dav2-s-scalenb diode-in --n 200 --out /kaggle/working/results
+[  65.3 min] fit-scale-indoor: ok
+[  65.3 min] start eval-dav2-s-scale-nyu: scripts/run_audit.py dav2-s-scale nyu --n 200 --out /kaggle/working/results
+[  65.3 min] start cues-dav2-s-scale-nyu: scripts/run_audit.py dav2-s-scale nyu --n 100 --cues --out-tag cues --out /kaggle/working/results
+[  65.3 min] start eval-dav2-s-scale-diode-in: scripts/run_audit.py dav2-s-scale diode-in --n 200 --out /kaggle/working/results
+[  65.3 min] start cues-dav2-s-scale-diode-in: scripts/run_audit.py dav2-s-scale diode-in --n 100 --cues --out-tag cues --out /kaggle/working/results
+[  70.0 min] cues-dav2-s-scale-nyu: ok
+[  70.3 min] cues-dav2-s-scale-diode-in: ok
+[  79.0 min] eval-dav2-s-scalenb-nyu: ok
+[  79.3 min] eval-dav2-s-scale-nyu: ok
+[  81.3 min] eval-dav2-s-scalenb-diode-in: ok
+[  81.7 min] eval-dav2-s-scale-diode-in: ok
+[  86.0 min] eval-dav2-s-fixed-kitti: ok
+[  87.0 min] cues-zoedepth-diode-in: ok
+[  88.0 min] cues-zoedepth-diode-out: ok
+[  90.0 min] cache-outdoor-2: ok
+[  90.0 min] cache-outdoor-7: ok
+[  90.7 min] cache-outdoor-3: ok
+[  90.7 min] cache-outdoor-5: ok
+[  91.0 min] cache-outdoor-1: ok
+[  91.0 min] cache-outdoor-6: ok
+[  91.3 min] cache-outdoor-0: ok
+[  91.3 min] cache-outdoor-4: ok
+[  91.3 min] start fit-scale-outdoor: scripts/eft_scale.py fit outdoor --cache /kaggle/working/eft/cache --w-blur 1 --epochs 60 --tag scale --out /kaggle/working/eft
+[  91.3 min] start fit-scalenb-outdoor: scripts/eft_scale.py fit outdoor --cache /kaggle/working/eft/cache  --epochs 60 --tag scalenb --out /kaggle/working/eft
+[  92.0 min] fit-scale-outdoor: ok
+[  92.0 min] fit-scalenb-outdoor: ok
+[  92.0 min] start eval-dav2-s-scale-kitti: scripts/run_audit.py dav2-s-scale kitti --n 200 --out /kaggle/working/results
+[  92.0 min] start eval-dav2-s-scalenb-kitti: scripts/run_audit.py dav2-s-scalenb kitti --n 200 --out /kaggle/working/results
+[  92.0 min] start cues-dav2-s-scale-kitti: scripts/run_audit.py dav2-s-scale kitti --n 100 --cues --out-tag cues --out /kaggle/working/results
+[  92.0 min] start eval-dav2-s-scale-diode-out: scripts/run_audit.py dav2-s-scale diode-out --n 200 --out /kaggle/working/results
+[  92.0 min] start eval-dav2-s-scalenb-diode-out: scripts/run_audit.py dav2-s-scalenb diode-out --n 200 --out /kaggle/working/results
+[  92.0 min] start cues-dav2-s-scale-diode-out: scripts/run_audit.py dav2-s-scale diode-out --n 100 --cues --out-tag cues --out /kaggle/working/results
+[  94.7 min] cues-dav2-s-scale-diode-out: ok
+[  97.3 min] cues-moge2-s-diode-in: ok
+[  98.3 min] cues-moge2-s-nyu: ok
+[  99.0 min] cues-moge2-s-kitti: ok
+[  99.0 min] cues-moge2-s-diode-out: ok
+[  99.0 min] cues-dav2-s-scale-kitti: ok
+[  99.7 min] eval-dav2-s-scale-diode-out: ok
+[  99.7 min] eval-dav2-s-scalenb-diode-out: ok
