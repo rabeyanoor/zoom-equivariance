@@ -47,13 +47,9 @@ The zoom error of the frozen model is almost one number per image. At $3\times$ 
 moves by \fixedShiftThree{} (median absolute value), while its shape, the median absolute deviation of the
 log ratio from its median (\cref{sec:audit}), changes by only \fixedShapeThree. EFT-S therefore keeps
 DA-V2-S frozen and learns one log-scale per image, $\hat D = \hat D_0(I)\,e^{c(I)}$, with the EFT+B objective.
-$c$ is a two-layer MLP (198{,}657 parameters) on the last-layer class token and mean patch token of the frozen
-ViT; its last layer starts at zero, so training starts from the frozen model, and the depth shape is the
-frozen model's by construction. Since $c$ is one number per view, the head can be fitted from a cache of frozen-model outputs in about a
-minute on a CPU (supplement). EFT-S is a cheap check of
-how far a scale correction alone goes; it cannot fix the shape part of the zoom error.
+$c$ is a two-layer MLP on the frozen ViT's class and mean patch tokens whose last layer starts at zero; it
+trains from a cache in about a minute on a CPU (supplement) and cannot fix the shape part of the zoom error.
 
 \paragraph{Baselines and ablations.} An anchor-only run is not a valid control: the student starts as an
 exact copy of the teacher, so its loss and gradient are exactly zero (we verified this). The \emph{blur-only}
-control keeps the anchor and the blur term and drops the zoom term, with everything else unchanged. We also report EFT+B with a three times stronger anchor ($\lambda=3$) and a Zhong
-\etal-style~\cite{zhong2023equivariance} variant whose target is the student's own stop-gradient prediction.
+control keeps the anchor and the blur term and drops the zoom term, with everything else unchanged. A Zhong \etal-style~\cite{zhong2023equivariance} variant uses the student's own stop-gradient prediction as target.

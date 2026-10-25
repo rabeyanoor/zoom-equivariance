@@ -105,7 +105,9 @@ elif kind == "tpu":
         seq = sys.argv[4]
         job("fig1-eft", f"scripts/scene_stats.py --figure-only --figure-models dav2-s-fixed dav2-s-eftb "
             f"--maps-name figure1_maps_eft.npz {res}")
-        job("srraw-maps", f"scripts/srraw_maps.py --seq {seq} --models dav2-s dav2-s-eftb depthpro depthpro-eftf moge2-s {res}")
+        job("srraw-check", f"scripts/srraw_check.py --root data/raw/srraw {res}")
+        job("srraw-maps", f"scripts/srraw_maps.py --root data/raw/srraw --seq {seq} "
+            f"--models dav2-s dav2-s-eftb depthpro depthpro-eftf moge2-s {res}")
     elif part == "calib":
         # GPU: a dedicated calibration network (GeoCalib) under the same zooms, as a reference for beta, and the
         # zoom response by semantic region (objects of familiar size vs surfaces), same 200 images per set
@@ -188,7 +190,7 @@ else:
 
 files = {str(p.relative_to(ROOT)): base64.b64encode(p.read_bytes()).decode()
          for p in sorted([*ROOT.glob("src/*.py"), ROOT / "scripts/run_audit.py", ROOT / "scripts/train_eft.py",
-                         ROOT / "scripts/run_regions.py", ROOT / "scripts/run_srraw.py",
+                         ROOT / "scripts/run_regions.py", ROOT / "scripts/run_srraw.py", ROOT / "scripts/srraw_check.py",
                          ROOT / "scripts/train_eft_focal.py", ROOT / "scripts/srraw_maps.py",
                          ROOT / "scripts/eft_scale.py",
                          ROOT / "scripts/scene_stats.py", ROOT / "scripts/count_params.py"])}

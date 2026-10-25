@@ -93,16 +93,16 @@ import plotstyle as ps
 ps.use()
 
 
-def panel_figure(ds, width):
+def panel_figure(ds, width, models=MODELS):
     h, w = maps[f"img|{ds}|1.0"].shape[:2]
-    n = 1 + len(MODELS)
+    n = 1 + len(models)
     fig, axes = plt.subplots(n, 3, figsize=(width, width / 3 * h / w * n * 1.12), gridspec_kw={"hspace": 0.08, "wspace": 0.02})
     vals = np.concatenate([maps[f"{m}|{ds}|{s}"].astype(np.float32).ravel() for m, _ in MODELS[:2] for s in ZOOMS])
     vmin, vmax = np.nanpercentile(vals[vals > 0], [2, 98])
     for k, s in enumerate(ZOOMS):
         axes[0, k].imshow(maps[f"img|{ds}|{s}"])
         axes[0, k].set_title(f"zoom {s:.0f}×", fontsize=8, pad=2)
-        for j, (m, label) in enumerate(MODELS):
+        for j, (m, label) in enumerate(models):
             d = maps[f"{m}|{ds}|{s}"].astype(np.float32)
             if m == "gt":
                 d = np.where(d > 0, d, np.nan)
@@ -120,7 +120,9 @@ def panel_figure(ds, width):
     return fig
 
 
-fig = panel_figure("kitti", 7.0)
+# the teaser keeps to the page budget: with EFT+B its GT row moves to the caption (GT depth does not change with
+# the zoom by construction; the printed medians above give its value); the NYUv2 figure keeps every row
+fig = panel_figure("kitti", 7.0, [r for r in MODELS if r[0] != "gt"] if EFT.exists() else MODELS)
 fig.savefig(ROOT / "paper/fig/teaser.pdf", bbox_inches="tight")
 fig.savefig(FIG / "teaser_kitti.png", bbox_inches="tight")
 plt.show()

@@ -20,18 +20,21 @@ $\EftbSeedsDiodeInAlphaMean\pm\EftbSeedsDiodeInAlphaSd$ and $\EftbSeedsDiodeOutA
 AbsRel on unzoomed KITTI images rises from \DavTwoSFixedKittiAbsrelOne{}
 to \DavTwoSEftbKittiAbsrelOne{}, and on DIODE-outdoor from \DavTwoSFixedDiodeOutAbsrelOne{} to
 \DavTwoSEftbDiodeOutAbsrelOne{} (higher for every seed), while NYUv2 is about unchanged
-(\DavTwoSFixedNyuAbsrelOne{} to $\EftbSeedsNyuAbsrelOneMean\pm\EftbSeedsNyuAbsrelOneSd$ over seeds). A three times stronger anchor does not buy the KITTI accuracy back
-(\DavTwoSEftbThreeKittiAbsrelOne) at the same $\alpha$ (\DavTwoSEftbThreeKittiAlpha).
+(\DavTwoSFixedNyuAbsrelOne{} to $\EftbSeedsNyuAbsrelOneMean\pm\EftbSeedsNyuAbsrelOneSd$ over seeds). A stronger
+anchor does not buy it back (supplement).
 
 \paragraph{What does the work.}
-Blur augmentation alone, without the zoom term, leaves most of the
-effect in place ($\alpha$ \DavTwoSBlurKittiAlpha{} on KITTI, \DavTwoSBlurNyuAlpha{} on NYUv2): seeing
-low-detail images is not what teaches the model the camera. Replacing the frozen teacher with the
-student's own stop-gradient prediction, as in Zhong \etal~\cite{zhong2023equivariance}, reaches a
-similar $\alpha$ (\DavTwoSZhongKittiAlpha, \DavTwoSZhongNyuAlpha) but drifts: the blur shortcut returns
-(\DavTwoSZhongKittiBlur\% on KITTI) and unzoomed AbsRel degrades most of all variants
-(\DavTwoSZhongKittiAbsrelOne{} on KITTI, \DavTwoSZhongNyuAbsrelOne{} on NYUv2). The frozen teacher, the
-zoom term and the blur term are each needed.
+Blur augmentation alone leaves most of the effect in place ($\alpha$ \DavTwoSBlurKittiAlpha{} on KITTI,
+\DavTwoSBlurNyuAlpha{} on NYUv2). The student's own stop-gradient target, as in
+Zhong \etal~\cite{zhong2023equivariance}, reaches a similar $\alpha$ (\DavTwoSZhongKittiAlpha,
+\DavTwoSZhongNyuAlpha) but drifts: the blur shortcut returns (\DavTwoSZhongKittiBlur\% on KITTI) and unzoomed
+AbsRel degrades most (\DavTwoSZhongKittiAbsrelOne{} on KITTI). The frozen teacher, the zoom term and the blur
+term are each needed.
+
+\paragraph{Tuning only a focal head.}
+A zoom by $s$ gives Depth Pro's focal head a free target, its focal times $s$. Tuning only that head (EFT-F,
+supplement) lowers $\alpha$ on NYUv2 (\DepthproFheadNyuAlpha{} to \DepthproEftfFheadNyuAlpha) but raises it on
+unseen DIODE-indoor (\DepthproFheadDiodeInAlpha{} to \DepthproEftfFheadDiodeInAlpha).
 
 \paragraph{Correcting only the scale.}
 EFT-S leaves the frozen network untouched and learns one number per image (per-domain table in the supplement). It reaches

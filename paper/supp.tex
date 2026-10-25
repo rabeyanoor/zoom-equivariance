@@ -18,7 +18,7 @@
 
 % same generated numbers as the main paper
 \input{gen/numbers}
-\newcommand{\maybefig}[1]{\IfFileExists{fig/#1.pdf}{\includegraphics[width=\linewidth]{fig/#1.pdf}}{\fbox{\small figure #1 pending}}}
+\newcommand{\maybefig}[1]{\IfFileExists{fig/#1.pdf}{\includegraphics[width=\linewidth]{fig/#1.pdf}}{\fbox{\small figure \detokenize{#1} pending}}}
 \renewcommand{\thesection}{\Alph{section}}
 % S-prefixed numbers, so they cannot be mistaken for the main paper's
 \renewcommand{\thetable}{S\arabic{table}}
@@ -208,6 +208,10 @@ unzoomed), which a global factor cannot repair.
 
 \section{EFT-S per domain}
 
+\paragraph{Head.} $c$ is a two-layer MLP (198{,}657 parameters) on the last-layer class token and the mean patch
+token of the frozen ViT. Its last layer starts at zero, so training starts from the frozen model, and the depth
+shape is the frozen model's by construction.
+
 \paragraph{Training from a cache.} Because $c$ is one number per view, each term of the loss depends only on the
 distribution of the residual $\log\hat D_0(\text{view})-\log\hat D_0(I)$ over the crop. We store 100 quantiles of
 that residual and the token features for 4{,}000 random zoom and blur views per domain, drawn as for EFT+B
@@ -219,6 +223,36 @@ from the same training images, from a single pass of the frozen model. The head 
 \DavTwoSScalenbKittiBlur\% (\DavTwoSScaleKittiBlur\% with it): EFT-S finds the same blur shortcut as EFT.
 
 \input{gen/table_scale}
+
+\section{EFT-F: tuning only the focal head}\label{sec:supp_eftf}
+
+Depth Pro predicts depth as $\hat f\,C(I)/W$, and with the true focal its camera-free part $C$ already follows
+a zoom (\cref{tab:camera}), so its zoom error sits in the focal head. A digital zoom by $s$ multiplies the
+true focal in pixels by $s$, which supervises that head without labels. EFT-F tunes only the head's layers
+after its frozen ViT (the neck, the fusion convolution and the output head) with
+\begin{equation*}
+\begin{aligned}
+L={}&\bigl|\log t(Z_sI)-\log t_0(I)+\log s\bigr|\\
+&+\bigl|\log t(BI)-\log t_0(I)\bigr|+\bigl|\log t(I)-\log t_0(I)\bigr|,
+\end{aligned}
+\end{equation*}
+where $t=\tan(\mathrm{fov}/2)$, $t_0$ is the original head, $Z_s$ a random zoom ($1\le s\le3$, random box) and
+$B$ a blur with the same field of view, as for EFT+B. The depth network is untouched. Everything the tuned
+layers read is frozen, so it is computed once for 4 views of each of 300 unlabeled KITTI raw and 300 NYUv2
+train images (10\% held out), and the layers are fitted on that cache (AdamW, learning rate $10^{-4}$, batch
+32, \eftfEpochs{} epochs). On held-out zoomed views the focal error drops from \eftfValZoomBefore{} to
+\eftfValZoomAfter{} in $\log t$.
+
+\Cref{tab:eftf} gives the audit on the same 200 images per set. On the two training domains EFT-F lowers
+$\alpha$ (KITTI \DepthproFheadKittiAlpha{} to \DepthproEftfFheadKittiAlpha, NYUv2 \DepthproFheadNyuAlpha{} to
+\DepthproEftfFheadNyuAlpha) and the error at $3\times$ (NYUv2 AbsRel \DepthproFheadNyuAbsrelThree{} to
+\DepthproEftfFheadNyuAbsrelThree), at a small cost at $1\times$. It does \emph{not} transfer: on DIODE, which it
+never saw, $\alpha$ rises from \DepthproFheadDiodeInAlpha{} to \DepthproEftfFheadDiodeInAlpha{} (indoor) and from
+\DepthproFheadDiodeOutAlpha{} to \DepthproEftfFheadDiodeOutAlpha{} (outdoor). A focal head tuned on two domains learns those
+domains; the label-free loss allows any unlabeled images, and broader training data is the obvious next step
+that we have not run.
+
+\input{gen/table_eftf}
 
 \section{Fine-tuning details}
 
@@ -265,6 +299,39 @@ near 1 under every control (\MetricThreedSOptical, \MetricThreedSDigitalLr, \Met
 DIODE-outdoor, UniDepthV2-S over-estimates the scale by more than $2\times$ on \udDiodeOutOverTwo\% of the images.
 
 \input{gen/table_controls}
+
+\section{Real optical zoom}\label{sec:supp_srraw}
+
+SR-RAW~\cite{zhang2019zoom} holds static scenes shot from a tripod with a Sony FE 24--240\,mm zoom lens at
+seven focal lengths. The camera does not move, so the true depth of every point is the same in every shot and
+no depth labels are needed. We use the camera JPEGs of the test set at a long side of 1024\,px and the EXIF focal
+length; the shots with $s\le3.2$ against the widest one are compared, \srrawShots{} zoomed shots in
+\srrawSequences{} sequences. As SR-RAW assumes, a zoomed shot shows the centred $1/s$ box of the wide shot; we
+compare the median log depth over the inner 80\% of the zoomed shot with the median over the matching box of
+the wide shot's prediction, which leaves a margin for the small shift of the lens centre. The same crop of the
+wide shot, done digitally, is scored on the same scenes. Models that take the camera get $K$ from the EXIF
+35\,mm-equivalent focal.
+
+\Cref{tab:srraw} gives the result. For DA-V2-S a real lens and a digital zoom are the same to the model
+($\alpha=\DavTwoSSrrawOpticalAlpha$ and \DavTwoSSrrawDigitalAlpha, Wilcoxon $p=\DavTwoSSrrawP$ over
+sequences): the error is not an artefact of resampling. Depth Pro keeps its depth under both
+(\DepthproSrrawOpticalAlpha, \DepthproSrrawDigitalAlpha) and Metric3D v2 with the EXIF camera does too
+(\MetricThreedSSrrawOpticalAlpha). MoGe-2-S and UniDepthV2-S shrink \emph{more} under the real lens than
+under the digital zoom (\MogeTwoSSrrawOpticalAlpha{} against \MogeTwoSSrrawDigitalAlpha, and
+\UnidepthTwoSSrrawOpticalAlpha{} against \UnidepthTwoSSrrawDigitalAlpha). EFT+B lowers $\alpha$ of DA-V2-S on
+this unseen data to \DavTwoSEftbSrrawOpticalAlpha, less than on its training domains. \Cref{fig:supp_srraw}
+shows the sequence whose DA-V2-S $\alpha$ is the median over all sequences.
+
+\input{gen/table_srraw}
+
+\begin{figure*}[t]
+  \centering
+  \maybefig{figS_srraw}
+  \caption{One SR-RAW sequence (the one with the median DA-V2-S $\alpha$, not hand-picked) shot at several
+  focal lengths from a fixed tripod. The true depth does not change across a row; the number is the median
+  predicted depth over the field of view of the longest shot, i.e.\ the same points in every column.}
+  \label{fig:supp_srraw}
+\end{figure*}
 
 \section{Fine-tuning curves}
 

@@ -513,16 +513,39 @@ write_table("table_scale", [
 for m in ("depthpro", "depthpro-eftf"):
     z = zc[zc.model == m]
     p_ = A.per_image(z) if len(z) else pd.DataFrame(columns=["alpha", "beta", "dataset", "absrel1"])
-    put(key(m, "eftf", "alpha"), p_.alpha.median() if len(p_) else np.nan)
-    put(key(m, "eftf", "beta"), p_.beta.median() if len(p_) else np.nan)
-    put(key(m, "eftf", "images"), len(p_), "{:d}")
+    put(key(m, "fhead", "alpha"), p_.alpha.median() if len(p_) else np.nan)
+    put(key(m, "fhead", "beta"), p_.beta.median() if len(p_) else np.nan)
+    put(key(m, "fhead", "images"), len(p_), "{:d}")
     for ds in A.DATASETS:
         g = p_[p_.dataset == ds]
-        put(key(m, "eftf", ds, "alpha"), g.alpha.median() if len(g) else np.nan)
-        put(key(m, "eftf", ds, "absrelOne"), g.absrel1.mean() if len(g) else np.nan, "{:.3f}")
+        put(key(m, "fhead", ds, "alpha"), g.alpha.median() if len(g) else np.nan)
+        put(key(m, "fhead", ds, "absrelOne"), g.absrel1.mean() if len(g) else np.nan, "{:.3f}")
+        put(key(m, "fhead", ds, "beta"), g.beta.median() if len(g) else np.nan)
+        put(key(m, "fhead", ds, "absrelThree"), g.absrel3.mean() if len(g) else np.nan, "{:.3f}")
     one = z[np.isclose(z.zoom, 1.0)]
-    put(key(m, "eftf", "scale"), np.median(np.abs(one.log_ratio_gt)) if len(one) else np.nan, "{:.3f}")
-    put(key(m, "eftf", "focalErr"), float(np.exp(p_.fx_err1.median())) if len(p_) else np.nan)
+    put(key(m, "fhead", "scale"), np.median(np.abs(one.log_ratio_gt)) if len(one) else np.nan, "{:.3f}")
+    put(key(m, "fhead", "focalErr"), float(np.exp(p_.fx_err1.median())) if len(p_) else np.nan)
+
+eftf_log = ROOT / "outputs" / "eft" / "train_log_depthpro-eftf.csv"
+if eftf_log.exists():  # held-out |log tan(fov/2) - target| of zoomed views before and after tuning
+    lg = pd.read_csv(eftf_log)
+    put("eftfValZoomBefore", lg.val_zoom.iloc[0], "{:.3f}")
+    put("eftfValZoomAfter", lg.val_zoom.iloc[-1], "{:.3f}")
+    put("eftfValPlainAfter", lg.val_plain.iloc[-1], "{:.3f}")
+    put("eftfEpochs", int(lg.epoch.iloc[-1]), "{:d}")
+write_table("table_eftf", [
+    r"\begin{table}[t]\centering\small",
+    r"\caption{EFT-F: Depth Pro with only its focal head tuned on unlabeled KITTI and NYUv2 training images (the "
+    r"depth network is unchanged). Same 200 images per set; median $\alpha$, $\beta$, mean AbsRel at $1\times$ and "
+    r"$3\times$; ideal $\alpha=0$, $\beta=1$.}\label{tab:eftf}",
+    r"\setlength{\tabcolsep}{2.5pt}",
+    r"\begin{tabular}{lcccccccc}\toprule",
+    r"& \multicolumn{2}{c}{$\alpha$} & \multicolumn{2}{c}{$\beta$} & \multicolumn{2}{c}{Abs$_{1\times}$} & "
+    r"\multicolumn{2}{c}{Abs$_{3\times}$} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}",
+    r"Set & DP & EFT-F & DP & EFT-F & DP & EFT-F & DP & EFT-F \\ \midrule",
+    *[f"{A.PRETTY_DS[ds]} & " + " & ".join(macros[key(m, "fhead", ds, q)] for q in ("alpha", "beta", "absrelOne", "absrelThree")
+                                          for m in ("depthpro", "depthpro-eftf")) + r" \\" for ds in A.DATASETS],
+    r"\bottomrule\end{tabular}\end{table}"])
 
 # ------------------------------------------------------------------ complete test sets (check of the 200-image sample)
 full_files = list(A.RESULTS.glob("*__full.csv"))

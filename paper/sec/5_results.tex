@@ -1,7 +1,7 @@
 \section{Results: the zoom audit}
 \label{sec:results}
 
-\newcommand{\maybefig}[1]{\IfFileExists{fig/#1.pdf}{\includegraphics[width=\linewidth]{fig/#1.pdf}}{\fbox{\small figure #1 pending}}}
+\newcommand{\maybefig}[1]{\IfFileExists{fig/#1.pdf}{\includegraphics[width=\linewidth]{fig/#1.pdf}}{\fbox{\small figure \detokenize{#1} pending}}}
 
 \begin{figure*}[t]
   \centering
@@ -64,8 +64,10 @@ moves depth by only \DavTwoSBlur\% for DA-V2-S and at most \UnidepthTwoSBlur\% f
 \emph{optical} $2\times$ zoom with real detail changes the depth of DA-V2-S by a factor of
 \DavTwoSOptical, the same zoom done digitally by \DavTwoSDigitalLr, while bilinear resampling and JPEG
 compression change it by \DavTwoSBilinear{} and \DavTwoSJpeg.
-Real detail does not rescue the model, and for the other models it changes the result by at most about a
-tenth (supplement).
+Real detail does not rescue the model. On a real zoom lens (SR-RAW~\cite{zhang2019zoom}, \srrawSequences{}
+tripod sequences, supplement) DA-V2-S gives $\alpha=\DavTwoSSrrawOpticalAlpha$, the same as for the
+digital zoom of the widest shot (\DavTwoSSrrawDigitalAlpha), while Depth Pro keeps its depth
+($\alpha=\DepthproSrrawOpticalAlpha$).
 
 \paragraph{Bigger and newer models.}
 The supplement extends the audit to larger variants and to Depth Anything~3~\cite{lin2025da3},

@@ -4,4 +4,12 @@
 \begin{tabular}{lrcccc}\toprule
 & & \multicolumn{2}{c}{$\alpha$} & \multicolumn{2}{c}{$\beta$} \\ \cmidrule(lr){3-4}\cmidrule(lr){5-6}
 Model & seq. & optical & digital & optical & digital \\ \midrule
+DA-V2-S & 50 & 0.76 & 0.76 & -- & -- \\
+DA-V2-S (frozen) & 50 & 0.74 & 0.71 & -- & -- \\
+DA-V2-S + EFT+B (ours) & 50 & 0.59 & 0.59 & -- & -- \\
+Depth Pro & 50 & -0.08 & -0.08 & 0.98 & 0.87 \\
+Depth Pro + EFT-F (ours) & 50 & 0.04 & -0.07 & 0.89 & 0.85 \\
+MoGe-2-S & 50 & 0.38 & 0.26 & 0.58 & 0.69 \\
+UniDepthV2-S & 50 & 0.62 & 0.39 & 0.22 & 0.53 \\
+Metric3D v2-S & 50 & -0.04 & -0.03 & -- & -- \\
 \bottomrule\end{tabular}\end{table}

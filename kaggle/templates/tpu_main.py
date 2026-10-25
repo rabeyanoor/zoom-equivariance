@@ -77,7 +77,7 @@ def download():
 def download_srraw():
     """SR-RAW test set (Zhang et al., CVPR 2019; CC BY-NC 4.0): zoom-test.zip in the authors' Google Drive folder linked from
     github.com/ceciliavision/zoom-learn-zoom; only the camera JPGs are kept (the ARW raw files are not used)."""
-    if not any("run_srraw" in j["cmd"] for j in JOBS) or (RAW / "srraw" / "done").exists():  # noqa: F821
+    if not any("srraw" in j["cmd"] for j in JOBS) or (RAW / "srraw" / "done").exists():  # noqa: F821
         return
     (RAW / "srraw").mkdir(parents=True, exist_ok=True)
     sh("pip install -q gdown")

@@ -14,8 +14,8 @@ Pro and DA3-Nested become equivariant ($\alpha=\DepthproCamGivenAlpha$, \DaThree
 camera-free output follows the zoom, the focal head carries the whole error and places them on that line, yet
 their depth fits their own focal better than the true one. We explain this
 failure mode with a zoom--squash ambiguity: a zoomed photo is pixel-for-pixel the photo of the same
-scene compressed along the viewing axis, which size cues cannot detect. Controls show the effect is
-not caused by interpolation or detail loss, and a cue intervention shows that for pixels-only models the
+scene compressed along the viewing axis, which size cues cannot detect. Controls, including a real zoom lens,
+show the effect is not caused by interpolation or detail loss, and a cue intervention shows that for pixels-only models the
 magnified content, not the lost context, drives it. Finally, a self-consistency fine-tuning on unlabeled
 images reduces $\alpha$ to \DavTwoSEftbKittiAlpha{} on KITTI and \DavTwoSEftbNyuAlpha{} on NYUv2,
 once a blur-invariance term removes a ``blurry means zoomed'' shortcut that the plain objective
