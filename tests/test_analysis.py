@@ -82,3 +82,33 @@ def test_zoomfix_crossfit_recovers_apparent_size_exponent():
     df.loc[df.kind == "zoom", "s_true"] = df.loc[df.kind == "zoom", "fx_gt"] / first
     fix = analysis.zoomfix_crossfit(df)
     assert np.isclose(fix.exponent.iloc[0], 1.0) and fix.absrel_fixed.iloc[0] < 0.01
+
+
+def test_fit_quality_on_an_exact_power_law():
+    rows = []
+    for r in audit.zoom_rows(ApparentSize(), dict(SAMPLE, name="size0"), 80):
+        r.update(model="size", dataset="toy")
+        rows.append(r)
+    df = pd.DataFrame(rows)
+    df["s_true"] = df.fx_gt / df[df.kind == "zoom"].fx_gt.min()
+    q = analysis.fit_quality(df)
+    assert len(q) == 1 and abs(q.alpha[0] - 1) < 1e-6 and q.rms[0] < 1e-6
+    assert abs(q.alpha_small[0] - q.alpha_large[0]) < 1e-6
+
+
+def test_twoway_bootstrap_contains_the_estimate():
+    rng = np.random.default_rng(0)
+    pairs = pd.DataFrame([dict(model=m, dataset=d, x=i + rng.normal(0, .5), y=i + rng.normal(0, .5))
+                          for i, m in enumerate("abcdefgh") for d in "wxyz"])
+    rho, lo, hi = analysis.twoway_boot_spearman(pairs, "x", "y", n=200)
+    assert lo <= rho <= hi and rho > 0.8
+
+
+def test_region_alpha_pairs_groups_per_image():
+    import regions
+
+    seg = np.full(SAMPLE["img"].shape[:2], 6)
+    seg[:, :100] = 20
+    rows = pd.DataFrame(regions.region_rows(ApparentSize(), SAMPLE, seg)).assign(model="m", dataset="d")
+    per, wide = analysis.region_alpha(rows)
+    assert np.allclose(per.alpha, 1) and len(wide) == 1 and abs(wide["diff"][0]) < 1e-6

@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr, wilcoxon
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -29,6 +29,8 @@ LADDER = ["dav2-l", "moge2-b", "moge2-l", "unidepth2-b", "unidepth2-l", "unik3d-
           "metric3d-l", "da3-l", "vggt"]
 RELATIVE = {"da3-l", "vggt"}  # depth normalised per scene: only beta is meaningful
 FT = ["dav2-s-fixed", "dav2-s-zhong", "dav2-s-blur", "dav2-s-eft", "dav2-s-eftb", "dav2-s-eftb3"]
+SCALE_FT = ["dav2-s-scale", "dav2-s-scalenb"]  # EFT-S: frozen model + learned per-image log-scale
+SEEDS = ["dav2-s-eftb", "dav2-s-eftb-s1", "dav2-s-eftb-s2"]  # EFT+B with training seeds 0, 1, 2
 CONTROLS = ["optical", "digital_lr", "bilinear", "jpeg"]
 macros = {}
 
@@ -152,7 +154,7 @@ for m in ladder_models:
     rows.append(f"{A.PRETTY.get(m, m)} & {group} & {size} & {fmt(r.alpha)} & {fmt(r.beta)} & "
                 f"{fmt(sh.alpha.get(m, np.nan))} & {fmt(sh.beta.get(m, np.nan))} \\\\")
 write_table("table_ladder", [
-    r"\begin{table}[t]\centering\small",
+    r"\begin{table*}[t]\centering\small",  # supplement only: full width
     r"\caption{Model ladder: larger variants and newer families. Left: each model on its own sample (200 images "
     r"per set for the main models, 100 for the larger variants and UniK3D, 50 for DA3, VGGT and Metric3D v2-L). "
     r"Right: the models with at least 100 images per set on the \nLadderShared{} images that all of them saw "
@@ -162,7 +164,7 @@ write_table("table_ladder", [
     r"\begin{tabular}{llrcccc}\toprule",
     r"& & & \multicolumn{2}{c}{own sample} & \multicolumn{2}{c}{shared} \\ \cmidrule(lr){4-5}\cmidrule(lr){6-7}",
     r"Model & Group & Params & $\alpha$ & $\beta$ & $\alpha$ & $\beta$ \\ \midrule",
-    *rows, r"\bottomrule\end{tabular}\end{table}"])
+    *rows, r"\bottomrule\end{tabular}\end{table*}"])
 
 # ------------------------------------------------------------------ per-dataset alpha
 lines = []
@@ -198,6 +200,17 @@ pairs = summ[summ.model.isin(MAIN)].assign(abs_alpha=lambda d: d.alpha.abs())
 for tgt, tag in (("absrel1", "One"), ("absrel3", "Three")):
     put(f"proxyRho{tag}", spearmanr(pairs.abs_alpha, pairs[tgt]).statistic if len(pairs) > 4 else np.nan)
 put("proxyPairs", len(pairs), "{:d}")
+# pairs share models and datasets: an interval that resamples both, and the zoom-only error change
+# (AbsRel at 3x minus the unzoomed prediction on the same pixels), which removes the error the model has anyway
+pairs = pairs.assign(dabsrel3=pairs.absrel3 - pairs.base3)
+for tgt, tag in (("absrel3", "Three"), ("dabsrel3", "DeltaThree")):
+    if len(pairs) > 4 and pairs[tgt].notna().all():
+        r, lo, hi = A.twoway_boot_spearman(pairs, "abs_alpha", tgt)
+    else:
+        r = lo = hi = np.nan
+    put(f"proxyRho{tag}TwoWay", r)
+    put(f"proxyRho{tag}TwoWayLo", lo)
+    put(f"proxyRho{tag}TwoWayHi", hi)
 proxy_f = ROOT / "outputs" / "tables" / "proxy_across_pairs.csv"
 if proxy_f.exists():
     pr = pd.read_csv(proxy_f).set_index(["score", "target"]).loc[("abs_alpha", "absrel3")]
@@ -222,12 +235,15 @@ for ds in A.DATASETS:
 
 # ------------------------------------------------------------------ cue split: context loss vs magnification
 CUE_MODELS = ["dav2-s", "zoedepth", "moge2-s", "unidepth2-s", "depthpro", "da3-metric-l"]
+CUE_FT = ["dav2-s-fixed", "dav2-s-eftb", "dav2-s-scale"]  # second block: does fine-tuning change the cue?
 CUE_KINDS = ["context", "magnify", "zoom", "shrink"]
 cue_files = list(A.RESULTS.glob("*__cues.csv"))
 cues = pd.concat([pd.read_csv(f) for f in cue_files], ignore_index=True) if cue_files else \
     pd.DataFrame(columns=["model", "kind", "name", "log_ratio_self", "fx", "fx_base"])
 rows = []
-for m in CUE_MODELS:
+for m in CUE_MODELS + CUE_FT:
+    if m == CUE_FT[0] and cues.model.isin(CUE_FT).any():
+        rows.append(r"\midrule")
     g = cues[cues.model == m]
     put(key(m, "cue", "images"), g.name.nunique(), "{:d}")
     cells = []
@@ -244,17 +260,40 @@ for m in CUE_MODELS:
     put(key(m, "cue", "shrink", "focal"), focal)
     cells.append(fmt(focal) if np.isfinite(focal) else "--")
     if len(g):
-        rows.append(f"{A.PRETTY.get(m, m)} & " + " & ".join(cells) + r" \\")
+        # short names in the lower block so the table fits one column
+        name = A.PRETTY.get(m, m).replace("DA-V2-S + ", "").replace(" (ours)", "").replace("DA-V2-S (frozen)", "frozen")
+        rows.append(f"{name} & " + " & ".join(cells) + r" \\")
+# per dataset: is magnification the consistent cause? It is for the pixels-only models; the camera-predicting ones
+# differ by model (MoGe-2 magnification, UniDepthV2 context, Depth Pro by dataset), so they are reported per model
+CUE_PIX = ["dav2-s", "zoedepth"]
+per_ds = cues[cues.model.isin(CUE_PIX)].groupby(["model", "dataset", "kind"]).log_ratio_self.median().pipe(np.exp)
+mag, ctx = per_ds.xs("magnify", level="kind"), per_ds.xs("context", level="kind")
+put("cuePixPairs", len(mag), "{:d}")
+put("cueMagnifyBelowOne", int((mag < 1).sum()), "{:d}")
+put("cueMagnifyMin", mag.min() if len(mag) else np.nan)
+put("cueMagnifyMax", mag.max() if len(mag) else np.nan)
+put("cueContextMin", ctx.min() if len(ctx) else np.nan)
+put("cueContextMax", ctx.max() if len(ctx) else np.nan)
+for m in ["moge2-s", "unidepth2-s", "depthpro"]:
+    g = cues[cues.model == m].groupby(["dataset", "kind"]).log_ratio_self.median().pipe(np.exp)
+    put(key(m, "cue", "magnifyBelowOne"), int((g.xs("magnify", level="kind") < 1).sum()) if len(g) else np.nan, "{:d}")
+    put(key(m, "cue", "contextBelowOne"), int((g.xs("context", level="kind") < 1).sum()) if len(g) else np.nan, "{:d}")
+# the zoom error of the frozen DA-V2-S at 3x is almost one number per image: global log shift against shape error
+z3 = df[(df.model == "dav2-s-fixed") & (df.kind == "zoom") & np.isclose(df.zoom, 3.0) & np.isclose(df.cx, 0.5)]
+put("fixedShiftThree", np.median(np.abs(z3.log_ratio_self)) if len(z3) else np.nan)
+put("fixedShapeThree", np.nanmedian(z3.shape_err) if "shape_err" in z3 and len(z3) else np.nan, "{:.3f}")
+
 write_table("table_cues", [
     r"\begin{table}[t]\centering\small",
     r"\caption{Splitting a $2\times$ zoom into its two parts, median depth ratio on the same pixels (1 = unchanged). "
     r"\emph{Context}: the crop pasted at its own place and size on a plain canvas. \emph{Magnify}: the zoomed image "
     r"against that pasted crop. \emph{Zoom}: both together. \emph{Shrink}: the whole image made $2\times$ smaller on a "
-    r"canvas. A model that reads apparent size gives 1, 0.5, 0.5 and 2. Last column: the predicted focal on the shrunk "
-    r"image (correct: 0.5).}\label{tab:cues}",
+    r"canvas. A model that reads apparent size gives 1, 0.5, 0.5 and 2. $^{*}$Predicted focal on the shrunk "
+    r"image (correct: 0.5). Lower block: DA-V2-S at the fine-tuning input size, frozen and tuned with EFT+B and EFT-S "
+    r"(\cref{sec:eft}).}\label{tab:cues}",
     r"\setlength{\tabcolsep}{3.5pt}",
     r"\begin{tabular}{lccccc}\toprule",
-    r"Model & context & magnify & zoom & shrink & focal, shrink \\ \midrule",
+    r"Model & context & magnify & zoom & shrink & focal$^{*}$ \\ \midrule",
     *rows, r"\bottomrule\end{tabular}\end{table}"])
 
 # ------------------------------------------------------------------ controls: optical vs digital, interpolation, JPEG
@@ -277,6 +316,79 @@ write_table("table_controls", [
     r"\setlength{\tabcolsep}{4pt}",
     r"\begin{tabular}{lcccc}\toprule",
     r"Model & optical $2\times$ & digital $2\times$ & bilinear $2\times$ & JPEG \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}\end{table}"])
+
+# goodness of the power law: RMS residual in log depth, and alpha from small vs large zooms
+fq = A.fit_quality(df[df.model.isin(MAIN)])
+put("fitRmsMedian", fq.rms.median() if len(fq) else np.nan, "{:.3f}")
+for m in ("dav2-s", "depthpro", "moge2-s", "unidepth2-s"):
+    g = fq[fq.model == m]
+    put(key(m, "alpha", "small"), g.alpha_small.median() if len(g) else np.nan)
+    put(key(m, "alpha", "large"), g.alpha_large.median() if len(g) else np.nan)
+
+# calibration-only reference: GeoCalib's focal exponent under the same zooms (its depth is a constant, so no alpha)
+gc = df[df.model == "geocalib"]
+gpi = A.per_image(gc) if len(gc) else pd.DataFrame(columns=["beta", "fx_err1", "dataset"])
+put("geocalibBeta", gpi.beta.median() if len(gpi) else np.nan)
+put("geocalibImages", len(gpi), "{:d}")
+put("geocalibFocalErr", float(np.exp(gpi.fx_err1.median())) if len(gpi) else np.nan)
+for ds in A.DATASETS:
+    g = gpi[gpi.dataset == ds]
+    put(key("geocalib", ds, "beta"), g.beta.median() if len(g) else np.nan)
+
+# zoom response by semantic region: objects of familiar size vs surfaces (paired per image, Wilcoxon)
+reg_files = list(A.RESULTS.glob("*__regions.csv"))
+reg = pd.concat([pd.read_csv(f) for f in reg_files], ignore_index=True) if reg_files else pd.DataFrame()
+per_r, wide_r = A.region_alpha(reg) if len(reg) else (pd.DataFrame(), pd.DataFrame())
+for m in ("dav2-s", "moge2-s", "depthpro"):
+    w = wide_r[wide_r.model == m] if len(wide_r) else pd.DataFrame()
+    put(key(m, "region", "object"), w.object.median() if len(w) else np.nan)
+    put(key(m, "region", "surface"), w.surface.median() if len(w) else np.nan)
+    put(key(m, "region", "diff"), w["diff"].median() if len(w) else np.nan)
+    put(key(m, "region", "pairs"), len(w), "{:d}")
+    put(key(m, "region", "p"), wilcoxon(w["diff"]).pvalue if len(w) > 10 else np.nan, "{:.2g}")
+    put(key(m, "region", "objectLarger"), 100 * float((w["diff"] > 0).mean()) if len(w) else np.nan, "{:.0f}")
+
+# UniDepthV2-S on DIODE-outdoor: how far its unzoomed metric scale is off (its pooled AbsRel is high)
+u1 = df[(df.model == "unidepth2-s") & (df.dataset == "diode-out") & (df.kind == "zoom") & np.isclose(df.zoom, 1.0)
+        & np.isclose(df.cx, 0.5) & np.isclose(df.cy, 0.5)]
+put("udDiodeOutScale", float(np.exp(np.median(u1.log_ratio_gt))) if len(u1) else np.nan)
+put("udDiodeOutOverTwo", 100 * float((u1.log_ratio_gt > np.log(2)).mean()) if len(u1) else np.nan, "{:.0f}")
+
+# ------------------------------------------------------------------ camera intervention: the same network, given the true K
+# Depth Pro and DA3-Nested turn a camera-free network output into metres with their own focal: depth = f * net(I)
+# (ml-depth-pro infer(); DA3 apply_metric_scaling). Given the true focal f*, the depth is exactly depth * f*/f, so
+# their given-K run follows from the audit CSVs. MoGe-2 and UniDepthV2 use the camera differently and are rerun with
+# it (models "-k"); they are compared with the plain run on the same images.
+CAM = [("depthpro", None), ("da3-nested", None), ("moge2-s", "moge2-s-k"), ("unidepth2-s", "unidepth2-s-k")]
+zc = df[(df.kind == "zoom") & np.isclose(df.cx, 0.5) & np.isclose(df.cy, 0.5)]
+rows = []
+for m, mk in CAM:
+    own = zc[zc.model == m]
+    given = A.given_focal(own) if mk is None else zc[zc.model == mk]
+    names_ = set(own.name) & set(given.name)
+    own, given = own[own.name.isin(names_)], given[given.name.isin(names_)].assign(model=m + "+K")
+    cells = []
+    for tag, z in (("own", own), ("given", given)):
+        p = A.per_image(z) if len(z) else pd.DataFrame(columns=["alpha"])
+        one = z[np.isclose(z.zoom, 1.0)]
+        put(key(m, "cam", tag, "alpha"), p.alpha.median() if len(p) else np.nan)
+        put(key(m, "cam", tag, "scale"), np.median(np.abs(one.log_ratio_gt)) if len(one) else np.nan, "{:.3f}")
+        cells += [macros[key(m, "cam", tag, "alpha")], macros[key(m, "cam", tag, "scale")]]
+    put(key(m, "cam", "images"), len(names_), "{:d}")
+    how = "exact" if mk is None else "rerun"
+    rows.append(f"{A.PRETTY.get(m, m)} & {how} & {len(names_)} & " + " & ".join(cells) + r" \\")
+write_table("table_camera", [
+    r"\begin{table}[t]\centering\small",
+    r"\caption{The same camera-predicting network with its own focal and given the true (zoomed) camera. $\alpha$: depth "
+    r"exponent. Scale: median over images of $|\operatorname{median}_p \log \hat D/D^{*}|$ at $1\times$ (0 = correct metric "
+    r"scale). \emph{exact}: the model's metres are its own focal times a camera-free output, so the given-camera depth "
+    r"follows exactly from the audit; \emph{rerun}: run again with the camera as input, on the same images as the "
+    r"plain run.}\label{tab:camera}",
+    r"\setlength{\tabcolsep}{3.5pt}",
+    r"\begin{tabular}{llrcccc}\toprule",
+    r"& & & \multicolumn{2}{c}{own focal} & \multicolumn{2}{c}{true camera} \\ \cmidrule(lr){4-5}\cmidrule(lr){6-7}",
+    r"Model & how & images & $\alpha$ & scale & $\alpha$ & scale \\ \midrule",
     *rows, r"\bottomrule\end{tabular}\end{table}"])
 
 # ------------------------------------------------------------------ ZoomFix (cross-fitted, label-free exponent)
@@ -334,10 +446,10 @@ for m in ["moge2-s", "unidepth2-s", "depthpro"]:
     put(key(m, "ppGuessTwo"), g.centred_guess_error.median() if len(g) else np.nan, "{:.3f}")
 
 # ------------------------------------------------------------------ fine-tuning (Table 2)
-ft = df[df.model.isin(FT)]
+ft = df[df.model.isin(FT + SCALE_FT + SEEDS)]
 sft = A.summary(A.per_image(ft)) if len(ft) else pd.DataFrame(columns=["model", "dataset"])
 rows = []
-for m in FT:
+for m in FT + SCALE_FT:
     for ds in A.DATASETS:
         r = sft[(sft.model == m) & (sft.dataset == ds)]
         get = (lambda c: r[c].iloc[0]) if len(r) else (lambda c: np.nan)
@@ -346,6 +458,14 @@ for m in FT:
         put(key(m, ds, "absrelThree"), get("absrel3"), "{:.3f}")
         bl = blur.get((m, ds), np.nan)
         put(key(m, ds, "blur"), 100 * (np.exp(bl) - 1) if np.isfinite(bl) else np.nan, "{:.1f}")
+# seed spread of EFT+B: mean and sample sd over the training seeds that are present for every dataset
+seeds = [m for m in SEEDS if (sft.model == m).sum() == len(A.DATASETS)]
+put("eftbSeeds", len(seeds), "{:d}")
+for ds in A.DATASETS:
+    r = sft[sft.model.isin(seeds) & (sft.dataset == ds)] if len(seeds) == len(SEEDS) else sft.iloc[:0]
+    for c, name, f in (("alpha", "alpha", "{:.2f}"), ("absrel1", "absrelOne", "{:.3f}")):
+        put(key("eftbSeeds", ds, name, "mean"), r[c].mean() if len(r) else np.nan, f)
+        put(key("eftbSeeds", ds, name, "sd"), r[c].std(ddof=1) if len(r) else np.nan, f)
 for ds in A.DATASETS:
     cells = []
     for m in FT:
@@ -365,6 +485,104 @@ write_table("table2", [
     "".join(rf"\cmidrule(lr){{{2 + 3 * i}-{4 + 3 * i}}}" for i in range(len(FT))),
     "Dataset" + r" & $\alpha$ & Abs$_{1\times}$ & blur" * len(FT) + r" \\ \midrule",
     *rows, r"\bottomrule\end{tabular}\end{table*}"])
+
+# EFT-S against the frozen model and EFT+B (its own table: Table 2 is full)
+SCALE_TAB = ["dav2-s-fixed", "dav2-s-eftb", "dav2-s-scale", "dav2-s-scalenb"]
+names.update({"dav2-s-eftb": "EFT+B", "dav2-s-scale": "EFT-S (ours)", "dav2-s-scalenb": "EFT-S, no blur term"})
+rows = []
+for ds in A.DATASETS:
+    cells = []
+    for m in SCALE_TAB:
+        cells += [macros[key(m, ds, "alpha")], macros[key(m, ds, "absrelOne")], macros[key(m, ds, "blur")] +
+                  (r"\%" if macros[key(m, ds, "blur")] != "--" else "")]
+    rows.append(A.PRETTY_DS[ds] + (r"$^\dagger$" if ds.startswith("diode") else "") + " & " + " & ".join(cells) + r" \\")
+write_table("table_scale", [
+    r"\begin{table*}[t]\centering\scriptsize",
+    r"\caption{Scale-only equivariance tuning (EFT-S): DA-V2-S stays frozen and a small head learns one log-scale "
+    r"correction per image from its tokens, with the EFT+B objective. $\alpha$, AbsRel on unzoomed images, and the depth "
+    r"change under the blur control. $^\dagger$never used in training.}\label{tab:scale}",
+    r"\setlength{\tabcolsep}{3pt}",
+    r"\begin{tabular}{l" + " ccc" * len(SCALE_TAB) + r"}\toprule",
+    "& " + " & ".join(rf"\multicolumn{{3}}{{c}}{{{names[m]}}}" for m in SCALE_TAB) + r" \\",
+    "".join(rf"\cmidrule(lr){{{2 + 3 * i}-{4 + 3 * i}}}" for i in range(len(SCALE_TAB))),
+    "Dataset" + r" & $\alpha$ & Abs$_{1\times}$ & blur" * len(SCALE_TAB) + r" \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}\end{table*}"])
+
+# ------------------------------------------------------------------ EFT-F: Depth Pro with its focal head tuned
+# same images as the plain Depth Pro run; the depth network is the original, so alpha_K stays as it was
+for m in ("depthpro", "depthpro-eftf"):
+    z = zc[zc.model == m]
+    p_ = A.per_image(z) if len(z) else pd.DataFrame(columns=["alpha", "beta", "dataset", "absrel1"])
+    put(key(m, "eftf", "alpha"), p_.alpha.median() if len(p_) else np.nan)
+    put(key(m, "eftf", "beta"), p_.beta.median() if len(p_) else np.nan)
+    put(key(m, "eftf", "images"), len(p_), "{:d}")
+    for ds in A.DATASETS:
+        g = p_[p_.dataset == ds]
+        put(key(m, "eftf", ds, "alpha"), g.alpha.median() if len(g) else np.nan)
+        put(key(m, "eftf", ds, "absrelOne"), g.absrel1.mean() if len(g) else np.nan, "{:.3f}")
+    one = z[np.isclose(z.zoom, 1.0)]
+    put(key(m, "eftf", "scale"), np.median(np.abs(one.log_ratio_gt)) if len(one) else np.nan, "{:.3f}")
+    put(key(m, "eftf", "focalErr"), float(np.exp(p_.fx_err1.median())) if len(p_) else np.nan)
+
+# ------------------------------------------------------------------ complete test sets (check of the 200-image sample)
+full_files = list(A.RESULTS.glob("*__full.csv"))
+dfull = A.load("*__full.csv") if full_files else pd.DataFrame()
+FULL = ["dav2-s", "zoedepth", "depthpro", "moge2-s", "unidepth2-s", "metric3d-s"]
+rows = []
+if len(dfull):
+    pf = A.per_image(dfull)
+    for m in [x for x in FULL if x in set(pf.model)]:
+        a_sub, a_full = pi[pi.model == m].alpha.median(), pf[pf.model == m].alpha.median()
+        put(key(m, "full", "alpha"), a_full)
+        put(key(m, "full", "images"), int((pf.model == m).sum()), "{:d}")
+        cells = []
+        for ds in A.DATASETS:
+            g = pf[(pf.model == m) & (pf.dataset == ds)]
+            put(key(m, "full", ds, "alpha"), g.alpha.median() if len(g) else np.nan)
+            cells.append(f"{fmt(pi[(pi.model == m) & (pi.dataset == ds)].alpha.median())} / {fmt(g.alpha.median())}")
+        rows.append(f"{A.PRETTY[m]} & " + " & ".join(cells) + f" & {fmt(a_sub)} / {fmt(a_full)}" + r" \\")
+    for ds in A.DATASETS:
+        put(key("full", ds, "images"), int(pf[pf.dataset == ds].name.nunique()), "{:d}")
+    put("fullMaxShift", float(max(abs(pi[pi.model == m].alpha.median() - pf[pf.model == m].alpha.median())
+                                  for m in set(pf.model) & set(FULL))))
+write_table("table_full", [
+    r"\begin{table*}[t]\centering\small",
+    r"\caption{Depth exponent $\alpha$ on the 200-image sample per set / on the complete test sets (KITTI val selection, "
+    r"NYUv2 test, DIODE val), median over images.}\label{tab:full}",
+    r"\begin{tabular}{lccccc}\toprule",
+    "Model & " + " & ".join(A.PRETTY_DS[d] for d in A.DATASETS) + r" & all \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}\end{table*}"])
+
+# ------------------------------------------------------------------ real optical zoom (SR-RAW)
+sr_files = list(A.RESULTS.glob("*__srraw.csv"))
+sr = pd.concat([pd.read_csv(f) for f in sr_files], ignore_index=True) if sr_files else pd.DataFrame()
+SR = ["dav2-s", "dav2-s-fixed", "dav2-s-eftb", "depthpro", "depthpro-eftf", "moge2-s", "unidepth2-s", "metric3d-s"]
+rows = []
+if len(sr):
+    sa = A.srraw_alpha(sr)
+    put("srrawSequences", int(sr.seq.nunique()), "{:d}")
+    put("srrawShots", int((sr.view == "optical").groupby(sr.model).sum().max()), "{:d}")
+    for m in [x for x in SR if x in set(sa.model)]:
+        cells = []
+        for v in ("optical", "digital"):
+            g = sa[(sa.model == m) & (sa.view == v)]
+            put(key(m, "srraw", v, "alpha"), g.alpha.median() if len(g) else np.nan)
+            put(key(m, "srraw", v, "beta"), g.beta.median() if len(g) and g.beta.notna().any() else np.nan)
+        w = sa[sa.model == m].pivot_table(index="seq", columns="view", values="alpha").dropna()
+        put(key(m, "srraw", "seqs"), len(w), "{:d}")
+        put(key(m, "srraw", "p"), wilcoxon(w.optical - w.digital).pvalue if len(w) > 10 else np.nan, "{:.2g}")
+        cells = [macros[key(m, "srraw", v, q)] for q in ("alpha", "beta") for v in ("optical", "digital")]
+        rows.append(f"{A.PRETTY.get(m, m)} & {len(w)} & " + " & ".join(cells) + r" \\")
+write_table("table_srraw", [
+    r"\begin{table}[t]\centering\small",
+    r"\caption{Real optical zoom (SR-RAW~\cite{zhang2019zoom}): the same static scene shot at several focal lengths "
+    r"($s\le3.2$), against the same zoom done digitally from the widest shot. Median over sequences; ideal "
+    r"$\alpha=0$, $\beta=1$.}\label{tab:srraw}",
+    r"\setlength{\tabcolsep}{3pt}",
+    r"\begin{tabular}{lrcccc}\toprule",
+    r"& & \multicolumn{2}{c}{$\alpha$} & \multicolumn{2}{c}{$\beta$} \\ \cmidrule(lr){3-4}\cmidrule(lr){5-6}",
+    r"Model & seq. & optical & digital & optical & digital \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}\end{table}"])
 
 (GEN / "numbers.tex").write_text("% generated by scripts/make_paper_numbers.py -- do not edit\n" +
                                  "\n".join(f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n")

@@ -35,7 +35,8 @@ PRETTY = {"dav2-l": "DA-V2-L", "moge2-b": "MoGe-2-B", "moge2-l": "MoGe-2-L", "un
           "metric3d-s-staleK": "Metric3D v2-S (stale K)", "dav2-s-fixed": "DA-V2-S (frozen)",
           "dav2-s-eft": "DA-V2-S + EFT", "dav2-s-anchor": "DA-V2-S + anchor-only FT",
           "dav2-s-eftb": "DA-V2-S + EFT+B (ours)", "dav2-s-blur": "DA-V2-S + blur-only FT",
-          "dav2-s-eftb3": "DA-V2-S + EFT+B (anchor x3)"}
+          "dav2-s-eftb3": "DA-V2-S + EFT+B (anchor x3)", "dav2-s-scale": "DA-V2-S + EFT-S (ours)",
+          "dav2-s-scalenb": "DA-V2-S + EFT-S, no blur term", "depthpro-eftf": "Depth Pro + EFT-F (ours)"}
 DATASETS = ["kitti", "nyu", "diode-in", "diode-out"]
 PRETTY_DS = {"kitti": "KITTI", "nyu": "NYUv2", "diode-in": "DIODE-in", "diode-out": "DIODE-out"}
 
@@ -71,7 +72,7 @@ def load(pattern="*__*.csv", folder=None):
     folder = Path(folder or RESULTS)
     # side runs (off-centre, controls, fine ZoomFix, cue split) share model names with the main run, so they
     # are only loaded when asked for by name, never mixed into the main audit
-    side = ("__offc", "__ctrl", "__fix", "__cues")
+    side = ("__offc", "__ctrl", "__fix", "__cues", "__regions", "__full", "__srraw")
     files = [f for f in sorted(folder.glob(pattern)) if not any(t in f.name and t[2:] not in pattern for t in side)]
     df = pd.concat([repair_cx(pd.read_csv(f)) for f in files], ignore_index=True)
     first = df[df.kind == "zoom"].groupby(["model", "dataset", "name", "cx", "cy"])["fx_gt"].transform("min")
@@ -304,3 +305,90 @@ def principal_point(df):
     return z.groupby(["model", "dataset", "offset", "zoom"]).agg(
         model_error=("pp_err", lambda v: float(np.median(np.abs(v)))),
         centred_guess_error=("pp_centre_err", lambda v: float(np.median(np.abs(v))))).reset_index()
+
+
+def given_focal(z):
+    """Zoom rows of a model whose metres are its own focal times a camera-free output (Depth Pro,
+    DA3-Nested), turned into the rows it would give with the true focal: depth * fx_gt / fx.
+
+    Exact for such models, so their "given the camera" run needs no rerun. Rows must be one
+    crop centre per image (the 1x row of each image is the reference)."""
+    z = z.copy()
+    corr = np.log(z.fx_gt / z.fx)
+    corr1 = z[np.isclose(z.zoom, 1.0)].set_index("name").pipe(lambda b: np.log(b.fx_gt / b.fx))
+    z["log_ratio_self"] = z.log_ratio_self + corr - z.name.map(corr1).values
+    z["log_ratio_gt"] = z.log_ratio_gt + corr
+    z["fx"], z["fx_base"] = z.fx_gt, z.groupby("name").fx_gt.transform("min")
+    return z
+
+
+def twoway_boot_spearman(pairs, x, y, n=2000, seed=0):
+    """Spearman rho over (model, dataset) pairs with a 95% interval that resamples models and datasets
+    together: pairs that share a model or a dataset are not independent, so resampling pairs is too narrow."""
+    from scipy.stats import spearmanr
+
+    rng = np.random.default_rng(seed)
+    models, sets = pairs.model.unique(), pairs.dataset.unique()
+    by = pairs.set_index(["model", "dataset"])
+    rho = spearmanr(pairs[x], pairs[y]).statistic
+    reps = []
+    for _ in range(n):
+        ms, ds = rng.choice(models, len(models)), rng.choice(sets, len(sets))
+        idx = [(m, d) for m in ms for d in ds if (m, d) in by.index]
+        b = by.loc[idx]
+        if len(b) > 4 and b[x].nunique() > 1 and b[y].nunique() > 1:
+            reps.append(spearmanr(b[x], b[y]).statistic)
+    lo, hi = np.percentile(reps, [2.5, 97.5])
+    return rho, lo, hi
+
+
+def fit_quality(df):
+    """How well the per-image power law describes the depth ratio: per image, the RMS residual of
+    log(depth ratio) around -alpha*log(s), and alpha fitted on the small zooms (s<=1.5) and the large
+    ones (s>=2) separately. One row per (model, dataset, image) at the centre."""
+    z = df[(df.kind == "zoom") & (df.zoom > 1) & np.isclose(df.cx, 0.5) & np.isclose(df.cy, 0.5)].copy()
+    z["log_s"] = np.log(z.s_true)
+    keys = ["model", "dataset", "name"]
+
+    def slope(g):
+        return -float((g.log_s * g.log_ratio_self).sum() / (g.log_s ** 2).sum())
+
+    rows = []
+    for k, g in z.groupby(keys):
+        g = g.dropna(subset=["log_ratio_self"])
+        if len(g) < 4:
+            continue
+        a = slope(g)
+        rms = float(np.sqrt(np.mean((g.log_ratio_self + a * g.log_s) ** 2)))
+        rows.append(dict(zip(keys, k), alpha=a, rms=rms, alpha_small=slope(g[g.zoom <= 1.5]),
+                         alpha_large=slope(g[g.zoom >= 2])))
+    return pd.DataFrame(rows)
+
+
+def region_alpha(reg):
+    """Per image and region group, the depth exponent from the 2x and 3x zooms (fit through the origin),
+    and per image the paired difference object - surface (images with both groups only)."""
+    reg = reg.dropna(subset=["log_ratio_self"]).assign(log_s=lambda d: np.log(d.s_true))
+    keys = ["model", "dataset", "name", "group"]
+    g = reg.groupby(keys)
+    a = -(g.apply(lambda d: (d.log_s * d.log_ratio_self).sum() / (d.log_s ** 2).sum(), include_groups=False)
+          .rename("alpha"))
+    n = g.size().rename("n_zooms")
+    per = pd.concat([a, n], axis=1).reset_index()
+    per = per[per.n_zooms == reg.zoom.nunique()]
+    wide = per.pivot_table(index=["model", "dataset", "name"], columns="group", values="alpha").dropna()
+    wide["diff"] = wide["object"] - wide["surface"]
+    return per, wide.reset_index()
+
+
+def srraw_alpha(df):
+    """Real optical vs digital zoom on SR-RAW: per model, sequence and view, alpha from the log depth ratios and
+    beta from the focal ratios (both fit through the origin over the zoomed shots)."""
+    z = df[df.view != "base"].assign(log_s=lambda d: np.log(d.s),
+                                     log_f=lambda d: np.log(d.fx.astype(float) / d.fx_base.astype(float)))
+    keys = [z.model, z.seq, z.view]
+    a = -_slope_by_group(z.log_s.values, z.log_ratio.values, keys)
+    b = _slope_by_group(z.log_s.values, z.log_f.values, keys)
+    out = pd.concat([a.rename("alpha"), b.rename("beta")], axis=1)
+    out.index.names = ["model", "seq", "view"]
+    return out.reset_index()
