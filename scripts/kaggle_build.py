@@ -99,6 +99,13 @@ elif kind == "tpu":
                   "metric3d-s"):
             job(f"srraw-{m}", f"scripts/run_srraw.py {m} --root data/raw/srraw{' --every 20' if SMOKE else ''} {res}",
                 ["train-eftf"] if m == "depthpro-eftf" else [])
+    elif part == "figs":
+        # CPU: Figure 1 maps of the fine-tuned model (and the frozen one at the same input size), and the maps of one
+        # SR-RAW sequence for the optical-zoom figure; the sequence (argv[4]) is the one with DA-V2-S's median alpha
+        seq = sys.argv[4]
+        job("fig1-eft", f"scripts/scene_stats.py --figure-only --figure-models dav2-s-fixed dav2-s-eftb "
+            f"--maps-name figure1_maps_eft.npz {res}")
+        job("srraw-maps", f"scripts/srraw_maps.py --seq {seq} --models dav2-s dav2-s-eftb depthpro depthpro-eftf moge2-s {res}")
     elif part == "calib":
         # GPU: a dedicated calibration network (GeoCalib) under the same zooms, as a reference for beta, and the
         # zoom response by semantic region (objects of familiar size vs surfaces), same 200 images per set
@@ -182,7 +189,7 @@ else:
 files = {str(p.relative_to(ROOT)): base64.b64encode(p.read_bytes()).decode()
          for p in sorted([*ROOT.glob("src/*.py"), ROOT / "scripts/run_audit.py", ROOT / "scripts/train_eft.py",
                          ROOT / "scripts/run_regions.py", ROOT / "scripts/run_srraw.py",
-                         ROOT / "scripts/train_eft_focal.py",
+                         ROOT / "scripts/train_eft_focal.py", ROOT / "scripts/srraw_maps.py",
                          ROOT / "scripts/eft_scale.py",
                          ROOT / "scripts/scene_stats.py", ROOT / "scripts/count_params.py"])}
 
@@ -205,7 +212,8 @@ GPU_TPU_PARTS = ("camgpu", "calib", "focal", "focalsmoke")  # "tpu" kernels that
        if part == "cuestpu" or (kind == "tpu" and part not in GPU_TPU_PARTS) else {}),
     "enable_internet": True,
     **({"kernel_sources": [f"{user}/zoom-equivariance-eft"]} if part == "baseline" else {}),
-    **({"kernel_sources": [f"{user}/zoom-equivariance-eft-baseline"]} if kind == "tpu" and part not in ("cam", "camgpu", "calib")
-       else {}),
+    **({"kernel_sources": [f"{user}/zoom-equivariance-eft-baseline"]
+                          + ([f"{user}/zoom-equivariance-tpu-focal"] if part == "figs" else [])}
+       if kind == "tpu" and part not in ("cam", "camgpu", "calib") else {}),
 }, indent=2))
 print("built", out, len(files), "files,", len(JOBS), "jobs")

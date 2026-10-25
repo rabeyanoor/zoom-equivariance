@@ -22,6 +22,8 @@ p.add_argument("--n", type=int, default=200)
 p.add_argument("--out", default=str(ROOT / "outputs" / "results"))
 p.add_argument("--figure1", action="store_true", help="also save depth maps for Figure 1")
 p.add_argument("--figure-only", action="store_true")
+p.add_argument("--figure-models", nargs="+", default=["dav2-s", "moge2-s"], help="models whose Figure 1 maps are saved")
+p.add_argument("--maps-name", default="figure1_maps.npz")
 p.add_argument("--nyu-scenes", action="store_true", help="only write the scene name of every NYUv2 test image")
 args = p.parse_args()
 out = Path(args.out)
@@ -58,7 +60,7 @@ if args.figure1 or args.figure_only:
     picks = {"kitti": datasets.sample_ids("kitti", args.n)[3], "nyu": datasets.sample_ids("nyu", args.n)[5]}
     maps = {}
     # Metric3D has hard-coded .cuda() calls, and this part runs on a CPU kernel
-    for name in ("dav2-s", "moge2-s"):
+    for name in args.figure_models:
         for ds, i in picks.items():
             m = models.load(name, datasets.DOMAIN[ds])
             s = datasets.Loader(ds)(i)
@@ -71,4 +73,4 @@ if args.figure1 or args.figure_only:
                 maps[f"gt|{ds}|{zf}"] = zoom.crop(s["depth"], box).astype(np.float16)
             del m
         print(name, "figure maps done", flush=True)
-        np.savez_compressed(out / "figure1_maps.npz", **maps)
+        np.savez_compressed(out / args.maps_name, **maps)

@@ -555,7 +555,7 @@ write_table("table_full", [
 
 # ------------------------------------------------------------------ real optical zoom (SR-RAW)
 sr_files = list(A.RESULTS.glob("*__srraw.csv"))
-sr = pd.concat([pd.read_csv(f) for f in sr_files], ignore_index=True) if sr_files else pd.DataFrame()
+sr = pd.concat([pd.read_csv(f, dtype={"seq": str}) for f in sr_files], ignore_index=True) if sr_files else pd.DataFrame()
 SR = ["dav2-s", "dav2-s-fixed", "dav2-s-eftb", "depthpro", "depthpro-eftf", "moge2-s", "unidepth2-s", "metric3d-s"]
 rows = []
 if len(sr):

@@ -17,9 +17,14 @@ import numpy as np
 
 ROOT = Path.cwd().parent if Path.cwd().name == "notebooks" else Path.cwd()
 FIG = ROOT / "outputs/figures"
-maps = np.load(ROOT / "outputs/results/figure1_maps.npz")
+maps = dict(np.load(ROOT / "outputs/results/figure1_maps.npz"))
 ZOOMS = (1.0, 2.0, 3.0)
 MODELS = [("dav2-s", "DA-V2-S"), ("moge2-s", "MoGe-2-S"), ("gt", "GT")]
+# the fine-tuned model (EFT+B) and the frozen model at the same 392-px input, from the "tpu figs" kernel
+EFT = ROOT / "outputs/results/figure1_maps_eft.npz"
+if EFT.exists():
+    maps.update({k: v for k, v in np.load(EFT).items() if not k.startswith(("img|", "gt|"))})
+    MODELS = MODELS[:2] + [("dav2-s-eftb", "EFT+B (ours)")] + MODELS[2:]
 
 
 def centre_box(shape, s_from, s_to=3.0):
@@ -41,12 +46,12 @@ def median_in_core(d, s):
 # %%
 for ds in ("kitti", "nyu"):
     print(ds)
-    for m, label in MODELS:
+    for m, label in MODELS + ([("dav2-s-fixed", "frozen, 392 px")] if EFT.exists() else []):
         meds = [median_in_core(maps[f"{m}|{ds}|{s}"], s) for s in ZOOMS]
         print(f"  {label:28s}", "  ".join(f"{s}x: {v:5.2f} m" for s, v in zip(ZOOMS, meds)))
 
 # %%
-fig, axes = plt.subplots(8, 3, figsize=(12, 14), gridspec_kw={"hspace": 0.25, "wspace": 0.03})
+fig, axes = plt.subplots(2 * (1 + len(MODELS)), 3, figsize=(12, 14), gridspec_kw={"hspace": 0.25, "wspace": 0.03})
 row = 0
 for ds in ("kitti", "nyu"):
     vals = np.concatenate([maps[f"{m}|{ds}|{s}"].astype(np.float32).ravel() for m, _ in MODELS[:2] for s in ZOOMS])
@@ -66,7 +71,7 @@ for ds in ("kitti", "nyu"):
                     bbox=dict(facecolor="k", alpha=0.5, pad=1.5))
             if k == 0:
                 ax.set_ylabel(label, fontsize=9)
-    row += 4
+    row += 1 + len(MODELS)
 for ax in axes.ravel():
     ax.set_xticks([])
     ax.set_yticks([])
@@ -90,7 +95,8 @@ ps.use()
 
 def panel_figure(ds, width):
     h, w = maps[f"img|{ds}|1.0"].shape[:2]
-    fig, axes = plt.subplots(4, 3, figsize=(width, width / 3 * h / w * 4 * 1.12), gridspec_kw={"hspace": 0.08, "wspace": 0.02})
+    n = 1 + len(MODELS)
+    fig, axes = plt.subplots(n, 3, figsize=(width, width / 3 * h / w * n * 1.12), gridspec_kw={"hspace": 0.08, "wspace": 0.02})
     vals = np.concatenate([maps[f"{m}|{ds}|{s}"].astype(np.float32).ravel() for m, _ in MODELS[:2] for s in ZOOMS])
     vmin, vmax = np.nanpercentile(vals[vals > 0], [2, 98])
     for k, s in enumerate(ZOOMS):

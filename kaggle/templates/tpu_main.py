@@ -92,7 +92,7 @@ def download_srraw():
 def reuse_checkpoints():
     """Checkpoints of earlier EFT kernels attached as input (EFT+B, for the cue split)."""
     (WORK / "eft").mkdir(parents=True, exist_ok=True)
-    for ck in Path("/kaggle/input").glob("**/dav2-s-*.pt"):
+    for ck in [*Path("/kaggle/input").glob("**/dav2-s-*.pt"), *Path("/kaggle/input").glob("**/depthpro-*.pt")]:
         print("reusing", ck, flush=True)
         shutil.copy(ck, WORK / "eft" / ck.name)
     # CSVs of an earlier TPU kernel: run_audit.py skips the images they already hold
