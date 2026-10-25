@@ -38,12 +38,17 @@ def _to_hw(depth, hw):
 class HFDepth:
     """transformers depth models (DA-V2 metric, ZoeDepth, Depth Pro)."""
 
-    def __init__(self, repo, kind):
+    def __init__(self, repo, kind, fov_ckpt=None):
         from transformers import AutoImageProcessor, AutoModelForDepthEstimation
 
         self.kind = kind
         self.proc = AutoImageProcessor.from_pretrained(repo)
         self.model = AutoModelForDepthEstimation.from_pretrained(repo).eval().to(DEVICE)
+        if fov_ckpt:
+            # EFT-F: Depth Pro with its focal head tuned (scripts/train_eft_focal.py); the depth network is the original
+            sd = torch.load(Path(os.environ.get("EFT_DIR", ROOT / "outputs" / "eft")) / f"{fov_ckpt}.pt", map_location="cpu")
+            missing, unexpected = self.model.fov_model.load_state_dict(sd, strict=False)
+            assert not unexpected and len(sd), (fov_ckpt, unexpected)
 
     @torch.no_grad()
     def predict(self, img, K=None):
@@ -61,9 +66,12 @@ class HFDepth:
 
 
 class MoGe2:
-    def __init__(self, repo):
+    """given_K: pass the true horizontal FoV (MoGe's fov_x) instead of recovering the focal from the point map."""
+
+    def __init__(self, repo, given_K=False):
         from moge.model.v2 import MoGeModel
 
+        self.given_K = given_K
         self.model = MoGeModel.from_pretrained(repo).eval().to(DEVICE)
 
     @torch.no_grad()
@@ -71,7 +79,8 @@ class MoGe2:
         h, w = img.shape[:2]
         x = torch.from_numpy(img).permute(2, 0, 1).float().to(DEVICE) / 255
         # fp16 is MoGe's default and is what we use on the GPU; the CPU has no fp16 kernels
-        out = {k: v.cpu() for k, v in self.model.infer(x, use_fp16=DEVICE.type == "cuda").items()}
+        fov_x = float(np.degrees(2 * np.arctan(w / (2 * K[0, 0])))) if self.given_K else None
+        out = {k: v.cpu() for k, v in self.model.infer(x, use_fp16=DEVICE.type == "cuda", fov_x=fov_x).items()}
         depth = out["depth"].numpy().copy()
         depth[~out["mask"].numpy()] = np.nan
         # MoGe returns intrinsics normalised by image width / height
@@ -82,17 +91,22 @@ class MoGe2:
 
 
 class UniDepth2:
-    def __init__(self, repo):
+    """given_K: condition the network on the true pinhole K (UniDepthV2.infer's camera argument)."""
+
+    def __init__(self, repo, given_K=False):
         from unidepth.models import UniDepthV2
 
+        self.given_K = given_K
         self.model = UniDepthV2.from_pretrained(repo).eval().to(DEVICE)
 
     @torch.no_grad()
     def predict(self, img, K=None):
         x = torch.from_numpy(img).permute(2, 0, 1)
-        out = self.model.infer(x)
-        fx = float(out["intrinsics"][0, 0, 0])
-        cx = float(out["intrinsics"][0, 0, 2])
+        cam = torch.as_tensor(K, dtype=torch.float32)[None] if self.given_K else None
+        out = self.model.infer(x, cam)
+        # with a camera the decoder uses its rays, but "intrinsics" is still the camera head's own estimate
+        Kout = K if self.given_K else out["intrinsics"][0]
+        fx, cx = float(Kout[0, 0]), float(Kout[0, 2])
         return {"depth": out["depth"][0, 0].cpu().numpy(), "fx": fx, "cx": cx}
 
 
@@ -115,6 +129,23 @@ def _mmcv_shim():
     mmcv = types.ModuleType("mmcv")
     mmcv.utils = utils
     sys.modules["mmcv"], sys.modules["mmcv.utils"] = mmcv, utils
+
+
+class GeoCalibCam:
+    """Calibration only (GeoCalib, ECCV 2024): a dedicated single-image focal estimator, as a reference for
+    the focal exponent beta. It predicts no depth; the constant depth map only keeps the audit code uniform,
+    so only beta (and fx) of its rows mean anything."""
+
+    def __init__(self):
+        from geocalib import GeoCalib
+
+        self.model = GeoCalib().to(DEVICE).eval()
+
+    @torch.no_grad()
+    def predict(self, img, K=None):
+        x = torch.from_numpy(img).permute(2, 0, 1).float().div(255).to(DEVICE)
+        cam = self.model.calibrate(x)["camera"]  # focal in the input image's pixels (undo_scale_crop)
+        return {"depth": np.ones(img.shape[:2], np.float32), "fx": float(cam.f[0, 0]), "cx": float(cam.c[0, 0])}
 
 
 class Metric3D:
@@ -156,6 +187,8 @@ def _dav2_fixed(domain, tag=None):
     import eft as eft_lib
 
     m = AutoModelForDepthEstimation.from_pretrained(f"depth-anything/Depth-Anything-V2-Metric-{domain}-Small-hf")
+    if tag and tag.startswith("scale"):
+        m = eft_lib.ScaleAdapter(m)
     if tag:
         ckpt = Path(os.environ.get("EFT_DIR", ROOT / "outputs" / "eft")) / f"dav2-s-{tag}-{domain.lower()}.pt"
         m.load_state_dict(torch.load(ckpt, map_location="cpu"))
@@ -261,9 +294,16 @@ REGISTRY = {
     "dav2-b": ("pixels only", lambda dom: HFDepth(f"depth-anything/Depth-Anything-V2-Metric-{dom}-Base-hf", "dav2")),
     "zoedepth": ("pixels only", lambda dom: HFDepth("Intel/zoedepth-nyu-kitti", "zoe")),
     "depthpro": ("predicts camera", lambda dom: HFDepth("apple/DepthPro-hf", "depthpro")),
+    "depthpro-eftf": ("predicts camera (EFT-F, focal head tuned)",
+                      lambda dom: HFDepth("apple/DepthPro-hf", "depthpro", fov_ckpt="depthpro-eftf")),
     "moge2-s": ("predicts camera", lambda dom: MoGe2("Ruicheng/moge-2-vits-normal")),
     "unidepth2-s": ("predicts camera", lambda dom: UniDepth2("lpiccinelli/unidepth-v2-vits14")),
     "metric3d-s": ("takes camera", lambda dom: Metric3D()),
+    # dedicated calibration network: reference for beta only (no depth)
+    "geocalib": ("calibration only", lambda dom: GeoCalibCam()),
+    # the same camera-predicting networks, given the true (zoomed) camera instead
+    "moge2-s-k": ("predicts camera, given true K", lambda dom: MoGe2("Ruicheng/moge-2-vits-normal", given_K=True)),
+    "unidepth2-s-k": ("predicts camera, given true K", lambda dom: UniDepth2("lpiccinelli/unidepth-v2-vits14", given_K=True)),
     # larger models and newer families (the "model ladder")
     "dav2-l": ("pixels only", lambda dom: HFDepth(f"depth-anything/Depth-Anything-V2-Metric-{dom}-Large-hf", "dav2")),
     "moge2-b": ("predicts camera", lambda dom: MoGe2("Ruicheng/moge-2-vitb-normal")),
@@ -285,6 +325,12 @@ REGISTRY = {
     "dav2-s-blur": ("pixels only (blur-only FT)", lambda dom: _dav2_fixed(dom, "blur")),
     "dav2-s-eftb3": ("pixels only (EFT+B, anchor x3)", lambda dom: _dav2_fixed(dom, "eftb3")),
     "dav2-s-zhong": ("pixels only (Zhong et al. style self-consistency)", lambda dom: _dav2_fixed(dom, "zhong")),
+    # EFT+B with other training seeds (seed variance)
+    "dav2-s-eftb-s1": ("pixels only (EFT+B, seed 1)", lambda dom: _dav2_fixed(dom, "eftb-s1")),
+    "dav2-s-eftb-s2": ("pixels only (EFT+B, seed 2)", lambda dom: _dav2_fixed(dom, "eftb-s2")),
+    # EFT-S: frozen model + one learned log-scale per image, with and without the blur term
+    "dav2-s-scale": ("pixels only (EFT-S, scale only)", lambda dom: _dav2_fixed(dom, "scale")),
+    "dav2-s-scalenb": ("pixels only (EFT-S, no blur term)", lambda dom: _dav2_fixed(dom, "scalenb")),
 }
 
 

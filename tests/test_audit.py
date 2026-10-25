@@ -92,3 +92,31 @@ def test_cues_apparent_size_model_reacts_to_magnification_only():
     assert abs(rows["magnify"]["log_ratio_self"] - np.log(0.5)) < 0.02
     assert abs(rows["zoom"]["log_ratio_self"] - np.log(0.5)) < 0.02
     assert abs(rows["shrink"]["log_ratio_self"] - np.log(2.0)) < 0.02
+
+
+def test_given_focal_makes_a_focal_head_model_equivariant():
+    # ApparentSize is a fixed focal times a correct camera-free depth (depth = f_hat * 10 / f_true),
+    # the Depth Pro / DA3-Nested structure: with the true focal its whole zoom error goes away
+    _, _, rows = exponents(ApparentSize())
+    for r in rows:
+        r.update(model="m", dataset="d")
+    df = pd.DataFrame(rows)
+    z = df[df.kind == "zoom"].copy()
+    z["s_true"] = z.fx_gt / z.fx_gt.min()
+    g = analysis.given_focal(z)
+    pi = analysis.per_image(g)
+    assert abs(pi.alpha.iloc[0]) < 1e-6 and abs(pi.beta.iloc[0] - 1) < 1e-6
+    assert np.allclose(g.log_ratio_gt, 0, atol=1e-6)
+
+
+def test_region_rows_split_the_zoom_response_by_group():
+    import regions
+
+    seg = np.full(SAMPLE["img"].shape[:2], 6)  # road (surface)
+    seg[:, :100] = 20  # left half: car (object)
+    rows = pd.DataFrame(regions.region_rows(ApparentSize(), SAMPLE, seg))
+    for _, r in rows.iterrows():  # apparent size: depth ~ 1/s on every region
+        assert abs(r.log_ratio_self + np.log(r.s_true)) < 1e-6
+    assert set(rows.group) == {"object", "surface"}
+    eq = pd.DataFrame(regions.region_rows(Equivariant(), SAMPLE, seg))
+    assert np.allclose(eq.log_ratio_self, 0, atol=1e-6)
