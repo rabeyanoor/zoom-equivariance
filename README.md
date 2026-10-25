@@ -1,6 +1,6 @@
 # Zoom equivariance of metric depth models
 
-Code, results and paper for *Zoom In, Scale Out: When Metric Depth Models Mistake Digital Zoom for Scene Motion*
+Code, results and paper for *Zoom In, Scale Out: Metric Depth Models Mistake Digital Zoom for Moving Closer*
 (CVPR 2027 submission, under double-blind review: do not link this repository from the paper).
 
 A centred crop followed by a resize is an exact digital zoom: the focal length is multiplied by the zoom
