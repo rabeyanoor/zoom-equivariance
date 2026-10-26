@@ -47,6 +47,9 @@ def test_alpha_beta_of_known_model(tmp_path):
     seq.mkdir()
     for i, f in enumerate((24.0, 35.0, 50.0, 70.0, 100.0)):  # 100 mm is beyond S_MAX and is skipped
         write_shot(seq / f"{i + 1:05d}.JPG", f, int(f))
+    (seq / "aligned").mkdir()  # the dataset's pre-aligned crops: not a sequence of their own
+    for i in range(2):
+        Image.new("RGB", (60, 40)).save(seq / "aligned" / f"{i + 1:05d}.JPG")
     assert srraw.sequences(tmp_path) == [seq]
     rows = pd.DataFrame(srraw.sequence_rows(CameraPower(0.4, 0.6), seq, needs_K=True)).assign(model="m")
     assert set(rows.view) == {"base", "optical", "digital"} and rows.s.max() <= srraw.S_MAX

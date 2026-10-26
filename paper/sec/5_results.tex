@@ -3,17 +3,6 @@
 
 \newcommand{\maybefig}[1]{\IfFileExists{fig/#1.pdf}{\includegraphics[width=\linewidth]{fig/#1.pdf}}{\fbox{\small figure \detokenize{#1} pending}}}
 
-\begin{figure*}[t]
-  \centering
-  \IfFileExists{fig/teaser.pdf}{\includegraphics[width=\linewidth]{fig/teaser.pdf}}{\fbox{teaser pending}}
-  \caption{A KITTI image at $1\times$, $2\times$ and $3\times$ digital zoom. All depth panels share one
-  colour scale (metres); the number is the median depth of the pixels inside the $3\times$ crop, i.e. the
-  same physical points in every column. Depth Anything V2 moves the scene closer as we zoom in (28.5\,m to
-  7.8\,m); MoGe-2, which predicts its camera, moves it less; the LiDAR ground truth does not move.
-  An NYUv2 example is in the supplement.}
-  \label{fig:teaser}
-\end{figure*}
-
 \input{gen/table1}
 
 \paragraph{Models that infer or ignore the camera miss the zoom (Q1).}

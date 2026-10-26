@@ -37,8 +37,10 @@ def read_shot(path, long_side=LONG_SIDE):
 
 
 def sequences(root):
-    """Folders that hold an SR-RAW sequence (00001.JPG and at least one more shot)."""
-    return sorted(p.parent for p in Path(root).rglob("00001.JPG") if len(list(p.parent.glob("0000[2-7].JPG"))))
+    """Folders that hold an SR-RAW sequence (00001.JPG and at least one more shot). Each test sequence also has an
+    aligned/ subfolder (the authors' pre-aligned crops, without EXIF); it is not a sequence of its own."""
+    return sorted(p.parent for p in Path(root).rglob("00001.JPG")
+                  if p.parent.name != "aligned" and len(list(p.parent.glob("0000[2-7].JPG"))))
 
 
 def centre_box(h, w, frac):

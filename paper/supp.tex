@@ -43,7 +43,8 @@ from the same result files as the main paper.
   \maybefig{figS_teaser_nyu}
   \caption{The layout of \cref{fig:teaser} on an NYUv2 test image: depth at $1\times$, $2\times$ and
   $3\times$ digital zoom on one colour scale in metres. The number in each panel is the median depth over
-  the pixels inside the $3\times$ crop, the same physical points in every column.}
+  the pixels inside the $3\times$ crop, the same physical points in every column. EFT+B (392-px input) keeps
+  4.65, 4.47 and 4.55\,m (frozen model at that input: 4.16 to 0.81\,m); the ground truth is 2.26\,m.}
   \label{fig:supp_nyu}
 \end{figure}
 
@@ -312,7 +313,7 @@ SR-RAW~\cite{zhang2019zoom} holds static scenes shot from a tripod with a Sony F
 seven focal lengths. The camera does not move, so the true depth of every point is the same in every shot and
 no depth labels are needed. We use the camera JPEGs of the test set at a long side of 1024\,px and the EXIF focal
 length; the shots with $s\le3.2$ against the widest one are compared, \srrawShots{} zoomed shots in
-\srrawSequences{} sequences. As SR-RAW assumes, a zoomed shot shows the centred $1/s$ box of the wide shot; we
+all \srrawSequences{} test sequences. As SR-RAW assumes, a zoomed shot shows the centred $1/s$ box of the wide shot; we
 compare the median log depth over the inner 80\% of the zoomed shot with the median over the matching box of
 the wide shot's prediction, which leaves a margin for the small shift of the lens centre. The same crop of the
 wide shot, done digitally, is scored on the same scenes. Models that take the camera get $K$ from the EXIF
@@ -335,7 +336,8 @@ shows the sequence whose DA-V2-S $\alpha$ is the median over all sequences.
   \maybefig{figS_srraw}
   \caption{One SR-RAW sequence (the one with the median DA-V2-S $\alpha$, not hand-picked) shot at several
   focal lengths from a fixed tripod. The true depth does not change across a row; the number is the median
-  predicted depth over the field of view of the longest shot, i.e.\ the same points in every column.}
+  predicted depth over the field of view of the longest shot, i.e.\ the same points in every column. Single
+  sequences vary: here Depth Pro moves the scene away as the focal grows; \cref{tab:srraw} gives the medians.}
   \label{fig:supp_srraw}
 \end{figure*}
 

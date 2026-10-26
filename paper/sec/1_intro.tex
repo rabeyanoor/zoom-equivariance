@@ -1,6 +1,16 @@
 \section{Introduction}
 \label{sec:intro}
 
+\begin{figure*}[t]
+  \centering
+  \IfFileExists{fig/teaser.pdf}{\includegraphics[width=\linewidth]{fig/teaser.pdf}}{\fbox{teaser pending}}
+  \caption{A KITTI image at $1\times$, $2\times$, $3\times$ digital zoom, one colour scale (metres); the number is
+  the median depth inside the $3\times$ crop, the same points in every column. Depth Anything V2 moves the
+  scene closer (28.5\,m to 7.8\,m), MoGe-2 less. Our label-free EFT+B (392-px input) keeps it (34.7, 35.5,
+  34.8\,m; frozen at that input: 33.6 to 11.8\,m) at a wrong scale (LiDAR: 21.3\,m). NYUv2: supplement.}
+  \label{fig:teaser}
+\end{figure*}
+
 Single-image metric depth has improved fast~\cite{bochkovskii2025depthpro,piccinelli2025unidepthv2,
 wang2025moge2,hu2024metric3dv2,yang2024dav2}. These models now run on phones, robots and cars with
 cameras they never saw in training. To answer in metres they have to solve an old problem: the same
@@ -33,7 +43,7 @@ We ask four questions.
 
 \paragraph{What we find.}
 No tested model that must infer or ignores the camera fully respects the zoom law (Q1): Depth Anything V2
-shrinks depth almost like $1/s$ ($\alpha=\DavTwoSAlpha$), and models with a camera head close only part of the
+shrinks depth almost like $1/s$ ($\alpha=\DavTwoSAlpha$, \cref{fig:teaser}), and models with a camera head close only part of the
 gap while their focal grows far less than $s$ (\cref{fig:curves}). The failures follow one pattern (Q2): a
 zoomed photo is pixel for pixel an ordinary photo of the scene squashed along the viewing direction, the
 \emph{zoom--squash ambiguity}, and models that read size end up on the line $\alpha+\beta=1$, where Depth Pro
