@@ -6,9 +6,9 @@ import sys
 import time
 from pathlib import Path
 
-# the same file also runs as a Colab notebook (scripts/colab_build.py); Kaggle images now have /content too, so
-# Colab is detected from its own environment variables, and only /kaggle/working is kept as kernel output
-COLAB = "COLAB_RELEASE_TAG" in os.environ or "COLAB_GPU" in os.environ
+# the same file also runs as a Colab notebook (scripts/colab_build.py). Kaggle images now have /content and even
+# set COLAB_RELEASE_TAG, so Kaggle is detected by /kaggle/working, the only folder it keeps as kernel output
+COLAB = not Path("/kaggle/working").exists()
 WORK = Path("/content/out") if COLAB else Path("/kaggle/working")
 PROJ = Path("/kaggle/temp/ze") if Path("/kaggle/temp").exists() else Path("/tmp/ze")
 RAW = PROJ / "data" / "raw"
@@ -80,8 +80,7 @@ def main():
         except subprocess.CalledProcessError as e:
             # one broken model should not cost us the others
             print("FAILED:", job, e, flush=True)
-    if not COLAB:
-        assert any(out.glob("*.csv")), f"no result CSV in {out}"
+    assert any(out.glob("*.csv")), f"no result CSV in {out}"
     print(f"all done in {(time.time() - t0) / 60:.1f} min", flush=True)
 
 

@@ -74,7 +74,7 @@ stored in this repository.
 | `audit a2`, `audit b` | main audit: 8 models × 4 sets × 200 images (b: Depth Pro, off-centre zooms) |
 | `audit c1`, `audit c2` | larger and newer models (DA3, UniK3D, VGGT, …) |
 | `audit d` | optical-vs-digital, interpolation and JPEG controls; fine ZoomFix grid |
-| `audit fulla`, `audit fullb` | main models on the complete test sets |
+| `audit fulla`, `audit fullb` | main models on the complete test sets (both runs lost their output, see `audit_main.py`; not in the paper; `tpu full` is the CPU alternative) |
 | `eft`, `eft baseline`, `eft ablate`, `eft seeds` | EFT, EFT+B, controls, three training seeds |
 | `tpu main` | cue split and EFT-S on the CPU cores of a TPU VM |
 | `tpu camgpu` | MoGe-2 / UniDepthV2 given the true camera; Depth Pro cue split |
