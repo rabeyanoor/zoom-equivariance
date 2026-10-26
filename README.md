@@ -80,6 +80,7 @@ stored in this repository.
 | `tpu camgpu` | MoGe-2 / UniDepthV2 given the true camera; Depth Pro cue split |
 | `tpu calib` | GeoCalib reference and semantic-region α |
 | `tpu focal` | EFT-F training and audit; SR-RAW real optical zoom |
+| `tpu figs <seq>` | Figure 1 maps of EFT+B, SR-RAW maps of one sequence, SR-RAW inventory (`scripts/srraw_check.py`) |
 
 When a kernel is done:
 
@@ -88,6 +89,7 @@ kaggle kernels output <user>/zoom-equivariance-<kernel> -p /tmp/out
 cp /tmp/out/results/*.csv outputs/results/
 python scripts/make_paper_numbers.py      # every number and table of the paper -> paper/gen/
 python scripts/kaggle_paper.py <user>     # compiles the paper on a Kaggle CPU kernel (no local LaTeX needed)
+python scripts/abstract_text.py           # plain-text abstract with the numbers filled in -> paper/gen/abstract.txt
 ```
 
 Every number in the paper is a LaTeX macro written by `scripts/make_paper_numbers.py` from the CSVs in
@@ -100,6 +102,9 @@ Only public data is used, downloaded by the kernels from the original sources:
 - KITTI depth selection (val) and raw drives disjoint from it (unlabeled training images): cvlibs.net/datasets/kitti
 - NYU Depth v2 labelled set and official split: cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html
 - DIODE val: diode-dataset.org
-- SR-RAW test set (Zhang et al., CVPR 2019; CC BY-NC 4.0): github.com/ceciliavision/zoom-learn-zoom
+- SR-RAW test set (Zhang et al., CVPR 2019; CC BY-NC 4.0): github.com/ceciliavision/zoom-learn-zoom. Its 50 sequences
+  are used; the `aligned/` subfolders (pre-aligned crops without EXIF) are not.
 
 Model weights come from their official Hugging Face or GitHub releases (see `src/models.py`).
+
+The title, abstract, authors and keywords for the submission form are in `SUBMISSION.md`.
