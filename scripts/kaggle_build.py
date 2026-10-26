@@ -99,6 +99,17 @@ elif kind == "tpu":
                   "metric3d-s"):
             job(f"srraw-{m}", f"scripts/run_srraw.py {m} --root data/raw/srraw{' --every 20' if SMOKE else ''} {res}",
                 ["train-eftf"] if m == "depthpro-eftf" else [])
+    elif part == "full":
+        # the audit-fulla models on the complete test sets, on the TPU VM's CPU cores (the GPU quota is spent):
+        # each model and set is split into image shards run side by side, merged at the end. Depth Pro (audit-fullb)
+        # is far too slow on CPU (its cue split on 50 images did not finish in tpu-main)
+        n_img = {"kitti": 1000, "nyu": 654, "diode-in": 325, "diode-out": 446}
+        for m, w in (("zoedepth", 2), ("unidepth2-s", 2), ("moge2-s", 2), ("dav2-s", 1), ("metric3d-s", 2)):
+            for ds in sets:
+                k = w * max(1, round(n_img[ds] / 250))
+                for i in range(k):
+                    job(f"full-{m}-{ds}-{i}", f"scripts/run_audit.py {m} {ds} --n 100000 --shard {i} --shards {k} "
+                        f"--out-tag full-s{i} {res}")
     elif part == "figs":
         # CPU: Figure 1 maps of the fine-tuned model (and the frozen one at the same input size), and the maps of one
         # SR-RAW sequence for the optical-zoom figure; the sequence (argv[4]) is the one with DA-V2-S's median alpha
@@ -216,6 +227,6 @@ GPU_TPU_PARTS = ("camgpu", "calib", "focal", "focalsmoke")  # "tpu" kernels that
     **({"kernel_sources": [f"{user}/zoom-equivariance-eft"]} if part == "baseline" else {}),
     **({"kernel_sources": [f"{user}/zoom-equivariance-eft-baseline"]
                           + ([f"{user}/zoom-equivariance-tpu-focal"] if part == "figs" else [])}
-       if kind == "tpu" and part not in ("cam", "camgpu", "calib") else {}),
+       if kind == "tpu" and part not in ("cam", "camgpu", "calib", "full") else {}),
 }, indent=2))
 print("built", out, len(files), "files,", len(JOBS), "jobs")

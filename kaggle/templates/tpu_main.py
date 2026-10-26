@@ -17,6 +17,9 @@ S3 = "https://s3.eu-central-1.amazonaws.com/avg-kitti"
 # single PyTorch CPU job barely speeds up); TpuV5E8 has 224 cores
 THREADS = max(6, min(16, (os.cpu_count() or 96) // max(1, len(JOBS))))  # noqa: F821
 SLOTS = max(1, (os.cpu_count() or 96) // THREADS)
+# Kaggle ends a session at 9 h and may then keep nothing: stop the jobs before that (the audit CSVs are written
+# image by image, so a stopped job keeps what it finished)
+T_START, BUDGET_S = time.time(), 8.3 * 3600
 
 # unlabeled training drives, disjoint from the KITTI val selection (as in eft_main.py)
 TRAIN_DRIVES = ["2011_09_26_drive_0001", "2011_09_26_drive_0009", "2011_09_26_drive_0011",
@@ -108,6 +111,15 @@ def run_all(jobs):
     waiting, running, ended, failed = list(jobs), {}, set(), []
     t0 = time.time()
     while waiting or running:
+        if time.time() - T_START > BUDGET_S:
+            print(f"time budget reached: stopping {sorted(running)}, not starting {[j['id'] for j in waiting]}",
+                  flush=True)
+            for p, f in running.values():
+                p.terminate()
+                p.wait()
+                f.close()
+            failed += sorted(running) + [j["id"] for j in waiting]
+            break
         for jid, (p, f) in list(running.items()):
             if p.poll() is not None:
                 f.close()
@@ -130,7 +142,23 @@ def run_all(jobs):
     print("failed jobs:", failed or "none", flush=True)
     for jid in failed:
         print(f"--- tail of {jid}", flush=True)
-        print("".join((log_dir / f"{jid}.log").read_text().splitlines(True)[-30:]), flush=True)
+        if (log_dir / f"{jid}.log").exists():
+            print("".join((log_dir / f"{jid}.log").read_text().splitlines(True)[-30:]), flush=True)
+
+
+def merge_shards():
+    """model__set__TAG-sK.csv (one per --shard job) -> model__set__TAG.csv"""
+    import pandas as pd
+
+    groups = {}
+    for f in sorted((WORK / "results").glob("*-s[0-9]*.csv")):
+        base, _, k = f.stem.rpartition("-s")
+        if k.isdigit():
+            groups.setdefault(base, []).append(f)
+    for base, fs in groups.items():
+        df = pd.concat([pd.read_csv(f) for f in fs], ignore_index=True)
+        df.to_csv(WORK / "results" / f"{base}.csv", index=False)
+        print(f"merged {len(fs)} shards -> {base}.csv ({df['name'].nunique()} images)", flush=True)
 
 
 def main():
@@ -142,6 +170,7 @@ def main():
     download_srraw()
     print(f"setup done in {(time.time() - t0) / 60:.1f} min, {os.cpu_count()} cores", flush=True)
     run_all(JOBS)  # noqa: F821  (filled in by the builder)
+    merge_shards()
     print(f"all done in {(time.time() - t0) / 60:.1f} min", flush=True)
 
 

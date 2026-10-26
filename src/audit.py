@@ -231,8 +231,9 @@ def cue_rows(model, sample, max_depth, s=2.0):
 
 
 def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), stale_K=False, log_every=10, suffix="",
-        controls_only=False, fine_fix=False, cues=False, every=1):
-    """every: keep every k-th image of the n-image sample, a paired subset of the full run."""
+        controls_only=False, fine_fix=False, cues=False, every=1, shard=0, shards=1):
+    """every: keep every k-th image of the n-image sample, a paired subset of the full run.
+    shard/shards: this job's share of those images (shard-th of every shards), for parallel CPU jobs."""
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     tag = f"{model_name}{'-staleK' if stale_K else ''}__{dataset}{suffix}"
@@ -243,7 +244,7 @@ def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), sta
         done = set(zip(prev["name"], prev["cx"], prev["cy"]))
 
     load = datasets.Loader(dataset)
-    ids = datasets.sample_ids(dataset, n)[::every]
+    ids = datasets.sample_ids(dataset, n)[::every][shard::shards]
     model = models.load(model_name, datasets.DOMAIN[dataset])
     t0 = time.time()
     for k, i in enumerate(ids):
