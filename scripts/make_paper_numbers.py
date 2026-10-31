@@ -590,6 +590,42 @@ write_table("table_full", [
     "Model & " + " & ".join(A.PRETTY_DS[d] for d in A.DATASETS) + r" \\ \midrule",
     *rows, r"\bottomrule\end{tabular}}\end{table}"])
 
+# ------------------------------------------------------------------ FocalUnshrink: inverting the focal head's shrinkage
+# exact for models whose metres are their focal times a camera-free output; for MoGe-2 and UniDepthV2 the depth
+# columns assume the same (an approximation), the focal columns are exact for every model
+UNSHRINK = [("depthpro", "exact"), ("da3-nested", "exact"), ("moge2-s", "approx."), ("unidepth2-s", "approx."),
+            ("geocalib", "focal only")]
+us_df = df[df.model.isin([m for m, _ in UNSHRINK])]
+us = A.deshrink_summary(A.focal_deshrink(us_df)) if len(us_df) else pd.DataFrame()
+rows = []
+for m, how in UNSHRINK:
+    r = us[us.model == m]
+    if not len(r):
+        continue
+    r = r.iloc[0]
+    for c in ("beta", "alpha", "alpha_c", "scale1", "scale1_c", "scale3", "scale3_c", "scale_all", "scale_all_c",
+              "focal1", "focal1_c", "focal3", "focal3_c", "focal_all", "focal_all_c"):
+        put(key(m, "unshrink", c.replace("_c", "corr").replace("_", "")), r[c], "{:.3f}" if "scale" in c or
+            "focal" in c else "{:.2f}")
+    dep = how != "focal only"
+    cells = [fmt(r.beta), f"{fmt(r.alpha)} $\\to$ {fmt(r.alpha_c)}" if dep else "--",
+             *[f"{fmt(r[c], 3)} $\\to$ {fmt(r[c + '_c'], 3)}" if dep else "--" for c in ("scale1", "scale3", "scale_all")],
+             f"{fmt(r.focal3, 3)} $\\to$ {fmt(r.focal3_c, 3)}"]
+    rows.append(f"{A.PRETTY.get(m, m)} & {how} & " + " & ".join(cells) + r" \\")
+write_table("table_unshrink", [
+    r"\begin{table*}[t]\centering\small",
+    r"\caption{FocalUnshrink: the focal head's shrinkage inverted without labels, training or the zoom factor, "
+    r"$\log f_c=\mu+(\log\hat f-\mu)/\hat\beta$ with $\hat\beta$ from self-zoom (pooled over datasets) and $\mu$ the mean "
+    r"unzoomed log focal of the target dataset, both measured on one half of the images and applied to the other "
+    r"(cross-fitted). Before $\to$ after. Scale: median $|\log\hat D/D^{*}|$ on the crop at $1\times$, $3\times$ and "
+    r"over all zooms; focal: median $|\log\hat f/f^{*}|$ at $3\times$. \emph{exact}: metres are the focal times a "
+    r"camera-free output, so the corrected depth is exact; \emph{approx.}: the depth is rescaled as if it were.}"
+    r"\label{tab:unshrink}",
+    r"\setlength{\tabcolsep}{4pt}",
+    r"\begin{tabular}{llcccccc}\toprule",
+    r"Model & depth & $\hat\beta$ & $\alpha$ & scale $1\times$ & scale $3\times$ & scale, all & focal $3\times$ \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}\end{table*}"])
+
 # ------------------------------------------------------------------ real optical zoom (SR-RAW)
 sr_files = list(A.RESULTS.glob("*__srraw.csv"))
 sr = pd.concat([pd.read_csv(f, dtype={"seq": str}) for f in sr_files], ignore_index=True) if sr_files else pd.DataFrame()

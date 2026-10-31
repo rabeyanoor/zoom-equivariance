@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from IPython.display import display  # a Jupyter builtin; imported so the file also runs as a script
 import numpy as np
 
 ROOT = Path.cwd().parent if Path.cwd().name == "notebooks" else Path.cwd()
@@ -95,7 +96,10 @@ stale.round(3)
 # ## 4. ZoomFix: a training-free correction when the zoom factor is known
 
 # %%
-pi = A.per_image(main)
+# deployed metric models only: not the fine-tuned variants (their own notebook), not DA3-L and VGGT, which
+# normalise depth per scene, so a metric correction means nothing for them
+deployed = [m for m in main.model.unique() if not m.startswith("dav2-s-") and m not in ("depthpro-eftf", "da3-l", "vggt", "geocalib")]
+pi = A.per_image(main[main.model.isin(deployed)])
 fix = A.zoomfix(pi)
 if len(fix):
     fix.round(4).to_csv(TAB / "zoomfix.csv", index=False)

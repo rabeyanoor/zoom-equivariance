@@ -49,7 +49,9 @@ zoomed photo is pixel for pixel an ordinary photo of the scene squashed along th
 \emph{zoom--squash ambiguity}, and models that read size end up on the line $\alpha+\beta=1$, where Depth Pro
 sits image by image. Giving the network the true camera locates the failure: Depth Pro and DA3-Nested become
 equivariant ($\alpha=\DepthproCamGivenAlpha$ and \DaThreeNestedCamGivenAlpha), so their focal head carries the
-whole error (\cref{tab:camera}). For pixels-only models the magnified content, not the lost context, drives the
+whole error (\cref{tab:camera}). The same ambiguity explains why every focal head we test, a dedicated
+calibration network included, under-scales: a regression-trained head shrinks towards its prior, and inverting
+that shrinkage without labels makes Depth Pro equivariant. For pixels-only models the magnified content, not the lost context, drives the
 effect on every dataset (Q3). For Q4, a self-consistency objective in the spirit of~\cite{zhong2023equivariance}
 learns a shortcut, ``blurry means zoomed''; a blur-invariance term removes it and brings $\alpha$ close to zero
 on the training domains, at a cost we report in full.
@@ -66,7 +68,8 @@ on the training domains, at a cost we report in full.
   \item Two \textbf{interventions} that locate the failure. Giving the same network the true camera shows
         that the focal head, not the depth network, carries the error of Depth Pro and DA3-Nested, and that
         their depth fits their own focal better than the true one, whereas MoGe-2 and UniDepthV2 gain in both
-        equivariance and accuracy (\cref{sec:camint,tab:camera}). Splitting a zoom into context loss and
+        equivariance and accuracy (\cref{sec:camint,tab:camera}). A shrinkage account of focal heads
+        ($\beta$ = cue reliability) yields \emph{FocalUnshrink}, a training- and label-free correction. Splitting a zoom into context loss and
         magnification shows that magnification drives the pixels-only models (\cref{sec:cues,tab:cues}).
   \item A careful test of \textbf{label-free correction}: self-consistency fine-tuning, the blur shortcut
         it learns, EFT+B that removes it, a scale-only variant (EFT-S) that trains in a minute on a CPU,

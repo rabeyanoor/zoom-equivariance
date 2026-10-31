@@ -38,19 +38,13 @@ identical intrinsics. We also test bilinear resampling and JPEG quality 75.
 
 \paragraph{Splitting a zoom into its causes.}
 \label{sec:cues}
-A digital zoom changes two things at once. It throws away the context around the crop, and it makes
-everything inside the crop $s$ times larger. To see which one moves the depth, we build two more images
-from each photo. \emph{Paste}: the $2\times$ crop stays at its own place and size,
-and the rest of the frame is filled with the image's mean colour. The camera is unchanged, so the model
-gets the original $K$, and only the context is gone. \emph{Shrink}: the whole image is made $2\times$
-smaller and placed in the middle of a plain canvas, with its own intrinsics (the inverse of
-\cref{eq:law}). Everything is still visible, only smaller. We then compare, on the same pixels, the paste
-with the original (\emph{context} effect), the zoom with the paste (\emph{magnification} effect: same
-content, $2\times$ larger), the zoom with the original, and the shrink with the original. A model that
-respects the camera keeps depth in all four. A model that reads apparent size gives ratios of 1, 0.5, 0.5
-and 2. The plain border is itself unusual, so we read the paste and shrink as interventions on the cue,
-not as natural images. We run the split for DA-V2-S, ZoeDepth, MoGe-2-S and UniDepthV2-S (100 images per
-set), Depth Pro and DA3-Metric-L (50 per set), and for DA-V2-S before and after fine-tuning (\cref{sec:eft}).
+A digital zoom removes the context around the crop and makes everything in it $s$ times larger. To separate
+the two, \emph{paste} keeps the $2\times$ crop at its own place and size on a mean-colour canvas (original $K$,
+only the context is gone), and \emph{shrink} places the whole image $2\times$ smaller on a plain canvas, with its
+own intrinsics. On the same pixels we compare paste with original (\emph{context}), zoom with paste
+(\emph{magnification}), zoom with original, and shrink with original; apparent-size reasoning gives 1, 0.5, 0.5
+and 2, a camera-aware model 1 throughout. The canvas is unusual, so these are interventions on the cue, not
+natural images. Samples: 100 images per set (50 for Depth Pro and DA3-Metric-L).
 
 \paragraph{Giving the camera back.}
 \label{sec:camint}
@@ -59,11 +53,6 @@ To locate the failure of a camera-predicting model, we give the same network the
 output, this is an exact rescaling of the audit's predictions. MoGe-2 takes the true horizontal field of view in
 place of the one it recovers from its point map, and UniDepthV2 conditions its decoder on the rays of $K'$; we
 rerun both on the same 200 images per set as their plain runs.
-
-\paragraph{Scope of the claim.}
-For a model without the camera, a crop changes the visible context, and its output may legitimately change
-where the content is ambiguous (\cref{sec:law}). The audit measures how far each model is from the law and in
-which direction, not whether every image-only estimator can reach $\alpha=0$ on every image.
 
 \paragraph{Metrics.}
 \textbf{Label-free:} the exponents $\alpha$ and $\beta$ of \cref{eq:exponents}, and the depth

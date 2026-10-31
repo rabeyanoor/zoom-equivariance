@@ -53,7 +53,7 @@ def colour(model):
     if model.startswith("dav2-s-"):  # fine-tuned variants of DA-V2-S
         return {"dav2-s-fixed": "#999999", "dav2-s-anchor": "#56B4E9", "dav2-s-eft": "#E69F00",
                 "dav2-s-eftb": "#D55E00", "dav2-s-blur": "#009E73", "dav2-s-eftb3": "#CC79A7",
-                "dav2-s-zhong": "#0072B2"}[model]
+                "dav2-s-zhong": "#0072B2"}.get(model, "#666666")
     base = to_rgb(FAMILY_COLOUR.get(family(model), "#333333"))
     size = model.split("-")[1][:1] if "-" in model else "l"
     shade = SIZE_SHADE.get(size, 1.0)

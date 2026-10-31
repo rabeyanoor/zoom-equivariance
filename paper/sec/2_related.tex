@@ -42,13 +42,10 @@ not claim the loss as new and compare against their stop-gradient target.
 Kim and Lee~\cite{kim2026mismatch} study camera-conditioned models whose pipeline passes stale intrinsics after a
 crop, resize or padding, and propose a mismatch-aware camera module; our stale-$K$ run is one case of this
 setting, included only to put such models on the same scale.
-Other work looks at crops in different tasks. PlaneDepth~\cite{wang2023planedepth} notes that resize-and-crop
-augmentation breaks the plane geometry of self-supervised depth. KPE~\cite{prakash2024kpe} shows that crops
-cause a perspective ambiguity for object-level 3D and feeds the crop position to the network. Multi-RoI
-human mesh recovery~\cite{nie2024multicrop} keeps the camera consistent between crops of one person.
-NERO~\cite{zhao2023nero} visualises how models break equivariance along a transformation. A recent paper
-makes depth models robust to camera roll~\cite{tang2026roll}. A roll does not change the intrinsics, but a
-zoom does.
+Crops also matter elsewhere: resize-and-crop augmentation breaks plane geometry in self-supervised
+depth~\cite{wang2023planedepth}, crops cause a perspective ambiguity for object-level 3D~\cite{prakash2024kpe} and
+human meshes~\cite{nie2024multicrop}, and NERO~\cite{zhao2023nero} visualises broken equivariance. Robustness to
+camera roll~\cite{tang2026roll} leaves the intrinsics unchanged; a zoom does not.
 
 \paragraph{Label-free evaluation and adaptation.}
 Self-Geometry~\cite{youn2026selfgeometry} adapts 3D foundation models at test time with multi-view

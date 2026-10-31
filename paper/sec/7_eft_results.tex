@@ -31,16 +31,9 @@ Zhong \etal~\cite{zhong2023equivariance}, reaches a similar $\alpha$ (\DavTwoSZh
 AbsRel degrades most (\DavTwoSZhongKittiAbsrelOne{} on KITTI). The frozen teacher, the zoom term and the blur
 term are each needed.
 
-\paragraph{Tuning only a focal head.}
-A zoom by $s$ gives Depth Pro's focal head a free target, its focal times $s$. Tuning only that head (EFT-F,
-supplement) lowers $\alpha$ on NYUv2 (\DepthproFheadNyuAlpha{} to \DepthproEftfFheadNyuAlpha) but raises it on
-unseen DIODE-indoor (\DepthproFheadDiodeInAlpha{} to \DepthproEftfFheadDiodeInAlpha).
-
 \paragraph{Correcting only the scale.}
-EFT-S leaves the frozen network untouched and learns one number per image (per-domain table in the supplement). It reaches
-$\alpha=\DavTwoSScaleNyuAlpha$ on NYUv2 at no cost on unzoomed images (AbsRel \DavTwoSScaleNyuAbsrelOne, frozen
-\DavTwoSFixedNyuAbsrelOne), and on the two unseen datasets it transfers better than EFT+B
-($\alpha=\DavTwoSScaleDiodeInAlpha$ and \DavTwoSScaleDiodeOutAlpha, against \DavTwoSEftbDiodeInAlpha{} and
-\DavTwoSEftbDiodeOutAlpha). On KITTI it is weaker ($\alpha=\DavTwoSScaleKittiAlpha$ against
-\DavTwoSEftbKittiAlpha), and on KITTI and DIODE-outdoor it costs more unzoomed accuracy than EFT+B
-(\DavTwoSScaleKittiAbsrelOne{} and \DavTwoSScaleDiodeOutAbsrelOne).
+EFT-S, which learns one number per image, reaches $\alpha=\DavTwoSScaleNyuAlpha$ on NYUv2 at no unzoomed cost
+(AbsRel \DavTwoSScaleNyuAbsrelOne, frozen \DavTwoSFixedNyuAbsrelOne) and transfers better than EFT+B to the unseen
+DIODE ($\alpha=\DavTwoSScaleDiodeInAlpha$ and \DavTwoSScaleDiodeOutAlpha, against \DavTwoSEftbDiodeInAlpha{} and
+\DavTwoSEftbDiodeOutAlpha), but is weaker on KITTI ($\alpha=\DavTwoSScaleKittiAlpha$) and costs more unzoomed accuracy there and on DIODE-outdoor. Tuning only Depth Pro's
+focal head with the zoom law (EFT-F) helps on its training domains but not on DIODE (supplement).

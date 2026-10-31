@@ -36,7 +36,8 @@ PRETTY = {"dav2-l": "DA-V2-L", "moge2-b": "MoGe-2-B", "moge2-l": "MoGe-2-L", "un
           "dav2-s-eft": "DA-V2-S + EFT", "dav2-s-anchor": "DA-V2-S + anchor-only FT",
           "dav2-s-eftb": "DA-V2-S + EFT+B (ours)", "dav2-s-blur": "DA-V2-S + blur-only FT",
           "dav2-s-eftb3": "DA-V2-S + EFT+B (anchor x3)", "dav2-s-scale": "DA-V2-S + EFT-S (ours)",
-          "dav2-s-scalenb": "DA-V2-S + EFT-S, no blur term", "depthpro-eftf": "Depth Pro + EFT-F (ours)"}
+          "dav2-s-scalenb": "DA-V2-S + EFT-S, no blur term", "depthpro-eftf": "Depth Pro + EFT-F (ours)",
+          "geocalib": "GeoCalib"}
 DATASETS = ["kitti", "nyu", "diode-in", "diode-out"]
 PRETTY_DS = {"kitti": "KITTI", "nyu": "NYUv2", "diode-in": "DIODE-in", "diode-out": "DIODE-out"}
 
@@ -418,3 +419,78 @@ def merge_shards(folder=None, remove=False):
             for f in fs:
                 f.unlink()
     return merged
+
+
+def focal_beta(z):
+    """Label-free focal exponent of a set of zoom rows: least-squares slope through the origin of
+    log(f_s / f_1) on log s, pooled over images (only the model's own focal, no ground truth)."""
+    z = z[(z.kind == "zoom") & z.fx.notna()] if "kind" in z else z[z.fx.notna()]
+    f1 = z[np.isclose(z.zoom, 1.0)].set_index(["model", "dataset", "name"]).fx
+    r = z[z.zoom > 1]
+    f1 = f1.reindex(pd.MultiIndex.from_frame(r[["model", "dataset", "name"]])).values
+    s = r.s_true.values if "s_true" in r else r.zoom.values
+    return slope_through_origin(np.log(s), np.log(r.fx.values / f1))
+
+
+def focal_deshrink(df, seed=0):
+    """Training-free, label-free correction of a focal head that under-scales under zoom (FocalUnshrink).
+
+    A focal head with exponent beta < 1 behaves like a shrinkage estimator, log f_hat = mu + beta (log f - mu) + noise,
+    pulled towards a prior centre mu. Both are measured without labels on unlabeled images: beta by self-zoom
+    (pooled over all domains, so it is stable) and mu as the mean log focal on unzoomed images of the target
+    domain. The correction inverts the shrinkage, log f_c = mu + (log f_hat - mu) / beta, and needs neither the zoom
+    factor nor the camera. For models whose metres are their own focal times a camera-free output (Depth Pro,
+    DA3-Nested) the corrected depth is exactly D_hat * f_c / f_hat.
+
+    Cross-fitted: in each dataset, beta and mu come from one half of the images and are applied to the other half,
+    then the halves swap. Returns the zoom rows (centred crops) with columns log_fc (corrected log focal) and
+    log_corr (log f_c - log f_hat)."""
+    z = df[(df.kind == "zoom") & np.isclose(df.cx, 0.5) & np.isclose(df.cy, 0.5) & df.fx.notna()].copy()
+    rng = np.random.default_rng(seed)
+    out = []
+    for model, zm in z.groupby("model"):
+        names = zm.name.unique()
+        half = set(rng.permutation(names)[: len(names) // 2])
+        for fit in (half, set(names) - half):
+            cal, ev = zm[zm.name.isin(fit)], zm[~zm.name.isin(fit)].copy()
+            beta = focal_beta(cal)
+            for dataset, g in ev.groupby("dataset"):
+                c = cal[(cal.dataset == dataset) & np.isclose(cal.zoom, 1.0)]
+                mu = np.log(c.fx).mean()
+                ev.loc[g.index, "log_fc"] = mu + (np.log(g.fx) - mu) / beta
+                ev.loc[g.index, "beta_fit"] = beta
+            out.append(ev)
+    if not out:
+        return pd.DataFrame()
+    r = pd.concat(out)
+    r["log_corr"] = r.log_fc - np.log(r.fx)
+    return r
+
+
+def deshrink_summary(r):
+    """Per model: alpha, scale error |median log D/D*| at 1x and 3x and over all zooms, and focal error
+    |log f/f*| at 1x and 3x, before and after FocalUnshrink (the depth columns assume D proportional to f)."""
+    r = r.copy()
+    base = r[np.isclose(r.zoom, 1.0)].set_index(["model", "name"]).log_corr
+    r["self_c"] = r.log_ratio_self + r.log_corr - base.reindex(pd.MultiIndex.from_frame(r[["model", "name"]])).values
+    r["gt_c"] = r.log_ratio_gt + r.log_corr
+    r["ls"] = np.log(r.s_true if "s_true" in r else r.zoom)
+    rows = []
+    for model, g in r.groupby("model"):
+        zz = g[g.zoom > 1]
+        sl = _slope_by_group(zz.ls.values, zz.log_ratio_self.values, [zz.name])
+        sc = _slope_by_group(zz.ls.values, zz.self_c.values, [zz.name])
+        one, three = g[np.isclose(g.zoom, 1.0)], g[np.isclose(g.zoom, 3.0)]
+        lfg = np.log(g.fx_gt)
+        rows.append(dict(
+            model=model, images=g.name.nunique(), beta=g.beta_fit.mean(),
+            alpha=float((-sl).median()), alpha_c=float((-sc).median()),
+            scale1=one.log_ratio_gt.abs().median(), scale1_c=one.gt_c.abs().median(),
+            scale3=three.log_ratio_gt.abs().median(), scale3_c=three.gt_c.abs().median(),
+            scale_all=g.log_ratio_gt.abs().median(), scale_all_c=g.gt_c.abs().median(),
+            focal1=(np.log(one.fx) - np.log(one.fx_gt)).abs().median(),
+            focal1_c=(one.log_fc - np.log(one.fx_gt)).abs().median(),
+            focal3=(np.log(three.fx) - np.log(three.fx_gt)).abs().median(),
+            focal3_c=(three.log_fc - np.log(three.fx_gt)).abs().median(),
+            focal_all=(np.log(g.fx) - lfg).abs().median(), focal_all_c=(g.log_fc - lfg).abs().median()))
+    return pd.DataFrame(rows)

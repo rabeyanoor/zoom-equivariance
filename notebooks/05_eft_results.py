@@ -22,6 +22,7 @@ import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from IPython.display import display  # a Jupyter builtin; imported so the file also runs as a script
 import numpy as np
 import pandas as pd
 from scipy.stats import wilcoxon

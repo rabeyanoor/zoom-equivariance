@@ -132,3 +132,48 @@ def test_merge_shards_joins_disjoint_shards_and_rejects_overlap(tmp_path):
         assert "more than one shard" in str(e)
     else:
         raise AssertionError("overlapping shards were merged")
+
+
+class Shrinking:
+    """A focal head that shrinks log focal towards a prior: log f_hat = mu + b (log f - mu); its metres are the
+    focal times a camera-free output, like Depth Pro, so its depth has alpha = 1 - b."""
+
+    def __init__(self, b, mu=np.log(150.0)):
+        self.b, self.mu = b, mu
+
+    def predict(self, img, K=None):
+        f = self.mu + self.b * (np.log(K[0, 0]) - self.mu)
+        return {"depth": np.full(img.shape[:2], 10.0 * np.exp(f) / K[0, 0]), "fx": float(np.exp(f)), "cx": 99.5}
+
+
+def shrink_frame(b, n=8):
+    rows = []
+    for i in range(n):
+        for ds in ("a", "b"):
+            sample = dict(SAMPLE, name=f"{ds}{i}")
+            for r in audit.zoom_rows(Shrinking(b), sample, 80):
+                r.update(model="shrink", dataset=ds)
+                rows.append(r)
+    df = pd.DataFrame(rows)
+    df["s_true"] = df.fx_gt / df.groupby("name").fx_gt.transform("min")
+    return df
+
+
+def test_focal_beta_is_label_free_and_recovers_the_shrinkage():
+    assert abs(analysis.focal_beta(shrink_frame(0.6)) - 0.6) < 1e-3
+
+
+def test_focal_deshrink_makes_a_shrinking_focal_head_equivariant():
+    df = shrink_frame(0.6)
+    s = analysis.deshrink_summary(analysis.focal_deshrink(df)).iloc[0]
+    assert abs(s.beta - 0.6) < 1e-3
+    assert abs(s.alpha - 0.4) < 0.02 and abs(s.alpha_c) < 0.02
+    # without labels the 1x bias stays (the centre is the model's own unzoomed estimate), but the zoom no longer
+    # adds error: after the correction the focal error at 3x equals the model's own 1x error
+    assert abs(s.focal1_c - s.focal1) < 1e-6
+    assert abs(s.focal3_c - s.focal1) < 1e-3 and s.focal3 > s.focal1 + 0.1
+
+
+def test_focal_deshrink_leaves_an_equivariant_focal_head_unchanged():
+    r = analysis.focal_deshrink(shrink_frame(1.0))
+    assert np.allclose(r.log_corr, 0, atol=1e-6)

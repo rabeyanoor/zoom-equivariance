@@ -21,6 +21,7 @@ without depth labels.
 | Semantic regions | α on objects of familiar size vs walls/floors/roads (SegFormer-B5, ADE20K) | `src/regions.py` |
 | Calibration reference | GeoCalib's focal exponent under the same zooms | `src/models.py` (`geocalib`) |
 | Real optical zoom | α and β on SR-RAW, static scenes shot at several focal lengths, against the same zoom done digitally | `src/srraw.py` |
+| FocalUnshrink | training- and label-free inversion of a focal head's shrinkage (β̂ by self-zoom, μ from unlabeled target images) | `src/analysis.py` (`focal_deshrink`) |
 | EFT / EFT+B | fine-tuning DA-V2-S with a zoom self-consistency loss (+ blur invariance) | `src/eft.py`, `scripts/train_eft.py` |
 | EFT-S | frozen network + one learned log-scale per image | `scripts/eft_scale.py` |
 | EFT-F | Depth Pro's focal head tuned with a focal-consistency loss; depth network untouched | `src/eft_focal.py`, `scripts/train_eft_focal.py` |

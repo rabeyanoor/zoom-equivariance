@@ -59,16 +59,13 @@ digital zoom of the widest shot (\DavTwoSSrrawDigitalAlpha). Depth Pro keeps its
 DIODE-indoor (\DepthproDsKittiAlpha, \DepthproDsNyuAlpha, \DepthproDsDiodeInAlpha): its failure depends on the scene.
 
 \paragraph{Bigger and newer models.}
-The supplement extends the audit to larger variants and to Depth Anything~3~\cite{lin2025da3},
-UniK3D~\cite{piccinelli2025unik3d} and VGGT~\cite{wang2025vggt}. On the \nLadderShared{} images that every model
-saw, size helps the pixels-only family but does not remove the effect ($\alpha$ \DavTwoSAlphaShared,
-\DavTwoBAlphaShared{} and \DavTwoLAlphaShared{} for DA-V2-S, B and L); MoGe-2 is flat across sizes and UniK3D-L
-comes closest ($\alpha=\UnikThreedLAlphaShared$). The largest model in the study, DA3-Nested
-(\DaThreeNestedParams M parameters), shrinks depth with $\alpha=\DaThreeNestedAlphaSmallShared$ on the \nSmallShared{} images it shares with the
-main models, close to the
-pixels-only ZoeDepth (\ZoedepthAlphaSmallShared), while DA3-Metric-L and Metric3D v2-L, which are given the
-camera, keep it (\DaThreeMetricLAlphaSmallShared{} and \MetricThreedLAlphaSmallShared). What decides the
-behaviour is whether the camera enters the model, not how large the model is.
+The supplement adds larger variants, Depth Anything~3~\cite{lin2025da3}, UniK3D~\cite{piccinelli2025unik3d} and
+VGGT~\cite{wang2025vggt}. On the \nLadderShared{} images every model saw, size helps but does not remove the effect
+($\alpha$ \DavTwoSAlphaShared, \DavTwoBAlphaShared, \DavTwoLAlphaShared{} for DA-V2-S, B, L), and UniK3D-L comes
+closest ($\alpha=\UnikThreedLAlphaShared$). The largest model, DA3-Nested (\DaThreeNestedParams M), shrinks depth
+with $\alpha=\DaThreeNestedAlphaSmallShared$, near ZoeDepth (\ZoedepthAlphaSmallShared), while DA3-Metric-L and
+Metric3D v2-L, given the camera, keep it (\DaThreeMetricLAlphaSmallShared, \MetricThreedLAlphaSmallShared). Whether
+the camera enters the model matters more than its size.
 
 \paragraph{Same network, true camera.}
 Is the failure in the camera head or in the depth network? Depth Pro and DA3-Nested turn a camera-free
@@ -94,6 +91,18 @@ and from \UnidepthTwoSCamOwnScale{} to \UnidepthTwoSCamGivenScale. UniDepthV2-S'
 reproduces.
 \input{gen/table_camera}
 
+\paragraph{Undoing the shrinkage without labels.}
+The true camera is rarely available, but the shrinkage of \cref{sec:law} can be inverted without it.
+\emph{FocalUnshrink} measures $\hat\beta$ by self-zoom and $\mu$ as the mean unzoomed log focal on unlabeled
+images of the target domain, and maps every focal estimate to $\mu+(\log\hat f-\mu)/\hat\beta$. It needs no
+training, labels, camera or zoom factor (cross-fitted over image halves; supplement). For Depth Pro
+($\hat\beta=\DepthproUnshrinkBeta$) it brings $\alpha$ from \DepthproUnshrinkAlpha{} to
+\DepthproUnshrinkAlphacorr{} and the scale error at $3\times$ from \DepthproUnshrinkScaleThree{} to
+\DepthproUnshrinkScaleThreecorr, while the unzoomed error stays at \DepthproUnshrinkScaleOnecorr{}
+(\DepthproUnshrinkScaleOne{} before). DA3-Nested, with a less reliable cue ($\hat\beta=\DaThreeNestedUnshrinkBeta$),
+also becomes equivariant ($\alpha=\DaThreeNestedUnshrinkAlphacorr$), but the amplified noise raises its errors,
+as the trade-off predicts.
+
 \paragraph{Pixels-only models follow magnification; camera heads differ (Q3).}
 \Cref{tab:cues} splits a $2\times$ zoom into its two parts (\cref{sec:cues}). For the pixels-only models,
 removing the context around the crop barely changes its depth (DA-V2-S \DavTwoSCueContext, ZoeDepth
@@ -112,9 +121,7 @@ is discussed in the supplement.
 
 \paragraph{What the label-free score is good for.}
 Across the \proxyPairs{} model--dataset pairs, $|\alpha|$ rank-correlates with the error a $3\times$ zoom adds
-on the same pixels (Spearman \proxyRhoDeltaThreeTwoWay, 95\% interval
-[\proxyRhoDeltaThreeTwoWayLo, \proxyRhoDeltaThreeTwoWayHi], resampling models and datasets), but not with accuracy on
-unzoomed images (\proxyRhoOne): without labels, the audit tells which model will degrade most under zoom, not which model is more
-accurate. When the zoom factor is known, multiplying the depth by $s^{\hat\alpha}$, with $\hat\alpha$
-measured without labels on other images, removes between a third and two thirds of the $3\times$ zoom error of
-DA-V2-S on KITTI, NYUv2 and DIODE-indoor, but not on the heavy-tailed DIODE-outdoor. Details, and a per-image risk--coverage test, are in the supplement.
+(Spearman \proxyRhoDeltaThreeTwoWay, [\proxyRhoDeltaThreeTwoWayLo, \proxyRhoDeltaThreeTwoWayHi] resampling models
+and datasets), not with unzoomed accuracy (\proxyRhoOne): it tells which model will degrade most under zoom.
+When the zoom factor is known, scaling depth by $s^{\hat\alpha}$ (ZoomFix) removes a third to two thirds of the
+$3\times$ error of DA-V2-S except on DIODE-outdoor (supplement).
