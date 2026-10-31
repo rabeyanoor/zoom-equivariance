@@ -80,6 +80,7 @@ stored in this repository.
 | `tpu camgpu` | MoGe-2 / UniDepthV2 given the true camera; Depth Pro cue split |
 | `tpu calib` | GeoCalib reference and semantic-region α |
 | `tpu focal` | EFT-F training and audit; SR-RAW real optical zoom |
+| `tpu full` | main models except Depth Pro on the complete test sets, as image shards on the TPU VM's CPU cores (merged at the end; supplement table `tab:full`) |
 | `tpu figs <seq>` | Figure 1 maps of EFT+B, SR-RAW maps of one sequence, SR-RAW inventory (`scripts/srraw_check.py`) |
 
 When a kernel is done:

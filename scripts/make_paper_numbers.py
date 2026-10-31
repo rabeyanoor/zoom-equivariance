@@ -88,9 +88,14 @@ put("nScenes", int(pooled.n_scenes.max()) if "n_scenes" in pooled else np.nan, "
 # stale K: alpha(stale) - alpha(true), per image
 w = pi.pivot_table(index=["dataset", "name"], columns="model", values="alpha")
 if {"metric3d-s", "metric3d-s-staleK"} <= set(w.columns):
-    put("staleDiff", (w["metric3d-s-staleK"] - w["metric3d-s"]).median(), "{:.3f}")
+    d = (w["metric3d-s-staleK"] - w["metric3d-s"]).dropna()
+    put("staleDiff", d.median(), "{:.3f}")
+    put("staleDiffMean", d.mean(), "{:.3f}")
+    put("staleImages", len(d), "{:d}")
 else:
     put("staleDiff", np.nan)
+    put("staleDiffMean", np.nan)
+    put("staleImages", np.nan)
 
 # ------------------------------------------------------------------ Table 1 (main audit)
 rows = []
@@ -173,6 +178,7 @@ for m in [x for x in MAIN if x in present]:
     for ds in A.DATASETS:
         r = summ[(summ.model == m) & (summ.dataset == ds)]
         cells.append(fmt(r.alpha.iloc[0]) if len(r) else "--")
+        put(key(m, "ds", ds, "alpha"), r.alpha.iloc[0] if len(r) else np.nan)  # e.g. \DepthproDsDiodeOutAlpha
     lines.append(f"{A.PRETTY[m]} & " + " & ".join(cells) + r" \\")
 write_table("table_alpha_by_dataset", [
     r"\begin{table}[t]\centering\small",
@@ -552,29 +558,37 @@ full_files = list(A.RESULTS.glob("*__full.csv"))
 dfull = A.load("*__full.csv") if full_files else pd.DataFrame()
 FULL = ["dav2-s", "zoedepth", "depthpro", "moge2-s", "unidepth2-s", "metric3d-s"]
 rows = []
+for ds in A.DATASETS:
+    put(key("full", ds, "images"), np.nan)
 if len(dfull):
     pf = A.per_image(dfull)
+    shifts = []
     for m in [x for x in FULL if x in set(pf.model)]:
-        a_sub, a_full = pi[pi.model == m].alpha.median(), pf[pf.model == m].alpha.median()
-        put(key(m, "full", "alpha"), a_full)
         put(key(m, "full", "images"), int((pf.model == m).sum()), "{:d}")
         cells = []
         for ds in A.DATASETS:
             g = pf[(pf.model == m) & (pf.dataset == ds)]
-            put(key(m, "full", ds, "alpha"), g.alpha.median() if len(g) else np.nan)
-            cells.append(f"{fmt(pi[(pi.model == m) & (pi.dataset == ds)].alpha.median())} / {fmt(g.alpha.median())}")
-        rows.append(f"{A.PRETTY[m]} & " + " & ".join(cells) + f" & {fmt(a_sub)} / {fmt(a_full)}" + r" \\")
+            a_sub = pi[(pi.model == m) & (pi.dataset == ds)].alpha.median()
+            a_full = g.alpha.median() if len(g) else np.nan
+            put(key(m, "full", ds, "alpha"), a_full)
+            if np.isfinite(a_sub) and np.isfinite(a_full):
+                shifts.append(abs(a_full - a_sub))
+            cells.append(f"{fmt(a_sub)} / {fmt(a_full)}")
+        rows.append(f"{A.PRETTY[m]} & " + " & ".join(cells) + r" \\")
     for ds in A.DATASETS:
         put(key("full", ds, "images"), int(pf[pf.dataset == ds].name.nunique()), "{:d}")
-    put("fullMaxShift", float(max(abs(pi[pi.model == m].alpha.median() - pf[pf.model == m].alpha.median())
-                                  for m in set(pf.model) & set(FULL))))
+    # per dataset, not pooled: the complete sets differ in size (KITTI dominates), the 200-image sample does not
+    put("fullMaxShift", max(shifts) if shifts else np.nan)
+    put("fullMedianShift", float(np.median(shifts)) if shifts else np.nan)
 write_table("table_full", [
-    r"\begin{table*}[t]\centering\small",
-    r"\caption{Depth exponent $\alpha$ on the 200-image sample per set / on the complete test sets (KITTI val selection, "
-    r"NYUv2 test, DIODE val), median over images.}\label{tab:full}",
-    r"\begin{tabular}{lccccc}\toprule",
-    "Model & " + " & ".join(A.PRETTY_DS[d] for d in A.DATASETS) + r" & all \\ \midrule",
-    *rows, r"\bottomrule\end{tabular}\end{table*}"])
+    r"\begin{table}[t]\centering\small",
+    r"\caption{Depth exponent $\alpha$ on the 200-image sample per set / on the complete test sets (KITTI val "
+    r"selection, NYUv2 test, DIODE val indoor and outdoor; \fullKittiImages, \fullNyuImages, \fullDiodeInImages{} and "
+    r"\fullDiodeOutImages{} images), median over images.}\label{tab:full}",
+    r"\setlength{\tabcolsep}{3pt}",
+    r"\resizebox{\linewidth}{!}{\begin{tabular}{lcccc}\toprule",
+    "Model & " + " & ".join(A.PRETTY_DS[d] for d in A.DATASETS) + r" \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}}\end{table}"])
 
 # ------------------------------------------------------------------ real optical zoom (SR-RAW)
 sr_files = list(A.RESULTS.glob("*__srraw.csv"))
@@ -595,12 +609,14 @@ if len(sr):
         put(key(m, "srraw", "seqs"), len(w), "{:d}")
         put(key(m, "srraw", "p"), wilcoxon(w.optical - w.digital).pvalue if len(w) > 10 else np.nan, "{:.2g}")
         cells = [macros[key(m, "srraw", v, q)] for q in ("alpha", "beta") for v in ("optical", "digital")]
-        rows.append(f"{A.PRETTY.get(m, m)} & {len(w)} & " + " & ".join(cells) + r" \\")
+        # dav2-s-fixed is the frozen model through the fine-tuning's fixed 392-px input, the reference for EFT+B
+        name = "DA-V2-S, 392-px input" if m == "dav2-s-fixed" else A.PRETTY.get(m, m)
+        rows.append(f"{name} & {len(w)} & " + " & ".join(cells) + r" \\")
 write_table("table_srraw", [
     r"\begin{table}[t]\centering\small",
     r"\caption{Real optical zoom (SR-RAW~\cite{zhang2019zoom}): the same static scene shot at several focal lengths "
     r"($s\le3.2$), against the same zoom done digitally from the widest shot. Median over sequences; ideal "
-    r"$\alpha=0$, $\beta=1$.}\label{tab:srraw}",
+    r"$\alpha=0$, $\beta=1$. The 392-px row is the frozen reference for EFT+B (same input size).}\label{tab:srraw}",
     r"\setlength{\tabcolsep}{2.5pt}",
     r"\begin{tabular}{lrcccc}\toprule",
     r"& & \multicolumn{2}{c}{$\alpha$} & \multicolumn{2}{c}{$\beta$} \\ \cmidrule(lr){3-4}\cmidrule(lr){5-6}",

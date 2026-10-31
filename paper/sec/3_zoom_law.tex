@@ -84,6 +84,6 @@ In practice the zoom often happens after capture (a crop in a gallery app, a scr
 a detection crop) and the metadata still describes the original camera~\cite{kim2026mismatch}.
 In this \emph{stale-$K$} setting the network sees the same pixels and only the final
 de-canonical scale $f/1000$ differs by the factor $s$, so $\alpha_{\text{stale}}=\alpha_{\text{true}}+1$
-exactly, up to the model's output clipping. Our runs confirm this (mean difference over 800 images
-0.999), so a camera-conditioned model with stale metadata behaves like a pixels-only model that
+exactly, up to the model's output clipping. Our runs confirm this (mean difference over \staleImages{} images
+\staleDiffMean), so a camera-conditioned model with stale metadata behaves like a pixels-only model that
 reads apparent size.

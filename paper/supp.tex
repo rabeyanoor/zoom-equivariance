@@ -377,9 +377,11 @@ depth map survives the zoom/unzoom round trip exactly.
 true zoomed camera (MoGe-2: \texttt{fov\_x}; UniDepthV2: the \texttt{camera} argument of \texttt{infer})
 \end{itemize}}
 
-\paragraph{Compute.} All audits and fine-tuning runs ran as Kaggle notebooks with one GPU each; the
-analysis runs on a laptop CPU. The cue split ran on Kaggle CPU kernels. A check script confirms that all
-models saw the same images and that every zoom row is complete.
+\paragraph{Compute.} The audits, EFT, EFT+B and EFT-F ran as Kaggle notebooks with one T4 GPU each. The cue
+split and the EFT-S cache and fit ran as many parallel PyTorch jobs on the CPU cores
+of a Kaggle TPU VM (the TPU itself was not used); the analysis runs on a laptop CPU. A check script confirms that
+all models of one sample saw the same images, that every zoom row is complete, that the exact zoom factor matches
+the nominal one, and that every SR-RAW shot has its optical and digital pair.
 
 {\small\bibliographystyle{ieeenat_fullname}\bibliography{main}}
 

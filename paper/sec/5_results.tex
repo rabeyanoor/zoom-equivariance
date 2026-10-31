@@ -54,8 +54,9 @@ moves depth by only \DavTwoSBlur\% for DA-V2-S and at most \UnidepthTwoSBlur\% f
 compression change it by \DavTwoSBilinear{} and \DavTwoSJpeg.
 Real detail does not rescue the model. On a real zoom lens (SR-RAW~\cite{zhang2019zoom}, \srrawSequences{}
 tripod sequences, supplement) DA-V2-S gives $\alpha=\DavTwoSSrrawOpticalAlpha$, the same as for the
-digital zoom of the widest shot (\DavTwoSSrrawDigitalAlpha), while Depth Pro keeps its depth
-($\alpha=\DepthproSrrawOpticalAlpha$).
+digital zoom of the widest shot (\DavTwoSSrrawDigitalAlpha). Depth Pro keeps its depth there
+($\alpha=\DepthproSrrawOpticalAlpha$), as on DIODE-outdoor (\DepthproDsDiodeOutAlpha), but not on KITTI, NYUv2 and
+DIODE-indoor (\DepthproDsKittiAlpha, \DepthproDsNyuAlpha, \DepthproDsDiodeInAlpha): its failure depends on the scene.
 
 \paragraph{Bigger and newer models.}
 The supplement extends the audit to larger variants and to Depth Anything~3~\cite{lin2025da3},

@@ -392,3 +392,29 @@ def srraw_alpha(df):
     out = pd.concat([a.rename("alpha"), b.rename("beta")], axis=1)
     out.index.names = ["model", "seq", "view"]
     return out.reset_index()
+
+
+def merge_shards(folder=None, remove=False):
+    """Merge the per-shard CSVs of a sharded audit (run_audit.py --shard i --shards k --out-tag TAG-si), named
+    model__set__TAG-sI.csv, into model__set__TAG.csv. A shard must not repeat another shard's images.
+    Returns {merged file name: number of images}."""
+    folder = Path(folder or RESULTS)
+    groups = {}
+    for f in sorted(folder.glob("*__*-s[0-9]*.csv")):
+        base, _, k = f.stem.rpartition("-s")
+        if k.isdigit() and "__" in base:
+            groups.setdefault(base, []).append(f)
+    merged = {}
+    for base, fs in groups.items():
+        parts = [pd.read_csv(f) for f in fs]
+        names = [set(p["name"]) for p in parts]
+        overlap = set.union(*[a & b for i, a in enumerate(names) for b in names[i + 1:]] or [set()])
+        if overlap:
+            raise ValueError(f"{base}: {len(overlap)} images in more than one shard, e.g. {sorted(overlap)[0]}")
+        df = pd.concat(parts, ignore_index=True)
+        df.to_csv(folder / f"{base}.csv", index=False)
+        merged[f"{base}.csv"] = df["name"].nunique()
+        if remove:
+            for f in fs:
+                f.unlink()
+    return merged

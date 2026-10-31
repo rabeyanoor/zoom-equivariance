@@ -112,3 +112,23 @@ def test_region_alpha_pairs_groups_per_image():
     rows = pd.DataFrame(regions.region_rows(ApparentSize(), SAMPLE, seg)).assign(model="m", dataset="d")
     per, wide = analysis.region_alpha(rows)
     assert np.allclose(per.alpha, 1) and len(wide) == 1 and abs(wide["diff"][0]) < 1e-6
+
+
+def test_merge_shards_joins_disjoint_shards_and_rejects_overlap(tmp_path):
+    def shard(k, names):
+        pd.DataFrame({"name": names, "kind": "zoom", "zoom": 1.0}).to_csv(tmp_path / f"m-s__kitti__full-s{k}.csv",
+                                                                          index=False)
+
+    shard(0, ["a", "c"])
+    shard(1, ["b"])
+    pd.DataFrame({"name": ["x"]}).to_csv(tmp_path / "dav2-s__kitti.csv", index=False)  # not a shard: left alone
+    assert analysis.merge_shards(tmp_path, remove=True) == {"m-s__kitti__full.csv": 3}
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["dav2-s__kitti.csv", "m-s__kitti__full.csv"]
+    shard(0, ["a"])
+    shard(1, ["a"])
+    try:
+        analysis.merge_shards(tmp_path)
+    except ValueError as e:
+        assert "more than one shard" in str(e)
+    else:
+        raise AssertionError("overlapping shards were merged")

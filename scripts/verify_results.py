@@ -48,6 +48,28 @@ for f in sorted(A.RESULTS.glob("*__*.csv")):
                              images=df.name.nunique(), centres=1, rows=len(df),
                              cue_sum_gap=round(float((w.zoom - w.context - w.magnify).abs().median()), 4)))
         continue
+    if tag.endswith("__srraw"):
+        # real optical zoom: one base row per sequence, and per zoomed shot one optical and one digital row
+        # (same s, same pixels), with s >= 1 against the widest shot
+        base = df[df.view == "base"]
+        check(base.groupby("seq").size().eq(1).all(), f"{tag}: sequences without exactly one base row")
+        check((base.log_ratio.abs() < 1e-9).all(), f"{tag}: base rows are not exactly 0")
+        zoomed = df[df.view != "base"]
+        pairs = zoomed.groupby(["seq", "f_mm"]).view.apply(lambda v: tuple(sorted(v)))
+        check((pairs == ("digital", "optical")).all(),
+              f"{tag}: {int((pairs != ('digital', 'optical')).sum())} shots without an optical/digital pair")
+        check((zoomed.s >= 1).all(), f"{tag}: zoomed shot wider than the base shot")
+        manifest.append(dict(file=f.name, model=tag.split("__")[0], dataset="srraw",
+                             images=df.seq.nunique(), centres=1, rows=len(df)))
+        continue
+    if "__regions" in tag:
+        # semantic regions: per image and zoom at most one object and one surface row, no duplicates
+        check(df.duplicated(["name", "zoom", "group"]).sum() == 0, f"{tag}: duplicated region rows")
+        check(set(df.group) <= {"object", "surface"}, f"{tag}: unknown region group")
+        check(set(np.round(df.zoom, 4)) <= set(ZOOMS[1:]), f"{tag}: unexpected zoom factor")
+        manifest.append(dict(file=f.name, model=tag.split("__")[0], dataset=tag.split("__")[1],
+                             images=df.name.nunique(), centres=1, rows=len(df)))
+        continue
     if "__ctrl" in tag:
         # control runs: one row per control kind and image
         kinds = df.groupby("name").kind.apply(lambda v: tuple(sorted(v)))
