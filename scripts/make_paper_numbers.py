@@ -659,6 +659,118 @@ write_table("table_srraw", [
     r"Model & seq. & optical & digital & optical & digital \\ \midrule",
     *rows, r"\bottomrule\end{tabular}\end{table}"])
 
+# ------------------------------------------------------------------ one image change at a time (from the runs above)
+# each column changes one factor of a 2x digital zoom; entries are depth factors on the same pixels (1 = unchanged)
+FACT = [("dav2-s", "DA-V2-S"), ("depthpro", "Depth Pro"), ("moge2-s", "MoGe-2-S"), ("metric3d-s", r"Metric3D v2-S, true $K'$"),
+        ("metric3d-s-staleK", r"Metric3D v2-S, stale $K$")]
+rows = []
+for m, name in FACT:
+    a = pooled.alpha.get(m, np.nan) if "alpha" in pooled else np.nan
+    put(key(m, "zoom", "two", "factor"), 2 ** (-a) if np.isfinite(a) else np.nan)
+    cells = [macros.get(key(m, "zoom", "two", "factor"), "--")]
+    for c in ("CueMagnify", "CueShrink", "Optical", "CueContext"):
+        cells.append(macros.get(key(m) + c, "--"))
+    blur = macros.get(key(m) + "Blur", "--")
+    cells.append(blur + r"\%" if blur != "--" else "--")
+    rows.append(f"{name} & " + " & ".join(cells) + r" \\")
+write_table("table_factorial", [
+    r"\begin{table*}[t]\centering\small",
+    r"\caption{A $2\times$ digital zoom taken apart, one change at a time (numbers from the runs of \cref{tab:audit}, "
+    r"\cref{tab:cues} and \cref{tab:controls}). Entries: factor by which depth changes on the same pixels (1 = "
+    r"unchanged; apparent size alone: 0.5 for zoom and magnification, 2 for shrink). Zoom: $2^{-\alpha}$ from the "
+    r"audit. Crop only: the crop at its own place and size, original $K$ (context removed). Magnification: zoom against "
+    r"crop only. Shrink: the whole image $2\times$ smaller. Optical: the same field of view with real detail. Resize "
+    r"only: the blur control (detail lost, field of view and camera unchanged), absolute change. Only the factors that "
+    r"change the camera move depth; detail loss, compression and resampling do not.}\label{tab:factorial}",
+    r"\setlength{\tabcolsep}{5pt}",
+    r"\begin{tabular}{lcccccc}\toprule",
+    r"& \multicolumn{4}{c}{camera changes} & \multicolumn{2}{c}{camera fixed} \\ \cmidrule(lr){2-5}\cmidrule(lr){6-7}",
+    r"Model & zoom $2\times$ & magnification & shrink & optical $2\times$ & crop only & resize only \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}\end{table*}"])
+
+# ------------------------------------------------------------------ uncertainty of the exponents, small vs large zooms
+UNC = ["dav2-s", "zoedepth", "depthpro", "moge2-s", "unidepth2-s", "da3-nested", "metric3d-s"]
+unc = A.exponent_uncertainty(df[df.model.isin(UNC)]) if len(df) else pd.DataFrame()
+
+
+def ci(r, q, d=2):
+    return f"{fmt(r[q], d)} [{fmt(r[q + '_lo'], d)}, {fmt(r[q + '_hi'], d)}]" if np.isfinite(r[q]) else "--"
+
+
+rows = []
+for m in [x for x in UNC if x in set(unc.model)]:
+    r = unc[unc.model == m].iloc[0]
+    for q in ("alpha", "beta", "sum", "alpha_small", "alpha_large", "beta_small", "beta_large"):
+        for suf, c in (("", q), ("Lo", q + "_lo"), ("Hi", q + "_hi")):
+            put(key(m, "unc", q.replace("_", "-"), suf), r[c])
+    rows.append(f"{A.PRETTY.get(m, m)} & {int(r.images)} & {ci(r, 'alpha')} & {ci(r, 'beta')} & {ci(r, 'sum')} & "
+                f"{fmt(r.alpha_small)} / {fmt(r.alpha_large)} & {fmt(r.beta_small)} / {fmt(r.beta_large)} & "
+                f"{fmt(r.alpha_small + r.beta_small)} / {fmt(r.alpha_large + r.beta_large)} \\\\")
+write_table("table_uncert", [
+    r"\begin{table*}[t]\centering\small",
+    r"\caption{The exponents with 95\% intervals from a scene-level bootstrap (median over images, centred zooms), and "
+    r"fitted separately on the small zooms ($s\le1.5$) and the large ones ($s\ge2$). For the camera-predicting models "
+    r"$\alpha$ grows with the zoom because $\beta$ falls, while $\alpha+\beta$ stays close to 1 in both ranges.}"
+    r"\label{tab:uncert}",
+    r"\setlength{\tabcolsep}{4pt}",
+    r"\begin{tabular}{lrcccccc}\toprule",
+    r"& & \multicolumn{3}{c}{all zooms} & \multicolumn{3}{c}{small / large zooms} \\ "
+    r"\cmidrule(lr){3-5}\cmidrule(lr){6-8}",
+    r"Model & images & $\alpha$ & $\beta$ & $\alpha+\beta$ & $\alpha$ & $\beta$ & $\alpha+\beta$ \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}\end{table*}"])
+
+# ------------------------------------------------------------------ FocalUnshrink: sensitivity to beta, mu and the prior
+rows = []
+for m, how in UNSHRINK[:4]:
+    d = df[df.model == m]
+    if not len(d):
+        continue
+    b, blo, bhi = A.focal_beta_ci(d)
+    res = {tag: A.deshrink_summary(A.focal_deshrink(d, beta=bb)).iloc[0] for tag, bb in (("lo", blo), ("hi", bhi))}
+    res["mu"] = A.deshrink_summary(A.focal_deshrink(d, mu_shift=True)).iloc[0]
+    base = us[us.model == m].iloc[0]
+    for tag, v in (("betaCi", b), ("betaLo", blo), ("betaHi", bhi), ("alphaAtLo", res["lo"].alpha_c),
+                   ("alphaAtHi", res["hi"].alpha_c), ("muShiftScaleOne", res["mu"].scale1_c),
+                   ("muShiftAlpha", res["mu"].alpha_c)):
+        put(key(m, "sens", tag), v, "{:.3f}" if "Scale" in tag else "{:.2f}")
+    rows.append(f"{A.PRETTY.get(m, m)} & {fmt(b)} [{fmt(blo)}, {fmt(bhi)}] & {fmt(base.alpha)} & "
+                f"{fmt(res['hi'].alpha_c)} / {fmt(base.alpha_c)} / {fmt(res['lo'].alpha_c)} & "
+                f"{fmt(base.scale1, 3)} & {fmt(base.scale1_c, 3)} & {fmt(res['mu'].scale1_c, 3)} & "
+                f"{fmt(res['mu'].alpha_c)} \\\\")
+write_table("table_unshrink_sens", [
+    r"\begin{table*}[t]\centering\small",
+    r"\caption{Sensitivity of FocalUnshrink on real data. $\hat\beta$ with a 95\% scene-bootstrap interval; $\alpha$ "
+    r"after the correction with $\hat\beta$ at the upper end of its interval, at its estimate and at the lower end. "
+    r"Scale: median $|\log\hat D/D^{*}|$ at $1\times$, before, after, and after with a misspecified prior centre $\mu$ "
+    r"taken from the \emph{other} datasets instead of the target one. $\mu$ does not enter $\alpha$ (it cancels in "
+    r"the ratio of two zooms), so a wrong prior centre costs scale, not equivariance.}\label{tab:unshrink_sens}",
+    r"\setlength{\tabcolsep}{4pt}",
+    r"\begin{tabular}{lccccccc}\toprule",
+    r"& & \multicolumn{2}{c}{$\alpha$} & \multicolumn{3}{c}{scale $1\times$} & \\ "
+    r"\cmidrule(lr){3-4}\cmidrule(lr){5-7}",
+    r"Model & $\hat\beta$ [95\%] & before & after ($\hat\beta_{\text{hi}}$ / $\hat\beta$ / $\hat\beta_{\text{lo}}$) & "
+    r"before & after & wrong $\mu$ & $\alpha$, wrong $\mu$ \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}\end{table*}"])
+
+rows = []
+for p in ("gaussian", "laplace", "uniform", "bimodal"):
+    for rho in (0.65, 0.4):
+        s_ = A.shrinkage_sim(p, rho)
+        put(key("sim", p, "rho", str(int(rho * 100)), "zerrc"), s_["zerr_c"], "{:.2f}")
+        put(key("sim", p, "rho", str(int(rho * 100)), "zerr"), s_["zerr"], "{:.2f}")
+        rows.append(f"{p} & {rho:.2f} & {s_['beta']:.2f} & {s_['zerr']:.2f} $\\to$ {s_['zerr_c']:.2f} & "
+                    f"{s_['err1']:.2f} $\\to$ {s_['err1_c']:.2f} & {s_['err3']:.2f} $\\to$ {s_['err3_c']:.2f} \\\\")
+write_table("table_shrink_sim", [
+    r"\begin{table}[t]\centering\small",
+    r"\caption{FocalUnshrink when the camera prior is not Gaussian (simulation, \cref{sec:supp_unshrink}): $\log f$ "
+    r"from a unit-variance prior, a noisy cue of Gaussian reliability $\rho$, the exact posterior-mean focal head. "
+    r"Zoom error: per-image RMS of $\log\hat f_3-\log\hat f_1-\log 3$; error: RMS of $\log\hat f$ against the truth. "
+    r"Before $\to$ after the correction.}\label{tab:shrink_sim}",
+    r"\setlength{\tabcolsep}{3pt}",
+    r"\resizebox{\linewidth}{!}{\begin{tabular}{lccccc}\toprule",
+    r"prior & $\rho$ & $\beta$ & zoom error & error $1\times$ & error $3\times$ \\ \midrule",
+    *rows, r"\bottomrule\end{tabular}}\end{table}"])
+
 (GEN / "numbers.tex").write_text("% generated by scripts/make_paper_numbers.py -- do not edit\n" +
                                  "\n".join(f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n")
 missing = sum(v == "--" for v in macros.values())

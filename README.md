@@ -109,4 +109,9 @@ Only public data is used, downloaded by the kernels from the original sources:
 
 Model weights come from their official Hugging Face or GitHub releases (see `src/models.py`).
 
+- `DATA.md`: every data source, what is used from it, its ground truth and terms; the exact image ids of every
+  sample are in `outputs/samples/` (`scripts/export_samples.py`, which also checks the train/test drive split).
+- `CHECKPOINTS.md`: every checkpoint and fine-tuned variant with its training configuration.
+- `requirements-lock.txt`: the exact package versions behind every result (`requirements.txt` is the short list).
+
 The title, abstract, authors and keywords for the submission form are in `SUBMISSION.md`.

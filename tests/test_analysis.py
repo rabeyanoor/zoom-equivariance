@@ -177,3 +177,35 @@ def test_focal_deshrink_makes_a_shrinking_focal_head_equivariant():
 def test_focal_deshrink_leaves_an_equivariant_focal_head_unchanged():
     r = analysis.focal_deshrink(shrink_frame(1.0))
     assert np.allclose(r.log_corr, 0, atol=1e-6)
+
+
+def _named(df):
+    # scene_of expects "<dataset>/<image>" names, as in the result files
+    return df.assign(name=df.dataset + "/" + df.name)
+
+
+def test_exponent_uncertainty_recovers_the_exponents_and_the_line():
+    u = analysis.exponent_uncertainty(_named(shrink_frame(0.6)), n=50).iloc[0]
+    assert abs(u.beta - 0.6) < 1e-3 and abs(u.alpha - 0.4) < 0.02 and abs(u["sum"] - 1) < 0.02
+    assert u.beta_lo <= u.beta <= u.beta_hi
+    # a pure power law has the same exponent on small and large zooms
+    assert abs(u.beta_small - u.beta_large) < 1e-3
+
+
+def test_focal_beta_ci_brackets_the_estimate():
+    b, lo, hi = analysis.focal_beta_ci(_named(shrink_frame(0.6)), n=50)
+    assert abs(b - 0.6) < 1e-3 and lo <= b <= hi
+
+
+def test_a_wrong_prior_centre_changes_scale_not_alpha():
+    df = shrink_frame(0.6)
+    right = analysis.deshrink_summary(analysis.focal_deshrink(df)).iloc[0]
+    wrong = analysis.deshrink_summary(analysis.focal_deshrink(df, mu_shift=True)).iloc[0]
+    assert abs(right.alpha_c - wrong.alpha_c) < 1e-9
+
+
+def test_shrinkage_sim_is_exact_only_for_a_gaussian_prior():
+    g = analysis.shrinkage_sim("gaussian", 0.6, n=1000)
+    assert abs(g["beta"] - 0.6) < 0.03 and g["zerr_c"] < 1e-6 and g["err1_c"] > g["err1"]
+    b = analysis.shrinkage_sim("bimodal", 0.6, n=1000)
+    assert b["zerr_c"] > 0.05

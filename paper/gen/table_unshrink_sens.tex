@@ -1,0 +1,11 @@
+\begin{table*}[t]\centering\small
+\caption{Sensitivity of FocalUnshrink on real data. $\hat\beta$ with a 95\% scene-bootstrap interval; $\alpha$ after the correction with $\hat\beta$ at the upper end of its interval, at its estimate and at the lower end. Scale: median $|\log\hat D/D^{*}|$ at $1\times$, before, after, and after with a misspecified prior centre $\mu$ taken from the \emph{other} datasets instead of the target one. $\mu$ does not enter $\alpha$ (it cancels in the ratio of two zooms), so a wrong prior centre costs scale, not equivariance.}\label{tab:unshrink_sens}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccccccc}\toprule
+& & \multicolumn{2}{c}{$\alpha$} & \multicolumn{3}{c}{scale $1\times$} & \\ \cmidrule(lr){3-4}\cmidrule(lr){5-7}
+Model & $\hat\beta$ [95\%] & before & after ($\hat\beta_{\text{hi}}$ / $\hat\beta$ / $\hat\beta_{\text{lo}}$) & before & after & wrong $\mu$ & $\alpha$, wrong $\mu$ \\ \midrule
+Depth Pro & 0.70 [0.62, 0.78] & 0.31 & 0.13 / 0.04 / -0.09 & 0.136 & 0.138 & 0.245 & 0.03 \\
+DA3-Nested & 0.41 [0.29, 0.55] & 0.56 & 0.23 / -0.05 / -0.50 & 0.099 & 0.130 & 0.593 & -0.05 \\
+MoGe-2-S & 0.55 [0.51, 0.62] & 0.36 & 0.02 / -0.08 / -0.18 & 0.214 & 0.214 & 0.432 & -0.09 \\
+UniDepthV2-S & 0.50 [0.39, 0.64] & 0.34 & 0.14 / -0.05 / -0.30 & 0.138 & 0.201 & 0.431 & -0.07 \\
+\bottomrule\end{tabular}\end{table*}

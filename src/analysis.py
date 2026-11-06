@@ -432,7 +432,34 @@ def focal_beta(z):
     return slope_through_origin(np.log(s), np.log(r.fx.values / f1))
 
 
-def focal_deshrink(df, seed=0):
+def exponent_uncertainty(df, n=500, seed=0):
+    """Per model, with 95% scene-bootstrap intervals (median over images): alpha, beta and alpha+beta over all
+    zooms, and alpha and beta fitted on the small zooms (s<=1.5) and the large ones (s>=2) separately.
+    Centred crops only. Returns one row per model; each quantity q has columns q, q_lo, q_hi."""
+    z = df[(df.kind == "zoom") & (df.zoom > 1) & np.isclose(df.cx, 0.5) & np.isclose(df.cy, 0.5)].copy()
+    z["log_s"] = np.log(z.s_true)
+    z["log_f"] = np.log(z.fx.astype(float) / z.fx_base.astype(float))
+    keys = [z[k] for k in ("model", "name")]
+    out = pd.DataFrame(index=z.groupby(["model", "name"]).size().index)
+    for tag, m in (("", z.zoom > 0), ("_small", z.zoom <= 1.5), ("_large", z.zoom >= 2)):
+        zz, kk = z[m], [k[m] for k in keys]
+        out["alpha" + tag] = -_slope_by_group(zz.log_s.values, zz.log_ratio_self.values, kk)
+        has_fx = zz.fx.notna().groupby(kk).all()
+        out["beta" + tag] = _slope_by_group(zz.log_s.values, zz.log_f.values, kk).where(has_fx)
+    out["sum"] = out.alpha + out.beta
+    out = out.reset_index()
+    rows = []
+    for model, g in out.groupby("model"):
+        row = dict(model=model, images=len(g))
+        for q in ("alpha", "beta", "sum", "alpha_small", "alpha_large", "beta_small", "beta_large"):
+            ok = g[q].notna()
+            row[q], row[q + "_lo"], row[q + "_hi"] = (boot_median_scene(g[q][ok], g.name[ok], n=n, seed=seed)
+                                                      if ok.sum() >= 10 else (np.nan,) * 3)
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def focal_deshrink(df, seed=0, beta=None, mu_shift=False):
     """Training-free, label-free correction of a focal head that under-scales under zoom (FocalUnshrink).
 
     A focal head with exponent beta < 1 behaves like a shrinkage estimator, log f_hat = mu + beta (log f - mu) + noise,
@@ -444,7 +471,10 @@ def focal_deshrink(df, seed=0):
 
     Cross-fitted: in each dataset, beta and mu come from one half of the images and are applied to the other half,
     then the halves swap. Returns the zoom rows (centred crops) with columns log_fc (corrected log focal) and
-    log_corr (log f_c - log f_hat)."""
+    log_corr (log f_c - log f_hat).
+
+    Sensitivity options: beta fixes the exponent instead of measuring it (e.g. at the ends of its interval);
+    mu_shift takes mu from the other datasets instead of the target one (a misspecified prior centre)."""
     z = df[(df.kind == "zoom") & np.isclose(df.cx, 0.5) & np.isclose(df.cy, 0.5) & df.fx.notna()].copy()
     rng = np.random.default_rng(seed)
     out = []
@@ -453,18 +483,79 @@ def focal_deshrink(df, seed=0):
         half = set(rng.permutation(names)[: len(names) // 2])
         for fit in (half, set(names) - half):
             cal, ev = zm[zm.name.isin(fit)], zm[~zm.name.isin(fit)].copy()
-            beta = focal_beta(cal)
+            b = focal_beta(cal) if beta is None else beta
             for dataset, g in ev.groupby("dataset"):
-                c = cal[(cal.dataset == dataset) & np.isclose(cal.zoom, 1.0)]
+                same = cal.dataset != dataset if mu_shift else cal.dataset == dataset
+                c = cal[same & np.isclose(cal.zoom, 1.0)]
                 mu = np.log(c.fx).mean()
-                ev.loc[g.index, "log_fc"] = mu + (np.log(g.fx) - mu) / beta
-                ev.loc[g.index, "beta_fit"] = beta
+                ev.loc[g.index, "log_fc"] = mu + (np.log(g.fx) - mu) / b
+                ev.loc[g.index, "beta_fit"] = b
             out.append(ev)
     if not out:
         return pd.DataFrame()
     r = pd.concat(out)
     r["log_corr"] = r.log_fc - np.log(r.fx)
     return r
+
+
+def focal_beta_ci(df, n=500, seed=0):
+    """95% scene-bootstrap interval of the pooled focal exponent (focal_beta) of one model's zoom rows."""
+    z = df[(df.kind == "zoom") & np.isclose(df.cx, 0.5) & np.isclose(df.cy, 0.5) & df.fx.notna()]
+    scenes = z.name.map(scene_of)
+    groups = [g for _, g in z.groupby(scenes.values)]
+    rng = np.random.default_rng(seed)
+    bs = []
+    for _ in range(n):
+        pick = rng.integers(0, len(groups), len(groups))
+        # resampled copies of one scene get distinct names, so focal_beta pairs each zoom with its own 1x row
+        parts = [groups[i].assign(name=groups[i].name + f"#{j}") for j, i in enumerate(pick)]
+        bs.append(focal_beta(pd.concat(parts)))
+    return focal_beta(z), float(np.percentile(bs, 2.5)), float(np.percentile(bs, 97.5))
+
+
+def shrinkage_sim(prior, rho, n=4000, zooms=(1.25, 1.5, 2.0, 3.0), seed=0):
+    """FocalUnshrink when the camera prior is not Gaussian. log f is drawn from `prior` (unit variance), the cue
+    is x = log f + noise with noise variance set so that the Gaussian reliability would be rho, and the focal head is
+    the exact posterior mean E[log f | x] (squared-error optimum, computed on a grid). A zoom adds log s to x.
+    Returns the head's pooled beta; the per-image zoom error at the largest zoom, RMS of
+    log f_s - log f_1 - log s, before and after FocalUnshrink (beta and mu measured as on real data; exactly zero after
+    it only for a Gaussian prior); and the RMS error of log focal against the truth at 1x and at the largest zoom."""
+    rng = np.random.default_rng(seed)
+    sig = np.sqrt(1 / rho - 1)
+    grid = np.linspace(-8, 8, 4001)
+    if prior == "gaussian":
+        dens, draw = np.exp(-grid ** 2 / 2), lambda k: rng.normal(size=k)
+    elif prior == "laplace":
+        b = 1 / np.sqrt(2)
+        dens, draw = np.exp(-np.abs(grid) / b), lambda k: rng.laplace(scale=b, size=k)
+    elif prior == "uniform":
+        h = np.sqrt(3)
+        dens, draw = (np.abs(grid) <= h).astype(float), lambda k: rng.uniform(-h, h, size=k)
+    elif prior == "bimodal":  # two camera families (e.g. phones and telephoto), unit variance overall
+        m, sd = 0.9, np.sqrt(1 - 0.81)
+        dens = np.exp(-(grid - m) ** 2 / (2 * sd ** 2)) + np.exp(-(grid + m) ** 2 / (2 * sd ** 2))
+        draw = lambda k: rng.choice([-m, m], size=k) + rng.normal(scale=sd, size=k)  # noqa: E731
+    else:
+        raise ValueError(prior)
+
+    def head(x):
+        w = dens[None, :] * np.exp(-(x[:, None] - grid[None, :]) ** 2 / (2 * sig ** 2))
+        return (w * grid).sum(1) / w.sum(1)
+
+    lf = draw(n)
+    x = lf + rng.normal(scale=sig, size=lf.size)
+    h1 = head(x)
+    ls = np.log(np.array(zooms))
+    hs = np.stack([head(x + v) for v in ls], 1)
+    beta = float((ls[None] * (hs - h1[:, None])).sum() / (lf.size * (ls ** 2).sum()))
+    mu = h1.mean()
+    c1, cs = mu + (h1 - mu) / beta, mu + (hs - mu) / beta
+    zerr = float(np.sqrt(np.mean((hs[:, -1] - h1 - ls[-1]) ** 2)))
+    zerr_c = float(np.sqrt(np.mean((cs[:, -1] - c1 - ls[-1]) ** 2)))
+    return dict(prior=prior, rho=rho, beta=beta, zerr=zerr, zerr_c=zerr_c, err1=float(np.sqrt(np.mean((h1 - lf) ** 2))),
+                err1_c=float(np.sqrt(np.mean((c1 - lf) ** 2))),
+                err3=float(np.sqrt(np.mean((hs[:, -1] - lf - ls[-1]) ** 2))),
+                err3_c=float(np.sqrt(np.mean((cs[:, -1] - lf - ls[-1]) ** 2))))
 
 
 def deshrink_summary(r):

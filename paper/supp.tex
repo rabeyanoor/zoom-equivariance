@@ -36,6 +36,31 @@
 Section and table numbers without a letter refer to the main paper. Every number here is generated
 from the same result files as the main paper.
 
+\section{Relation to the closest work}\label{sec:supp_related}
+
+\Cref{tab:related} sets this audit next to the three works closest to it, each described by what it states
+about itself. The difference is the setting: the earlier works ask whether a depth \emph{map} follows a crop, or
+how a camera-conditioned model degrades when a pipeline passes \emph{stale} intrinsics after a crop or resize.
+We give every model the \emph{correct} zoomed camera, or let it infer its own, and ask how its metric scale and
+its predicted focal respond, which is what the exponents $\alpha$ and $\beta$, the line $\alpha+\beta=1$ and the
+shrinkage account of $\beta$ describe. The stale-$K$ case is one row of our audit
+(\cref{sec:law}, $\alpha_{\text{stale}}=\alpha_{\text{true}}+1$).
+
+\begin{table*}[t]\centering\small
+\caption{The closest work and this audit, side by side. Each entry summarises the setting the work itself
+describes; a dash: not described as part of that work.}\label{tab:related}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{2.4cm}p{3.2cm}p{3.0cm}p{3.3cm}p{4.0cm}}\toprule
+& Zhong \etal~\cite{zhong2023equivariance} & UniDepth~\cite{piccinelli2024unidepth} & Kim and Lee~\cite{kim2026mismatch} & this work \\ \midrule
+Transform & crop-and-resize of the input & rescaled and cropped views in training & crop, resize, padding in preprocessing & crop-and-resize as an exact camera change (\cref{eq:law}) \\
+Camera after the crop & does not enter & conditions the features & stale (not updated) & correct $K'$, or inferred by the model \\
+What is measured & equivariance of depth and normal maps & (training loss) & bias from the mismatch, focal vs principal-point part & metric scale ($\alpha$) and predicted focal ($\beta$) per image, against the exact zoomed camera \\
+Models & supervised depth and normal predictors & UniDepth & camera-conditioned depth & pixels-only, camera-predicting and camera-taking metric models (7 main, 11 more) \\
+Explanation & -- & -- & resize scales the focal, crop shifts the principal point & zoom--squash ambiguity, $\alpha+\beta=1$, focal head as shrinkage ($\beta$ = cue reliability) \\
+Real optical zoom & -- & -- & -- & SR-RAW, \srrawSequences{} sequences \\
+Correction & test-time averaging; self-consistency fine-tuning & invariance loss & Mismatch-Aware Camera Module (uses preprocessing metadata) & FocalUnshrink (no training or labels); EFT+B, EFT-S (unlabeled images) \\
+\bottomrule\end{tabular}\end{table*}
+
 \section{Qualitative example on NYUv2}
 
 \begin{figure}[h]
@@ -74,6 +99,16 @@ Depth Pro, \MogeTwoSAlphaSmall{} and \MogeTwoSAlphaLarge{} for MoGe-2-S, and \Un
 \UnidepthTwoSAlphaLarge{} for UniDepthV2-S (medians over images). The camera-predicting models follow small zooms
 better than large ones; a single $\alpha$ over $[1,3]$ averages these.
 
+\Cref{tab:uncert} explains why. With scene-bootstrap intervals for every exponent, the focal exponent of the
+camera-predicting models falls from the small to the large zooms (Depth Pro \DepthproUncBetaSmall{} to
+\DepthproUncBetaLarge, MoGe-2-S \MogeTwoSUncBetaSmall{} to \MogeTwoSUncBetaLarge), while $\alpha+\beta$ stays near 1
+in both ranges. The focal head saturates on large zooms, as a shrinkage estimator does in the tails of its prior,
+and the depth follows it along the line. For the pixels-only DA-V2-S, $\alpha$ is close to 1 in both ranges
+(\DavTwoSUncAlphaSmall, \DavTwoSUncAlphaLarge), and for Metric3D v2 with the true camera close to 0
+(\MetricThreedSUncAlphaSmall, \MetricThreedSUncAlphaLarge).
+
+\input{gen/table_uncert}
+
 \section{A calibration-only reference}\label{sec:supp_geocalib}
 
 GeoCalib~\cite{veicht2024geocalib} predicts the camera but no depth. Run on the same zooms of the same
@@ -102,6 +137,27 @@ and for GeoCalib the focal error at $3\times$ falls from \GeocalibUnshrinkFocalT
 how much the camera cue actually knows, which is what $\beta$ measures.
 
 \input{gen/table_unshrink}
+
+\paragraph{Sensitivity.} \Cref{tab:unshrink_sens} varies the two measured quantities. $\hat\beta$ is known to
+within its scene-bootstrap interval (Depth Pro \DepthproSensBetaCi{} [\DepthproSensBetaLo, \DepthproSensBetaHi]);
+at the ends of that interval Depth Pro's corrected $\alpha$ is \DepthproSensAlphaAtHi{} and
+\DepthproSensAlphaAtLo, an over- or under-correction of the size the interval implies. The prior centre $\mu$
+cancels in the ratio of two zooms, so it cannot affect $\alpha$; taking it from the other datasets instead of the
+target one changes only the unzoomed scale (Depth Pro \DepthproSensMuShiftScaleOne, against
+\DepthproUnshrinkScaleOnecorr{} with the target's $\mu$). Unlabeled target images matter for scale, not for
+equivariance.
+
+\paragraph{Non-Gaussian priors.} The inversion is exact when $\log f$ and the cue are Gaussian. Real camera
+distributions are not (phones cluster at a few focal lengths). \Cref{tab:shrink_sim} simulates an exact
+posterior-mean focal head under Laplace, uniform and bimodal priors of the same variance. The measured $\hat\beta$
+stays close to the Gaussian reliability $\rho$, but the head is no longer linear in the cue, so a single
+$\hat\beta$ cannot undo it image by image: the per-image zoom error falls from \SimBimodalRhoSixFiveZerr{} to
+\SimBimodalRhoSixFiveZerrc{} for the bimodal prior at $\rho=0.65$, against 0 for the Gaussian one. In every
+case the error at $1\times$ grows, by the $1/\hat\beta$ amplification of \cref{sec:law}. FocalUnshrink is therefore
+a first-order correction; a non-linear inverse would need the prior's shape, which self-zoom alone does not give.
+
+\input{gen/table_unshrink_sens}
+\input{gen/table_shrink_sim}
 
 \section{Objects of familiar size and surfaces}\label{sec:supp_regions}
 
@@ -326,6 +382,17 @@ near 1 under every control (\MetricThreedSOptical, \MetricThreedSDigitalLr, \Met
 DIODE-outdoor, UniDepthV2-S over-estimates the scale by more than $2\times$ on \udDiodeOutOverTwo\% of the images.
 
 \input{gen/table_controls}
+
+\paragraph{One change at a time.} \Cref{tab:factorial} collects these runs into a single factorial view of a
+$2\times$ digital zoom: the changes that alter the camera (zoom, magnification of the content, shrinking the whole
+image, an optical zoom with real detail) against those that keep it (removing the context around the crop,
+losing detail by resizing). For the pixels-only DA-V2-S, magnification alone reproduces the zoom
+(\DavTwoSCueMagnify{} against \DavTwoSZoomTwoFactor), shrinking moves depth the other way (\DavTwoSCueShrink), and
+neither the lost context (\DavTwoSCueContext) nor the lost detail (\DavTwoSBlur\%) matters. Metric3D v2 separates
+the camera from the pixels directly: the same pixels give \MetricThreedSZoomTwoFactor{} with the true $K'$ and
+\MetricThreedSStaleKZoomTwoFactor{} with the stale $K$, which is the pixels-only response.
+
+\input{gen/table_factorial}
 
 \section{Real optical zoom}\label{sec:supp_srraw}
 

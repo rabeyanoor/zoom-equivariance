@@ -37,7 +37,8 @@ fitted per image by least squares in log-log space through the origin
 (the depth ratio is the median over the pixels in $b$).
 An equivariant model has $\alpha=0$ and $\beta=1$. The fit is an approximation: the median residual is
 \fitRmsMedian{} in log depth, and $\alpha$ grows with the zoom (Depth Pro \DepthproAlphaSmall{} for $s\le1.5$,
-\DepthproAlphaLarge{} for $s\ge2$; supplement).
+\DepthproAlphaLarge{} for $s\ge2$) because $\beta$ falls (\DepthproUncBetaSmall{} to \DepthproUncBetaLarge) while
+$\alpha+\beta$ stays near 1 (supplement).
 A model that ignores the zoom in its camera estimate has $\beta=0$.
 
 \paragraph{Three invariants.}
