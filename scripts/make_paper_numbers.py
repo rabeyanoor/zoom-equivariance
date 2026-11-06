@@ -583,8 +583,8 @@ if len(dfull):
 write_table("table_full", [
     r"\begin{table}[t]\centering\small",
     r"\caption{Depth exponent $\alpha$ on the 200-image sample per set / on the complete test sets (KITTI val "
-    r"selection, NYUv2 test, DIODE val indoor and outdoor; \fullKittiImages, \fullNyuImages, \fullDiodeInImages{} and "
-    r"\fullDiodeOutImages{} images), median over images.}\label{tab:full}",
+    r"selection, NYUv2 test, DIODE val indoor and outdoor; \FullKittiImages, \FullNyuImages, \FullDiodeInImages{} and "
+    r"\FullDiodeOutImages{} images), median over images.}\label{tab:full}",
     r"\setlength{\tabcolsep}{3pt}",
     r"\resizebox{\linewidth}{!}{\begin{tabular}{lcccc}\toprule",
     "Model & " + " & ".join(A.PRETTY_DS[d] for d in A.DATASETS) + r" \\ \midrule",

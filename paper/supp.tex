@@ -90,6 +90,15 @@ behaviour ($\alpha>1$).
   \label{fig:supp_alpha_ds}
 \end{figure}
 
+\section{Complete test sets}\label{sec:supp_full}
+
+The main audit uses 200 images per set. \Cref{tab:full} reruns the six main models on every image of the four
+sets. Per model and dataset, $\alpha$ moves by at most \fullMaxShift{} (median \fullMedianShift), and the ordering
+of pixels-only above camera-predicting models holds on every set (closest: ZoeDepth and MoGe-2-S on DIODE-indoor,
+tied on the sample, \ZoedepthFullDiodeInAlpha{} and \MogeTwoSFullDiodeInAlpha{} on the complete set).
+
+\input{gen/table_full}
+
 \section{How well the power law fits}
 
 Per image, the median RMS residual of $\log$ depth ratio around $-\alpha\log s$ is \fitRmsMedian{} over the main

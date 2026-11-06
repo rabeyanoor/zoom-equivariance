@@ -75,13 +75,13 @@ stored in this repository.
 | `audit a2`, `audit b` | main audit: 8 models × 4 sets × 200 images (b: Depth Pro, off-centre zooms) |
 | `audit c1`, `audit c2` | larger and newer models (DA3, UniK3D, VGGT, …) |
 | `audit d` | optical-vs-digital, interpolation and JPEG controls; fine ZoomFix grid |
-| `audit fulla`, `audit fullb` | main models on the complete test sets (both runs lost their output, see `audit_main.py`; not in the paper; `tpu full` is the CPU alternative) |
+| `audit fulla`, `audit fullb` | main models on the complete test sets (`results/*__full.csv`; supplement table `tab:full`) |
 | `eft`, `eft baseline`, `eft ablate`, `eft seeds` | EFT, EFT+B, controls, three training seeds |
 | `tpu main` | cue split and EFT-S on the CPU cores of a TPU VM |
 | `tpu camgpu` | MoGe-2 / UniDepthV2 given the true camera; Depth Pro cue split |
 | `tpu calib` | GeoCalib reference and semantic-region α |
 | `tpu focal` | EFT-F training and audit; SR-RAW real optical zoom |
-| `tpu full` | main models except Depth Pro on the complete test sets, as image shards on the TPU VM's CPU cores (merged at the end; supplement table `tab:full`) |
+| `tpu full` | main models except Depth Pro on the complete test sets, as image shards on the TPU VM's CPU cores (merged at the end; CPU fallback for `audit fulla`) |
 | `tpu figs <seq>` | Figure 1 maps of EFT+B, SR-RAW maps of one sequence, SR-RAW inventory (`scripts/srraw_check.py`) |
 
 When a kernel is done:
