@@ -12,7 +12,6 @@
 \definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
 \usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
 
-\def\paperID{*****}
 \def\confName{CVPR}
 \def\confYear{2027}
 
@@ -62,6 +61,10 @@ Correction & test-time averaging; self-consistency fine-tuning & invariance loss
 \bottomrule\end{tabular}\end{table*}
 
 \section{Qualitative example on NYUv2}
+
+\Cref{fig:supp_nyu} repeats \cref{fig:teaser} on an NYUv2 test image. Depth Anything V2 again moves
+the scene closer as the zoom grows (3.85, 1.66 and 0.52\,m); EFT+B keeps the depth of the same points, at a wrong
+scale.
 
 \begin{figure}[h]
   \centering
@@ -475,6 +478,9 @@ shows the sequence whose DA-V2-S $\alpha$ is the median over all sequences.
 \end{figure*}
 
 \section{Fine-tuning curves}
+
+\Cref{fig:eft} shows the depth ratio and the AbsRel of the frozen and fine-tuned DA-V2-S over the
+whole zoom range, the curves behind the exponents of \cref{tab:eft}.
 
 \begin{figure}[t]
   \centering
