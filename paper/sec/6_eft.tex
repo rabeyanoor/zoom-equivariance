@@ -23,10 +23,9 @@ undo the size-based shortcut.
 No depth labels and no intrinsics are used.
 
 \paragraph{Setup.}
-We tune Depth Anything V2 metric Small (24.8M parameters), the outdoor head on the frames of
-seven KITTI raw drives that are disjoint from the 13 drives of the KITTI val selection (3{,}323
-images), and the indoor head on the RGB of the 795
-official NYUv2 training images. AdamW, learning rate $5\cdot10^{-5}$ (head) and
+We tune Depth Anything V2 metric Small (24.8M parameters). The outdoor head is tuned on the
+frames of seven KITTI raw drives that do not overlap the 13 drives of the KITTI val selection (3{,}323
+images), and the indoor head on the RGB of the 795 official NYUv2 training images. AdamW, learning rate $5\cdot10^{-5}$ (head) and
 $5\cdot10^{-6}$ (backbone), batch 4, 3{,}000 steps, $\lambda=1$, horizontal flips, input height
 392\,px, mixed precision on one T4 GPU. DIODE is never used for training. The frozen baseline is re-evaluated through the same fixed 392-px input
 as the tuned models, so its $\alpha$ and error can differ from \cref{tab:audit}.

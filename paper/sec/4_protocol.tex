@@ -31,10 +31,10 @@ view. A subset of 50 images per set from KITTI and NYUv2 is also zoomed about th
 quadrant centres, where the principal point moves out of the image centre.
 
 \paragraph{Optical versus digital zoom.}
-A digital zoom changes the camera \emph{and} loses detail. Treating a $2\times$ down-sampled copy of each image
-as the camera, its \emph{optical} $2\times$ zoom is the same field of view cut from the full-resolution image,
-with real detail, and its \emph{digital} $2\times$ zoom a crop of the down-sampled image, up-sampled; both have
-identical intrinsics. We also test bilinear resampling and JPEG quality 75.
+A digital zoom changes the camera \emph{and} loses detail. We treat a $2\times$ down-sampled copy of each image
+as the camera. Its \emph{optical} $2\times$ zoom is the same view cut from the full-resolution image, with real
+detail. Its \emph{digital} $2\times$ zoom is a crop of the down-sampled image, up-sampled. Both have the same
+intrinsics. We also test bilinear resampling and JPEG quality 75.
 
 \paragraph{Splitting a zoom into its causes.}
 \label{sec:cues}

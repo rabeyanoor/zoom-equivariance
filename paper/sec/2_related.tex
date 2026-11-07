@@ -34,8 +34,8 @@ Zhong \etal~\cite{zhong2023equivariance} are the closest to us. They show that s
 predictors are not equivariant to crop-and-resize and fix it with test-time averaging and a self-consistency
 loss on unlabeled images; the output is treated as a map that should simply be cropped, and the camera does
 not appear. UniDepth trains a geometric invariance loss that aligns camera-conditioned depth features across
-rescaled and cropped views~\cite{piccinelli2024unidepth}. We instead measure released models' metric-depth and
-focal response under the exact camera change. For \emph{metric} models a crop is a zoom, the focal length must
+rescaled and cropped views~\cite{piccinelli2024unidepth}. We instead measure how released models change their
+metric depth and focal under the exact camera change. For \emph{metric} models a crop is a zoom, the focal length must
 grow by $s$, and a model that reads apparent size breaks the rule in a predictable way. Our fine-tuning
 (\cref{sec:eft}) follows the self-consistency idea of~\cite{zhong2023equivariance} with a frozen teacher; we do
 not claim the loss as new and compare against their stop-gradient target.

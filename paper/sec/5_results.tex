@@ -78,7 +78,7 @@ $\alpha+\beta=1+\alpha_{K}$ exactly, where $\alpha_{K}$ is the exponent with the
 image to machine precision). Their camera-free outputs follow the zoom as geometry requires ($\alpha_{K}\approx0$),
 the focal head carries the whole error, and this is why they sit on $\alpha+\beta=1$. A calibration-only network, GeoCalib~\cite{veicht2024geocalib}, under-scales the zoomed focal as
 well ($\beta=\geocalibBeta$, supplement). The true focal does not make
-them more accurate on unzoomed images, however: their median metric-scale error rises from
+them more accurate on unzoomed images, however. Their median metric-scale error rises from
 \DepthproCamOwnScale{} to \DepthproCamGivenScale{} and from \DaThreeNestedCamOwnScale{} to
 \DaThreeNestedCamGivenScale{} (it rises on DIODE for both and is about unchanged on NYUv2; the exception is Depth Pro on KITTI,
 \DepthproCamOwnScaleKitti{} to \DepthproCamGivenScaleKitti; supplement). Overall the depth output is better matched to the model's own focal than to the true

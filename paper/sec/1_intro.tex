@@ -26,9 +26,9 @@ is still in view keeps its metric depth (\cref{sec:law}). So a model that unders
 keep its depth and multiply its focal estimate by $s$. Phones do this kind of digital zoom all the time,
 and so do gallery apps, screenshots and detection crops.
 Earlier work showed that depth maps are not crop-equivariant~\cite{zhong2023equivariance} and that
-camera-conditioned models fail when a crop leaves the intrinsics stale~\cite{kim2026mismatch}. Missing is a
-matched-intrinsics audit of modern metric models: with the crop's camera updated correctly, how do models that
-ignore, infer, or receive the camera change their metric depth and focal prediction?
+camera-conditioned models fail when a crop leaves the intrinsics stale~\cite{kim2026mismatch}. What is still
+missing is a test of modern metric models in which the crop's camera is updated correctly: how do models that
+ignore, predict or receive the camera change their metric depth and focal under such a crop?
 
 We ask four questions.
 \begin{itemize}\setlength{\itemsep}{0pt}

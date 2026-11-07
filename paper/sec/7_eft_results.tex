@@ -32,7 +32,7 @@ AbsRel degrades most (\DavTwoSZhongKittiAbsrelOne{} on KITTI). Teacher, zoom ter
 
 \paragraph{Correcting only the scale.}
 EFT-S, which learns one number per image, reaches $\alpha=\DavTwoSScaleNyuAlpha$ on NYUv2 at no unzoomed cost
-(AbsRel \DavTwoSScaleNyuAbsrelOne, frozen \DavTwoSFixedNyuAbsrelOne) and transfers better than EFT+B to the unseen
+(AbsRel \DavTwoSScaleNyuAbsrelOne, frozen \DavTwoSFixedNyuAbsrelOne). It also transfers better than EFT+B to the unseen
 DIODE ($\alpha=\DavTwoSScaleDiodeInAlpha$ and \DavTwoSScaleDiodeOutAlpha, against \DavTwoSEftbDiodeInAlpha{} and
 \DavTwoSEftbDiodeOutAlpha), but is weaker on KITTI ($\alpha=\DavTwoSScaleKittiAlpha$) and costs more unzoomed accuracy there and on DIODE-outdoor. Tuning only Depth Pro's focal head (EFT-F)
 helps on its training domains, not on DIODE (supplement).
