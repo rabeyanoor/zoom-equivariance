@@ -209,3 +209,14 @@ def test_shrinkage_sim_is_exact_only_for_a_gaussian_prior():
     assert abs(g["beta"] - 0.6) < 0.03 and g["zerr_c"] < 1e-6 and g["err1_c"] > g["err1"]
     b = analysis.shrinkage_sim("bimodal", 0.6, n=1000)
     assert b["zerr_c"] > 0.05
+
+
+def test_load_skips_side_runs(tmp_path):
+    """The main audit loader must not pick up side runs (controls, JPEG with zoom, ...): they also hold kind='zoom'
+    rows and would silently change every exponent."""
+    row = pd.DataFrame([dict(name="a", kind="zoom", zoom=2.0, cx=0.5, cy=0.5, fx_gt=100.0, model="m", dataset="d",
+                             log_ratio_self=0.0)])
+    for tag in ("", "__ctrl", "__jz", "__jzfull", "__full"):
+        row.to_csv(tmp_path / f"m__d{tag}.csv", index=False)
+    assert len(analysis.load(folder=tmp_path)) == 1
+    assert len(analysis.load("*__jzfull.csv", folder=tmp_path)) == 1

@@ -120,3 +120,14 @@ def test_region_rows_split_the_zoom_response_by_group():
     assert set(rows.group) == {"object", "surface"}
     eq = pd.DataFrame(regions.region_rows(Equivariant(), SAMPLE, seg))
     assert np.allclose(eq.log_ratio_self, 0, atol=1e-6)
+
+
+def test_jpeg_zoom_rows():
+    """JPEG before/after a 2x zoom: a size-reading model halves depth in every zoomed row, JPEG alone changes nothing."""
+    rows = {r["kind"]: r for r in audit.jpeg_zoom_rows(ApparentSize(), SAMPLE, 80)}
+    assert set(rows) == {"zoom", "jpeg_after_zoom", "zoom_of_jpeg", "jpeg"}
+    for k in ("zoom", "jpeg_after_zoom", "zoom_of_jpeg"):
+        assert abs(rows[k]["log_ratio_self"] - np.log(0.5)) < 0.02
+    assert abs(rows["jpeg"]["log_ratio_self"]) < 1e-6
+    for r in audit.jpeg_zoom_rows(Equivariant(), SAMPLE, 80):
+        assert abs(r["log_ratio_self"]) < 1e-6

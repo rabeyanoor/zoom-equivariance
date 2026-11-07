@@ -230,8 +230,41 @@ def cue_rows(model, sample, max_depth, s=2.0):
     return rows
 
 
+def jpeg_zoom_rows(model, sample, max_depth, s=2.0, quality=75):
+    """JPEG and digital zoom together, in both orders, against the clean unzoomed prediction on the same pixels:
+
+    zoom           : the plain digital zoom by s (the reference for the two below);
+    jpeg_after_zoom: zoom, then JPEG (a phone that zooms digitally and saves a JPEG);
+    zoom_of_jpeg   : JPEG at 1x, then zoom (cropping a saved photo);
+    jpeg           : JPEG at 1x, no zoom (the paper's control).
+    """
+    img, gt, K = sample["img"], sample["depth"], sample["K"]
+    h, w = img.shape[:2]
+    base = model.predict(img, K)
+    box = zoom.zoom_box(h, w, s)
+    Kz = zoom.zoom_K(K, box, (h, w))
+    zi = zoom.zoom_image(img, box)
+    rows = []
+    for kind, z_img in (("zoom", zi), ("jpeg_after_zoom", zoom.jpeg(zi, quality)),
+                        ("zoom_of_jpeg", zoom.zoom_image(zoom.jpeg(img, quality), box))):
+        out = model.predict(z_img, Kz)
+        d = zoom.unzoom_depth(out["depth"], box)
+        lr, shape = self_consistency(d, zoom.crop(base["depth"], box))
+        r = dict(name=sample["name"], kind=kind, zoom=s, cx=0.5, cy=0.5, sec=np.nan, log_ratio_self=lr,
+                 shape_err=shape, fx=out["fx"], fx_base=base["fx"], fx_gt=float(Kz[0, 0]))
+        r.update(depth_errors(d, zoom.crop(gt, box), max_depth))
+        rows.append(r)
+    out = model.predict(zoom.jpeg(img, quality), K)
+    lr, shape = self_consistency(out["depth"], base["depth"])
+    r = dict(name=sample["name"], kind="jpeg", zoom=1.0, cx=0.5, cy=0.5, sec=np.nan, log_ratio_self=lr,
+             shape_err=shape, fx=out["fx"], fx_base=base["fx"], fx_gt=float(K[0, 0]))
+    r.update(depth_errors(out["depth"], gt, max_depth))
+    rows.append(r)
+    return rows
+
+
 def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), stale_K=False, log_every=10, suffix="",
-        controls_only=False, fine_fix=False, cues=False, every=1, shard=0, shards=1):
+        controls_only=False, fine_fix=False, cues=False, jpeg_zoom=False, every=1, shard=0, shards=1):
     """every: keep every k-th image of the n-image sample, a paired subset of the full run.
     shard/shards: this job's share of those images (shard-th of every shards), for parallel CPU jobs."""
     out_dir = Path(out_dir)
@@ -251,7 +284,9 @@ def run(model_name, dataset, n, out_dir, zooms=ZOOMS, centers=((0.5, 0.5),), sta
         sample = load(i)
         todo = [c for c in centers if (sample["name"], c[0], c[1]) not in done]
         for c in todo:
-            if cues:
+            if jpeg_zoom:
+                rows = jpeg_zoom_rows(model, sample, datasets.MAX_DEPTH[dataset])
+            elif cues:
                 rows = cue_rows(model, sample, datasets.MAX_DEPTH[dataset])
             elif controls_only:
                 rows = control_rows(model, sample, datasets.MAX_DEPTH[dataset], c)

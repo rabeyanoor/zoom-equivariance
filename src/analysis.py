@@ -73,7 +73,7 @@ def load(pattern="*__*.csv", folder=None):
     folder = Path(folder or RESULTS)
     # side runs (off-centre, controls, fine ZoomFix, cue split) share model names with the main run, so they
     # are only loaded when asked for by name, never mixed into the main audit
-    side = ("__offc", "__ctrl", "__fix", "__cues", "__regions", "__full", "__srraw")
+    side = ("__offc", "__ctrl", "__fix", "__cues", "__regions", "__full", "__srraw", "__jz")
     files = [f for f in sorted(folder.glob(pattern)) if not any(t in f.name and t[2:] not in pattern for t in side)]
     df = pd.concat([repair_cx(pd.read_csv(f)) for f in files], ignore_index=True)
     first = df[df.kind == "zoom"].groupby(["model", "dataset", "name", "cx", "cy"])["fx_gt"].transform("min")

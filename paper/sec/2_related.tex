@@ -16,7 +16,7 @@ tests whether it is.
 
 \paragraph{Depth cues.}
 DepthCues~\cite{danier2025depthcues} probes which monocular cues large vision models pick up, among them
-relative and familiar size. Our exponent $\alpha$ measures one cue in particular, apparent size, and our
+the known size of objects. Our exponent $\alpha$ measures one cue in particular, apparent size, and our
 cue intervention (\cref{sec:cues}) changes it directly while keeping everything else fixed.
 
 \paragraph{Single-image calibration.}
@@ -49,6 +49,6 @@ camera roll~\cite{tang2026roll} leaves the intrinsics unchanged; a zoom does not
 
 \paragraph{Label-free evaluation and adaptation.}
 Self-Geometry~\cite{youn2026selfgeometry} adapts 3D foundation models at test time with multi-view
-constraints, ReDepth Anything~\cite{bhattarai2025redepth} refines depth by self-supervised re-lighting, and
+constraints, Re-Depth Anything~\cite{bhattarai2025redepth} refines depth by self-supervised re-lighting, and
 test-time adaptation has been used for depth completion~\cite{park2024ttadepth}. A model can be consistently wrong, so we always report the
 label-free exponents next to errors against ground truth.

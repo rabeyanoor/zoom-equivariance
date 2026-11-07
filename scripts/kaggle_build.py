@@ -67,10 +67,26 @@ if kind == "audit":
         # the 200-image sample; Depth Pro alone in fullb (it is the slowest model by far)
         models_ = ("depthpro",) if part == "fullb" else ("dav2-s", "zoedepth", "moge2-s", "unidepth2-s", "metric3d-s")
         JOBS = [f"{m} {SETS} --n 100000 --out-tag full" for m in models_]
+    elif part.startswith("jz-"):
+        # CPU kernel, one model each: JPEG 75 before/after a 2x zoom, on the same 100-image sample as the controls
+        m = part[3:]
+        JOBS = [f"{m} {SETS} --n {sys.argv[4] if len(sys.argv) > 4 else 100} --jpeg-zoom --out-tag jz"]
+    elif part in ("jzgpu-a", "jzgpu-b"):
+        # GPU: JPEG before/after a 2x zoom on the complete test sets, and the ZoomCal pixel pilot on more images;
+        # Depth Pro (the slowest model) alone in part b
+        ms = ("depthpro",) if part == "jzgpu-b" else ("dav2-s", "moge2-s", "metric3d-s", "unidepth2-s")
+        JOBS = [f"{m} {SETS} --n 100000 --jpeg-zoom --out-tag jzfull" for m in ms]
+        JOBS += [f"zoomcal_stress.py --model {m} --dataset {ds} --n 100"
+                 for m in (("depthpro",) if part == "jzgpu-b" else ("dav2-s", "unidepth2-s")) for ds in ("kitti", "nyu")]
+    elif part.startswith("zs-"):
+        # CPU kernel: the ZoomCal pixel-level pilot (scripts/zoomcal_stress.py) for one model, KITTI and NYUv2
+        m = part[3:]
+        dss = sys.argv[4].split(",") if len(sys.argv) > 4 else ("kitti", "nyu")
+        JOBS = [f"zoomcal_stress.py --model {m} --dataset {ds} --n 40" for ds in dss]
     elif part == "csmoke":
         # CPU kernel (no GPU slot needed); Metric3D has hard-coded .cuda() calls
         JOBS = [f"{m} kitti --n 1" for m in LADDER if m != "metric3d-l"]
-    JOBS = ["scripts/run_audit.py " + j for j in JOBS]
+    JOBS = [("scripts/" + j) if j.startswith("zoomcal") else "scripts/run_audit.py " + j for j in JOBS]
     if part == "c2":
         JOBS.append("scripts/count_params.py")
 elif kind == "tpu":
@@ -110,6 +126,19 @@ elif kind == "tpu":
                 for i in range(k):
                     job(f"full-{m}-{ds}-{i}", f"scripts/run_audit.py {m} {ds} --n 100000 --shard {i} --shards {k} "
                         f"--out-tag full-s{i} {res}")
+    elif part == "jztpu":
+        # TPU VM CPU cores: JPEG before/after a 2x zoom on the complete test sets (image shards, merged afterwards),
+        # and the ZoomCal pixel pilot for MoGe-2-S and on DIODE
+        n_img = {"kitti": 1000, "nyu": 654, "diode-in": 325, "diode-out": 446}
+        for m in ("dav2-s", "moge2-s", "metric3d-s", "unidepth2-s"):
+            for ds in sets:
+                k = 2 * max(1, round(n_img[ds] / 250))
+                for i in range(k):
+                    job(f"jz-{m}-{ds}-{i}", f"scripts/run_audit.py {m} {ds} --n 100000 --jpeg-zoom --shard {i} "
+                        f"--shards {k} --out-tag jzfull-s{i} {res}")
+        for m, ds, n in (("moge2-s", "kitti", 100), ("moge2-s", "nyu", 100), ("dav2-s", "diode-in", 60),
+                         ("dav2-s", "diode-out", 60)):
+            job(f"zs-{m}-{ds}", f"scripts/zoomcal_stress.py --model {m} --dataset {ds} --n {n} {res}")
     elif part == "figs":
         # CPU: Figure 1 maps of the fine-tuned model (and the frozen one at the same input size), and the maps of one
         # SR-RAW sequence for the optical-zoom figure; the sequence (argv[4]) is the one with DA-V2-S's median alpha
@@ -204,7 +233,8 @@ files = {str(p.relative_to(ROOT)): base64.b64encode(p.read_bytes()).decode()
                          ROOT / "scripts/run_regions.py", ROOT / "scripts/run_srraw.py", ROOT / "scripts/srraw_check.py",
                          ROOT / "scripts/train_eft_focal.py", ROOT / "scripts/srraw_maps.py",
                          ROOT / "scripts/eft_scale.py",
-                         ROOT / "scripts/scene_stats.py", ROOT / "scripts/count_params.py"])}
+                         ROOT / "scripts/scene_stats.py", ROOT / "scripts/count_params.py",
+                         ROOT / "scripts/zoomcal_stress.py"])}
 
 name = f"zoom-equivariance-{kind}{'-' + part if part and kind != 'stats' else ''}"
 out = ROOT / "kaggle" / "build" / f"{kind}{'_' + part if part else ''}"
@@ -220,13 +250,13 @@ GPU_TPU_PARTS = ("camgpu", "calib", "focal", "focalsmoke")  # "tpu" kernels that
     "kernel_type": "script",
     "is_private": True,
     "enable_gpu": (kind not in ("stats", "tpu") or part in GPU_TPU_PARTS)
-    and part not in ("csmoke", "cues", "cues2", "cues3", "cuestpu"),
+    and part not in ("csmoke", "cues", "cues2", "cues3", "cuestpu") and not part.startswith(("jz-", "zs-")),
     **({"enable_tpu": True, "machine_shape": "TpuV5E8"}
        if part == "cuestpu" or (kind == "tpu" and part not in GPU_TPU_PARTS) else {}),
     "enable_internet": True,
     **({"kernel_sources": [f"{user}/zoom-equivariance-eft"]} if part == "baseline" else {}),
     **({"kernel_sources": [f"{user}/zoom-equivariance-eft-baseline"]
                           + ([f"{user}/zoom-equivariance-tpu-focal"] if part == "figs" else [])}
-       if kind == "tpu" and part not in ("cam", "camgpu", "calib", "full") else {}),
+       if kind == "tpu" and part not in ("cam", "camgpu", "calib", "full", "jztpu") else {}),
 }, indent=2))
 print("built", out, len(files), "files,", len(JOBS), "jobs")

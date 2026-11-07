@@ -36,11 +36,11 @@ A digital zoom also removes detail, so a student trained with \cref{eq:eft} alon
 zoom from \emph{sharpness} instead of geometry. The blur control of \cref{sec:audit} exposes exactly this (\cref{sec:eftresults}).
 EFT+B adds a third term that removes the shortcut:
 \begin{equation}
-  \mathcal{L}_{\text{B}} = \mathcal{L} + \mu\,\big\| \log \hat D_\theta(\mathcal{B}_{s'} I) - \log \hat D_0(I)\big\|_1,
+  \mathcal{L}_{\text{B}} = \mathcal{L} + \gamma\,\big\| \log \hat D_\theta(\mathcal{B}_{s'} I) - \log \hat D_0(I)\big\|_1,
 \end{equation}
 where $\mathcal{B}_{s'}$ down-samples by an independent $s'\sim\operatorname{LogUniform}[1,3]$ and
 up-samples back. A blurred image has the field of view of the original, so its target is the
-unzoomed depth; detail loss alone is no longer evidence of a zoom. We use $\mu=1$.
+unzoomed depth; detail loss alone is no longer evidence of a zoom. We use $\gamma=1$.
 
 \paragraph{EFT-S: correcting only the scale.}
 The zoom error of the frozen model is almost one number per image: at $3\times$ the log depth of the crop

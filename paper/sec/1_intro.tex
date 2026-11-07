@@ -62,8 +62,8 @@ on the training domains, at a cost we report in full.
         one for depth and one for focal. It comes with controls for interpolation, detail loss,
         compression, crop position, and optical against digital zoom, also on a real zoom lens (\cref{sec:audit}). We also test what the
         label-free score predicts: degradation under zoom, not accuracy in general.
-  \item The \textbf{zoom--squash ambiguity} and the $\alpha+\beta=1$ line, a testable account of the main
-        failure. We check it on three model groups and a ladder of models up to Depth Anything~3 and VGGT
+  \item The classical focal--depth ambiguity written as an exact, testable \textbf{zoom--squash} statement, and the
+        $\alpha+\beta=1$ line it predicts for the main failure. We check it on three model groups and a ladder of models up to Depth Anything~3 and VGGT
         (\cref{sec:law,sec:results}).
   \item Two \textbf{interventions} that locate the failure. Giving the same network the true camera shows
         that the focal head, not the depth network, carries the error of Depth Pro and DA3-Nested, and that

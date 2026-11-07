@@ -127,6 +127,26 @@ against the ideal $\beta=1$, and its median focal error on the unzoomed images i
 built only for calibration also under-scales the focal under zoom, so the under-scaling of the depth models' focal
 heads ($\beta=\DepthproBeta$ for Depth Pro, \MogeTwoSBeta{} for MoGe-2-S) is not specific to depth estimation.
 
+\paragraph{A calibrator's focal in place of the true one.} The true camera is rarely available, so a natural
+alternative is to give a depth model the focal of a dedicated calibrator. For Depth Pro this is exact without a new
+run: its metres are its focal times a camera-free output, so replacing its focal by GeoCalib's rescales each depth map
+by $f_{\text{GeoCalib}}/\hat f$. On the \depthproGeocalibImages{} images of the main sample this gives
+$\alpha=\depthproGeocalibAlpha$ (own focal \DepthproCamOwnAlpha, true focal \DepthproCamGivenAlpha, FocalUnshrink
+\DepthproUnshrinkAlphacorr) and an unzoomed scale error of \depthproGeocalibScale{} (own focal \DepthproCamOwnScale).
+GeoCalib's focal under-scales under zoom as well, so it does not repair the zoom response, and it is less accurate
+for Depth Pro's depth than Depth Pro's own focal.
+
+\paragraph{Own versus true focal, per dataset.} The pooled unzoomed scale errors of \cref{tab:camera} depend on the
+mix of datasets. Per dataset (median $|\log\hat D/D^{*}|$ at $1\times$, own $\to$ true focal), Depth Pro gives
+\DepthproCamOwnScaleKitti{} $\to$ \DepthproCamGivenScaleKitti{} on KITTI, \DepthproCamOwnScaleNyu{} $\to$
+\DepthproCamGivenScaleNyu{} on NYUv2, \DepthproCamOwnScaleDiodeIn{} $\to$ \DepthproCamGivenScaleDiodeIn{} on
+DIODE-indoor and \DepthproCamOwnScaleDiodeOut{} $\to$ \DepthproCamGivenScaleDiodeOut{} on DIODE-outdoor;
+DA3-Nested gives \DaThreeNestedCamOwnScaleKitti{} $\to$ \DaThreeNestedCamGivenScaleKitti,
+\DaThreeNestedCamOwnScaleNyu{} $\to$ \DaThreeNestedCamGivenScaleNyu, \DaThreeNestedCamOwnScaleDiodeIn{} $\to$
+\DaThreeNestedCamGivenScaleDiodeIn{} and \DaThreeNestedCamOwnScaleDiodeOut{} $\to$
+\DaThreeNestedCamGivenScaleDiodeOut{} in the same order. The true focal makes both worse on DIODE and leaves NYUv2
+about unchanged; it helps Depth Pro on KITTI and hurts DA3-Nested there.
+
 \section{FocalUnshrink}\label{sec:supp_unshrink}
 
 \Cref{tab:unshrink} gives the shrinkage inversion of \cref{sec:law,sec:results} for every focal head. Per model,
@@ -247,8 +267,8 @@ least sure of the scale, without any labels.
 Phones record a digital zoom ratio, and apps know their own crops. Since $\alpha$ needs no labels, a
 user can measure it on their own photos and multiply the depth of zoomed images by $s^{\hat\alpha}$.
 We evaluate this cross-fitted: $\hat\alpha$ is measured without labels on half of a dataset's images and
-the correction scored on the other half. For DA-V2-S at $3\times$ it removes between a third and two thirds of
-the zoom error on KITTI (AbsRel \DavTwoSFixKittiZoomed{} to \DavTwoSFixKittiAbsrel, against
+the correction scored on the other half. For DA-V2-S at $3\times$ it removes 61\%, 38\% and 70\% of the error
+the zoom adds on KITTI (AbsRel \DavTwoSFixKittiZoomed{} to \DavTwoSFixKittiAbsrel, against
 \DavTwoSFixKittiTarget{} for the unzoomed prediction on the same pixels), NYUv2 (\DavTwoSFixNyuZoomed{} to
 \DavTwoSFixNyuAbsrel) and DIODE-indoor (\DavTwoSFixDiodeInZoomed{} to \DavTwoSFixDiodeInAbsrel). On
 DIODE-outdoor the mean error rises (\DavTwoSFixDiodeOutZoomed{} to \DavTwoSFixDiodeOutAbsrel). The cause is
@@ -391,6 +411,18 @@ near 1 under every control (\MetricThreedSOptical, \MetricThreedSDigitalLr, \Met
 DIODE-outdoor, UniDepthV2-S over-estimates the scale by more than $2\times$ on \udDiodeOutOverTwo\% of the images.
 
 \input{gen/table_controls}
+
+\paragraph{JPEG together with the zoom.} The JPEG control above compresses the unzoomed image. A camera that zooms
+digitally saves the zoomed crop as a JPEG, and cropping a saved photo zooms into an image that is already
+compressed. \Cref{tab:jpegzoom} runs both orders on the complete test sets. Compressing after the zoom moves depth by a
+factor of \DavTwoSJpegAfterZoom{} to \MogeTwoSJpegAfterZoom{} relative to the plain zoom, the size of the JPEG control itself, while the zoom alone gives
+\DavTwoSJzZoom{} (DA-V2-S), \MogeTwoSJzZoom{} (MoGe-2-S) and \UnidepthTwoSJzZoom{} (UniDepthV2-S): compression does
+not explain the zoom response. Zooming into a JPEG adds a further error for the two camera-predicting models
+(MoGe-2-S \MogeTwoSZoomOfJpeg, UniDepthV2-S \UnidepthTwoSZoomOfJpeg), largest on KITTI (\MogeTwoSZoomOfJpegKitti{}
+and \UnidepthTwoSZoomOfJpegKitti), and less for DA-V2-S and Metric3D v2 (\DavTwoSZoomOfJpeg{} and
+\MetricThreedSZoomOfJpeg; DA-V2-S \DavTwoSZoomOfJpegKitti{} on KITTI).
+
+\input{gen/table_jpegzoom}
 
 \paragraph{One change at a time.} \Cref{tab:factorial} collects these runs into a single factorial view of a
 $2\times$ digital zoom: the changes that alter the camera (zoom, magnification of the content, shrinking the whole

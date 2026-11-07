@@ -28,12 +28,11 @@ Blur augmentation alone leaves most of the effect in place ($\alpha$ \DavTwoSBlu
 \DavTwoSBlurNyuAlpha{} on NYUv2). The student's own stop-gradient target, as in
 Zhong \etal~\cite{zhong2023equivariance}, reaches a similar $\alpha$ (\DavTwoSZhongKittiAlpha,
 \DavTwoSZhongNyuAlpha) but drifts: the blur shortcut returns (\DavTwoSZhongKittiBlur\% on KITTI) and unzoomed
-AbsRel degrades most (\DavTwoSZhongKittiAbsrelOne{} on KITTI). The frozen teacher, the zoom term and the blur
-term are each needed.
+AbsRel degrades most (\DavTwoSZhongKittiAbsrelOne{} on KITTI). Teacher, zoom term and blur term are each needed.
 
 \paragraph{Correcting only the scale.}
 EFT-S, which learns one number per image, reaches $\alpha=\DavTwoSScaleNyuAlpha$ on NYUv2 at no unzoomed cost
 (AbsRel \DavTwoSScaleNyuAbsrelOne, frozen \DavTwoSFixedNyuAbsrelOne) and transfers better than EFT+B to the unseen
 DIODE ($\alpha=\DavTwoSScaleDiodeInAlpha$ and \DavTwoSScaleDiodeOutAlpha, against \DavTwoSEftbDiodeInAlpha{} and
-\DavTwoSEftbDiodeOutAlpha), but is weaker on KITTI ($\alpha=\DavTwoSScaleKittiAlpha$) and costs more unzoomed accuracy there and on DIODE-outdoor. Tuning only Depth Pro's
-focal head with the zoom law (EFT-F) helps on its training domains but not on DIODE (supplement).
+\DavTwoSEftbDiodeOutAlpha), but is weaker on KITTI ($\alpha=\DavTwoSScaleKittiAlpha$) and costs more unzoomed accuracy there and on DIODE-outdoor. Tuning only Depth Pro's focal head (EFT-F)
+helps on its training domains, not on DIODE (supplement).

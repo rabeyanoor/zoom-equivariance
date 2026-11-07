@@ -41,13 +41,19 @@ def key(*parts):
     return "".join(digits.get(c, c) for c in word)
 
 
+def minus(s):
+    """A negative number as a real minus sign in text and in math mode ("-0.04" in text mode is a hyphen, which
+    LaTeX may also break across lines)."""
+    return f"\\ensuremath{{{s}}}" if s.startswith("-") else s
+
+
 def put(name, value, fmt="{:.2f}"):
     ok = isinstance(value, (int, float, np.floating, np.integer)) and np.isfinite(value)
-    macros[name] = fmt.format(value) if ok else "--"
+    macros[name] = minus(fmt.format(value)) if ok else "--"
 
 
 def fmt(x, d=2):
-    return f"{x:.{d}f}" if x is not None and np.isfinite(x) else "--"
+    return minus(f"{x:.{d}f}") if x is not None and np.isfinite(x) else "--"
 
 
 def write_table(name, lines):
@@ -98,6 +104,10 @@ else:
     put("staleImages", np.nan)
 
 # ------------------------------------------------------------------ Table 1 (main audit)
+# UniDepthV2-S's pooled AbsRel is far above the others; per dataset (mean, as in Table 1) it comes from DIODE-outdoor
+for ds in A.DATASETS:
+    g = pi[(pi.model == "unidepth2-s") & (pi.dataset == ds) & np.isclose(pi.cx, 0.5) & np.isclose(pi.cy, 0.5)]
+    put("ud" + key(ds, "absrelOne"), g.absrel1.mean() if len(g) else np.nan, "{:.2f}")
 rows = []
 for m in MAIN:
     if m not in pooled.index:
@@ -112,7 +122,9 @@ write_table("table1", [
     r"\nScenes{} scenes). $\alpha$: depth exponent (ideal 0; apparent size only: 1), median over images with a 95\% "
     r"interval from a scene-level bootstrap. $\beta$: focal exponent (ideal 1). $\alpha+\beta$: median per image "
     r"(1 = lateral sizes kept, \cref{sec:law}). Blur: depth change under the blur control. AbsRel at $1\times$ on the "
-    r"full image, and at $3\times$ on the crop for the unzoomed prediction (``same px'') and the zoomed one.}",
+    r"full image, and at $3\times$ on the crop for the unzoomed prediction (``same px'') and the zoomed one. The high AbsRel "
+    r"of UniDepthV2-S at $1\times$ is DIODE-outdoor alone (\udDiodeOutAbsrelOne; other sets "
+    r"\udNyuAbsrelOne--\udDiodeInAbsrelOne), a scale over-estimate (\cref{sec:results}).}",
     r"\label{tab:audit}",
     r"\setlength{\tabcolsep}{4pt}",
     r"\begin{tabular}{llccccccc}\toprule",
@@ -324,6 +336,37 @@ write_table("table_controls", [
     r"Model & optical $2\times$ & digital $2\times$ & bilinear $2\times$ & JPEG \\ \midrule",
     *rows, r"\bottomrule\end{tabular}\end{table}"])
 
+# JPEG together with a 2x zoom (*__jzfull.csv, complete test sets): median depth ratio on the same pixels; the two
+# JPEG orders are paired against the plain zoom of the same image
+_jzpat = "*__jzfull.csv" if list(A.RESULTS.glob("*__jzfull.csv")) else "*__jz.csv"
+if list(A.RESULTS.glob(_jzpat)):
+    jz = A.load(_jzpat)
+    rows = []
+    for m in ("dav2-s", "depthpro", "moge2-s", "metric3d-s", "unidepth2-s"):
+        t = jz[jz.model == m].pivot_table(index=["dataset", "name"], columns="kind", values="log_ratio_self")
+        if t.empty:
+            continue
+        cells = {"JzZoom": t["zoom"], "JzJpegOne": t["jpeg"], "JpegAfterZoom": t["jpeg_after_zoom"] - t["zoom"],
+                 "ZoomOfJpeg": t["zoom_of_jpeg"] - t["zoom"]}
+        vals = {k: float(np.exp(v.median())) for k, v in cells.items()}
+        for k, v in vals.items():
+            put(key(m, k), v)
+        kit = t.xs("kitti", level="dataset")
+        put(key(m, "ZoomOfJpegKitti"), float(np.exp((kit["zoom_of_jpeg"] - kit["zoom"]).median())))
+        put(key(m, "JzImages"), len(t), "{:d}")
+        rows.append(f"{A.PRETTY[m]} & {len(t)} & " + " & ".join(fmt(vals[k]) for k in cells) + r" \\")
+    write_table("table_jpegzoom", [
+        r"\begin{table}[t]\centering\small",
+        r"\caption{JPEG (quality 75) together with a $2\times$ digital zoom, on the complete test sets (all four "
+        r"datasets pooled). Median depth ratio on the same pixels. Zoom: the plain zoom against the unzoomed image. "
+        r"JPEG $1\times$: compression alone. JPEG after zoom (a camera that zooms and saves a JPEG) and zoom of a JPEG "
+        r"(cropping a saved photo): against the plain zoom of the same image, so 1 means JPEG adds nothing.}"
+        r"\label{tab:jpegzoom}",
+        r"\setlength{\tabcolsep}{3.5pt}",
+        r"\begin{tabular}{lccccc}\toprule",
+        r"Model & images & zoom $2\times$ & JPEG $1\times$ & JPEG after zoom & zoom of JPEG \\ \midrule",
+        *rows, r"\bottomrule\end{tabular}\end{table}"])
+
 # goodness of the power law: RMS residual in log depth, and alpha from small vs large zooms
 fq = A.fit_quality(df[df.model.isin(MAIN)])
 put("fitRmsMedian", fq.rms.median() if len(fq) else np.nan, "{:.3f}")
@@ -341,6 +384,23 @@ put("geocalibFocalErr", float(np.exp(gpi.fx_err1.median())) if len(gpi) else np.
 for ds in A.DATASETS:
     g = gpi[gpi.dataset == ds]
     put(key("geocalib", ds, "beta"), g.beta.median() if len(g) else np.nan)
+
+# a deployable alternative to the true camera: Depth Pro's metres are its focal times a camera-free output, so giving it
+# GeoCalib's focal estimate instead rescales each depth map exactly by f_geocalib / f_depthpro (same images and zooms)
+def _swap_focal(z, f_new):
+    cf = np.log(f_new / z.fx)
+    c1 = z.assign(cf=cf)[np.isclose(z.zoom, 1.0)].set_index("name").cf
+    return z.assign(log_ratio_self=z.log_ratio_self + cf - z.name.map(c1).values, log_ratio_gt=z.log_ratio_gt + cf)
+
+
+_dpz = df[(df.model == "depthpro") & (df.kind == "zoom") & np.isclose(df.cx, 0.5) & np.isclose(df.cy, 0.5)]
+_gcz = gc[(gc.kind == "zoom") & np.isclose(gc.cx, 0.5) & np.isclose(gc.cy, 0.5)]
+_m = _dpz.merge(_gcz[["name", "zoom", "fx"]], on=["name", "zoom"], suffixes=("", "_geo"))
+if len(_m):
+    _sw = _swap_focal(_m, _m.fx_geo)
+    put("depthproGeocalibImages", _sw.name.nunique(), "{:d}")
+    put("depthproGeocalibAlpha", A.per_image(_sw).alpha.median())
+    put("depthproGeocalibScale", np.median(np.abs(_sw[np.isclose(_sw.zoom, 1.0)].log_ratio_gt)), "{:.3f}")
 
 # zoom response by semantic region: objects of familiar size vs surfaces (paired per image, Wilcoxon)
 reg_files = list(A.RESULTS.glob("*__regions.csv"))
@@ -382,6 +442,10 @@ for m, mk in CAM:
         put(key(m, "cam", tag, "scale"), np.median(np.abs(one.log_ratio_gt)) if len(one) else np.nan, "{:.3f}")
         cells += [macros[key(m, "cam", tag, "alpha")], macros[key(m, "cam", tag, "scale")]]
     put(key(m, "cam", "images"), len(names_), "{:d}")
+    # the pooled medians above depend on the mix of datasets; per dataset, own vs true focal
+    for tag, z in (("own", own), ("given", given)):
+        for ds, g in z[np.isclose(z.zoom, 1.0)].groupby("dataset"):
+            put(key(m, "cam", tag, "scale", ds), np.median(np.abs(g.log_ratio_gt)), "{:.3f}")
     how = "exact" if mk is None else "rerun"
     rows.append(f"{A.PRETTY.get(m, m)} & {how} & {len(names_)} & " + " & ".join(cells) + r" \\")
 write_table("table_camera", [

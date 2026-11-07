@@ -79,6 +79,19 @@ for f in sorted(A.RESULTS.glob("*__*.csv")):
         manifest.append(dict(file=f.name, model=tag.split("__")[0], dataset=tag.split("__")[1],
                              images=df.name.nunique(), centres=1, rows=len(df)))
         continue
+    if "__jz" in tag:
+        # JPEG with a 2x zoom: one row per kind and image, the zoomed rows at s = 2 with the exact zoomed focal
+        kinds = df.groupby("name").kind.apply(lambda v: tuple(sorted(v)))
+        expected = ("jpeg", "jpeg_after_zoom", "zoom", "zoom_of_jpeg")
+        check((kinds == expected).all(), f"{tag}: {int((kinds != expected).sum())} images without all four kinds")
+        check(df.duplicated(["name", "kind"]).sum() == 0, f"{tag}: duplicated JPEG-zoom rows")
+        zz = df[df.kind != "jpeg"]
+        check((np.round(zz.zoom, 4) == 2.0).all(), f"{tag}: zoomed rows not at s = 2")
+        check(np.nanmax(np.abs(zz.fx_gt.values / df[df.kind == "jpeg"].set_index("name").fx_gt
+                                .reindex(zz.name).values / 2.0 - 1)) < 0.01, f"{tag}: zoomed focal off by > 1 %")
+        manifest.append(dict(file=f.name, model=tag.split("__")[0], dataset=tag.split("__")[1],
+                             images=df.name.nunique(), centres=1, rows=len(df)))
+        continue
     z = df[df.kind == "zoom"]
     n_img = df.name.nunique()
     centres = z.groupby("name")[["cx", "cy"]].apply(lambda g: len(g.drop_duplicates()))

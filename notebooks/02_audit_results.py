@@ -28,6 +28,9 @@ import analysis as A
 import plotstyle as ps
 
 ps.use()
+# paper figures drawn at their printed size
+SMALL = {"font.size": 7, "axes.titlesize": 7.5, "axes.labelsize": 7, "legend.fontsize": 6.5,
+         "xtick.labelsize": 6.5, "ytick.labelsize": 6.5}
 TAB = ROOT / "outputs/tables"
 TAB.mkdir(parents=True, exist_ok=True)
 MAIN = ["dav2-s", "dav2-b", "zoedepth", "depthpro", "moge2-s", "unidepth2-s", "metric3d-s", "metric3d-s-staleK"]
@@ -69,23 +72,32 @@ z["log_fx"] = np.log(z.fx / z.fx_base)
 curve = z.groupby(["model", "zoom"]).agg(depth=("log_ratio_self", "median"), focal=("log_fx", "median"),
                                          s=("s_true", "median")).reset_index()
 
-fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.2, 3.3))
-ss = np.linspace(1, 3, 50)
-a1.plot(ss, np.ones_like(ss), color="0.3", lw=1, ls="--", label="ideal")
-a1.plot(ss, 1 / ss, color="0.3", lw=1, ls=":", label="apparent size (1/s)")
-a2.plot(ss, ss, color="0.3", lw=1, ls="--", label="ideal (f·s)")
-a2.plot(ss, np.ones_like(ss), color="0.3", lw=1, ls=":", label="ignores zoom")
-for m in MAIN:
-    c = curve[curve.model == m].sort_values("zoom")
-    a1.plot(c.s, np.exp(c.depth), **ps.line(m))
-    if c.focal.notna().all():
-        a2.plot(c.s, np.exp(c.focal), **ps.line(m))
-a1.set(xlabel="zoom factor $s$", ylabel=r"$\hat D_s / \hat D_1$ (same pixels)", title="Depth under digital zoom")
-a2.set(xlabel="zoom factor $s$", ylabel=r"$\hat f_s / \hat f_1$", title="Predicted focal under digital zoom")
-h1, l1 = a1.get_legend_handles_labels()
-fig.legend(h1, l1, ncol=5, loc="lower center", bbox_to_anchor=(0.5, -0.02))
-fig.tight_layout(rect=(0, 0.13, 1, 1))
-ps.save(fig, "fig2_depth_and_focal_vs_zoom")
+# drawn at its printed size (one column), so the fonts print at 6-7.5 pt
+SHORT = {"metric3d-s": "Metric3D v2-S", "metric3d-s-staleK": "Metric3D, stale K"}
+with plt.rc_context(SMALL):
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(3.35, 1.5))
+    ss = np.linspace(1, 3, 50)
+    a1.plot(ss, np.ones_like(ss), color="0.3", lw=0.8, ls="--")
+    a1.plot(ss, 1 / ss, color="0.3", lw=0.8, ls=":")
+    a2.plot(ss, ss, color="0.3", lw=0.8, ls="--")
+    a2.plot(ss, np.ones_like(ss), color="0.3", lw=0.8, ls=":")
+    kw = dict(fontsize=6, color="0.3")
+    for ax_, y, txt in ((a1, 1.0, "ideal"), (a1, 1 / 3, "1/s"), (a2, 3.0, "ideal"), (a2, 1.0, "none")):
+        ax_.text(3.1, y, txt, va="center", **kw)
+    for m in MAIN:
+        c = curve[curve.model == m].sort_values("zoom")
+        a1.plot(c.s, np.exp(c.depth), **ps.line(m, lw=1.1, ms=2.5, label=SHORT.get(m, ps.LABEL.get(m, m))))
+        if c.focal.notna().all():
+            a2.plot(c.s, np.exp(c.focal), **ps.line(m, lw=1.1, ms=2.5))
+    a1.set(xlabel="zoom factor $s$", ylabel=r"$\hat D_s / \hat D_1$", title="Depth (same pixels)")
+    a2.set(xlabel="zoom factor $s$", ylabel=r"$\hat f_s / \hat f_1$", title="Predicted focal")
+    for ax_ in (a1, a2):
+        ax_.set(xlim=(0.9, 3.55), xticks=[1, 2, 3])
+    h1, l1 = a1.get_legend_handles_labels()
+    fig.legend(h1, l1, ncol=4, loc="lower center", bbox_to_anchor=(0.5, -0.01), columnspacing=0.8, handlelength=1.6,
+               handletextpad=0.4)
+    fig.tight_layout(rect=(0, 0.2, 1, 1), w_pad=0.6)
+    ps.save(fig, "fig2_depth_and_focal_vs_zoom")
 
 # %% [markdown]
 # ## Figure 3: the alpha-beta plane
@@ -97,43 +109,39 @@ ps.save(fig, "fig2_depth_and_focal_vs_zoom")
 # One path per family, small to large (marker size grows with the model), one label per family.
 FAMILIES = {"MoGe-2": ["moge2-s", "moge2-b", "moge2-l"], "UniDepthV2": ["unidepth2-s", "unidepth2-b", "unidepth2-l"]}
 SINGLE = ["depthpro", "unik3d-l", "da3-nested"]
-LABEL_AT = {"MoGe-2": ("moge2-b", (-4, 7), "right"), "UniDepthV2": ("unidepth2-s", (-5, 4), "right"),
-            "depthpro": ("depthpro", (6, -2), "left"), "unik3d-l": ("unik3d-l", (6, -3), "left"),
-            "da3-nested": ("da3-nested", (6, -2), "left")}
-SIZE = {"s": 22, "b": 38, "l": 58}
-fig, ax = plt.subplots(figsize=(3.6, 3.2))
+# drawn at its printed size (0.78 of a column)
+LABEL_AT = {"MoGe-2": ("moge2-b", (-3, 5), "right"), "UniDepthV2": ("unidepth2-s", (-4, 3), "right"),
+            "depthpro": ("depthpro", (4, -2), "left"), "unik3d-l": ("unik3d-l", (4, -3), "left"),
+            "da3-nested": ("da3-nested", (4, -2), "left")}
+SIZE = {"s": 12, "b": 21, "l": 32}
+plt.rcParams.update(SMALL)
+fig, ax = plt.subplots(figsize=(2.62, 2.33))
 b = np.linspace(0, 1.05, 10)
-ax.plot(b, 1 - b, color="0.5", lw=1, ls="--")
-ax.text(0.04, 1.02, r"$\alpha+\beta=1$ (apparent size)", fontsize=7, color="0.4", va="top")
-ax.scatter([1], [0], marker="*", s=120, color="k", zorder=5)
-ax.annotate("ideal", (1, 0), textcoords="offset points", xytext=(-22, 6), fontsize=7)
-
-
+ax.plot(b, 1 - b, color="0.5", lw=0.8, ls="--")
+ax.text(0.03, 1.03, r"$\alpha+\beta=1$ (apparent size)", fontsize=6.5, color="0.35", va="top")
+ax.scatter([1], [0], marker="*", s=70, color="k", zorder=5)
+ax.annotate("ideal", (1, 0), textcoords="offset points", xytext=(-17, 4), fontsize=6.5)
 def point(m):
     r = pooled.loc[m] if m in pooled.index else None
     return (r.beta, r.alpha) if r is not None and np.isfinite(r.beta) and np.isfinite(r.alpha) else None
-
-
 for fam, members in FAMILIES.items():
     pts = [(m, point(m)) for m in members if point(m) is not None]
     for (_, p0), (m1, p1) in zip(pts, pts[1:]):
-        ax.annotate("", p1, p0, arrowprops=dict(arrowstyle="-|>", color=ps.colour(m1), lw=1, shrinkA=4, shrinkB=5,
-                                                mutation_scale=7), zorder=3)
+        ax.annotate("", p1, p0, arrowprops=dict(arrowstyle="-|>", color=ps.colour(m1), lw=0.8, shrinkA=3, shrinkB=4, mutation_scale=5), zorder=3)
     for m, (x, y) in pts:
-        ax.scatter(x, y, color=ps.colour(m), s=SIZE[m.split("-")[-1]], edgecolor="k", lw=0.4, zorder=4)
+        ax.scatter(x, y, color=ps.colour(m), s=SIZE[m.split("-")[-1]], edgecolor="k", lw=0.3, zorder=4)
 for m in SINGLE:
     if point(m) is not None:
-        ax.scatter(*point(m), color=ps.colour(m), s=58 if m != "depthpro" else 38, edgecolor="k", lw=0.4, zorder=4)
+        ax.scatter(*point(m), color=ps.colour(m), s=32 if m != "depthpro" else 21, edgecolor="k", lw=0.3, zorder=4)
 for name, (anchor, off, ha) in LABEL_AT.items():
     if point(anchor) is not None:
-        colour = ps.colour(FAMILIES[name][-1]) if name in FAMILIES else ps.colour(anchor)  # darkest shade reads best
-        ax.annotate(ps.LABEL.get(name, name), point(anchor), textcoords="offset points", xytext=off, fontsize=6.5,
-                    ha=ha, color=colour)
-ax.text(0.98, 0.98, "marker size: S < B < L\narrow: small to large", transform=ax.transAxes, fontsize=6, color="0.4",
-        ha="right", va="top")
+        colour = ps.colour(FAMILIES[name][-1]) if name in FAMILIES else ps.colour(anchor)
+        ax.annotate(ps.LABEL.get(name, name), point(anchor), textcoords="offset points", xytext=off, fontsize=6.5, ha=ha, color=colour)
+ax.text(0.03, 0.03, "marker size: S < B < L\narrow: small to large", transform=ax.transAxes, fontsize=6, color="0.35", ha="left", va="bottom")
 ax.set(xlabel=r"$\beta$ (focal exponent)", ylabel=r"$\alpha$ (depth exponent)", xlim=(-0.05, 1.1), ylim=(-0.15, 1.1))
 fig.tight_layout()
 ps.save(fig, "fig3_alpha_beta_plane")
+ps.use()  # back to the default sizes for the notebook figures below
 
 # %% [markdown]
 # ## Figure 4: does a bigger model fix it? (model ladder)

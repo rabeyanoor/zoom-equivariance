@@ -15,7 +15,7 @@ focal estimate grows by only \UnidepthTwoSFocalThree--\DepthproFocalThree{} at $
 $3$. Metric3D with the correct $K'$ is close to the law ($\alpha=\MetricThreedSAlpha$, a slight
 over-correction), and with the stale $K$ its exponent is $\alpha=\MetricThreedSStaleKAlpha$, larger by
 \staleDiff{} per image as derived in \cref{sec:law}. On the same pixels, the AbsRel of DA-V2-S grows from \DavTwoSBaseThree{} unzoomed to \DavTwoSAbsrelThree{}
-at $3\times$. Intervals in \cref{tab:audit} resample whole scenes (\nScenes{} in total).
+at $3\times$.
 
 \begin{figure}[t]
   \centering
@@ -54,7 +54,7 @@ moves depth by only \DavTwoSBlur\% for DA-V2-S and at most \UnidepthTwoSBlur\% f
 compression change it by \DavTwoSBilinear{} and \DavTwoSJpeg.
 Real detail does not rescue the model. On a real zoom lens (SR-RAW~\cite{zhang2019zoom}, \srrawSequences{}
 tripod sequences, supplement) DA-V2-S gives $\alpha=\DavTwoSSrrawOpticalAlpha$, the same as for the
-digital zoom of the widest shot (\DavTwoSSrrawDigitalAlpha). Depth Pro keeps its depth there
+digital zoom of the widest shot (\DavTwoSSrrawDigitalAlpha). Depth Pro keeps its depth under the real lens
 ($\alpha=\DepthproSrrawOpticalAlpha$), as on DIODE-outdoor (\DepthproDsDiodeOutAlpha), but not on KITTI, NYUv2 and
 DIODE-indoor (\DepthproDsKittiAlpha, \DepthproDsNyuAlpha, \DepthproDsDiodeInAlpha): its failure depends on the scene.
 
@@ -63,7 +63,7 @@ The supplement adds larger variants, Depth Anything~3~\cite{lin2025da3}, UniK3D~
 VGGT~\cite{wang2025vggt}. On the \nLadderShared{} images every model saw, size helps but does not remove the effect
 ($\alpha$ \DavTwoSAlphaShared, \DavTwoBAlphaShared, \DavTwoLAlphaShared{} for DA-V2-S, B, L), and UniK3D-L comes
 closest ($\alpha=\UnikThreedLAlphaShared$). The largest model, DA3-Nested (\DaThreeNestedParams M), shrinks depth
-with $\alpha=\DaThreeNestedAlphaSmallShared$, near ZoeDepth (\ZoedepthAlphaSmallShared), while DA3-Metric-L and
+with $\alpha=\DaThreeNestedAlphaSmallShared$ on the \nSmallShared{} images it shares with the main models, near ZoeDepth (\ZoedepthAlphaSmallShared), while DA3-Metric-L and
 Metric3D v2-L, given the camera, keep it (\DaThreeMetricLAlphaSmallShared, \MetricThreedLAlphaSmallShared). Whether
 the camera enters the model matters more than its size.
 
@@ -71,8 +71,7 @@ the camera enters the model matters more than its size.
 Is the failure in the camera head or in the depth network? Depth Pro and DA3-Nested turn a camera-free
 network output into metres by multiplying it with their own focal estimate (\texttt{infer} in the official
 Depth Pro code~\cite{bochkovskii2025depthpro}; the metric branch of DA3-Nested~\cite{lin2025da3}). Giving them
-the true zoomed focal instead therefore changes each depth map by the exact factor $f^{*}/\hat f$ and needs no
-new run. It removes the failure: $\alpha$ falls from \DepthproCamOwnAlpha{} to \DepthproCamGivenAlpha{} for
+the true zoomed focal instead therefore changes each depth map by the exact factor $f^{*}/\hat f$. It removes the failure: $\alpha$ falls from \DepthproCamOwnAlpha{} to \DepthproCamGivenAlpha{} for
 Depth Pro and from \DaThreeNestedCamOwnAlpha{} to \DaThreeNestedCamGivenAlpha{} for DA3-Nested
 (\cref{tab:camera}). For such a model, $\hat D=\hat f\,C(I)$ with a camera-free $C$, so per image
 $\alpha+\beta=1+\alpha_{K}$ exactly, where $\alpha_{K}$ is the exponent with the true focal (it holds on every
@@ -81,7 +80,8 @@ the focal head carries the whole error, and this is why they sit on $\alpha+\bet
 well ($\beta=\geocalibBeta$, supplement). The true focal does not make
 them more accurate on unzoomed images, however: their median metric-scale error rises from
 \DepthproCamOwnScale{} to \DepthproCamGivenScale{} and from \DaThreeNestedCamOwnScale{} to
-\DaThreeNestedCamGivenScale. The depth output is better matched to the model's own focal than to the true
+\DaThreeNestedCamGivenScale{} (it rises on DIODE for both and is about unchanged on NYUv2; the exception is Depth Pro on KITTI,
+\DepthproCamOwnScaleKitti{} to \DepthproCamGivenScaleKitti; supplement). Overall the depth output is better matched to the model's own focal than to the true
 one, so a focal estimate is not simply a camera measurement that can be swapped for EXIF. MoGe-2 and
 UniDepthV2 also accept the camera as input, and for them the true camera helps on both counts: $\alpha$ falls
 from \MogeTwoSCamOwnAlpha{} to \MogeTwoSCamGivenAlpha{} and from \UnidepthTwoSCamOwnAlpha{} to
@@ -96,7 +96,7 @@ The true camera is rarely available, but the shrinkage of \cref{sec:law} can be 
 \emph{FocalUnshrink} measures $\hat\beta$ by self-zoom and $\mu$ as the mean unzoomed log focal on unlabeled
 images of the target domain, and maps every focal estimate to $\mu+(\log\hat f-\mu)/\hat\beta$. It needs no
 training, labels, camera or zoom factor (cross-fitted over image halves; supplement). For Depth Pro
-($\hat\beta=\DepthproUnshrinkBeta$) it brings $\alpha$ from \DepthproUnshrinkAlpha{} to
+($\hat\beta=\DepthproUnshrinkBeta$, a slope pooled over images; per-image median \DepthproBeta{} in \cref{tab:audit}) it brings $\alpha$ from \DepthproUnshrinkAlpha{} to
 \DepthproUnshrinkAlphacorr{} and the scale error at $3\times$ from \DepthproUnshrinkScaleThree{} to
 \DepthproUnshrinkScaleThreecorr, while the unzoomed error stays at \DepthproUnshrinkScaleOnecorr{}
 (\DepthproUnshrinkScaleOne{} before). DA3-Nested, with a less reliable cue ($\hat\beta=\DaThreeNestedUnshrinkBeta$),
@@ -123,5 +123,5 @@ is discussed in the supplement.
 Across the \proxyPairs{} model--dataset pairs, $|\alpha|$ rank-correlates with the error a $3\times$ zoom adds
 (Spearman \proxyRhoDeltaThreeTwoWay, [\proxyRhoDeltaThreeTwoWayLo, \proxyRhoDeltaThreeTwoWayHi] resampling models
 and datasets), not with unzoomed accuracy (\proxyRhoOne): it tells which model will degrade most under zoom.
-When the zoom factor is known, scaling depth by $s^{\hat\alpha}$ (ZoomFix) removes a third to two thirds of the
-$3\times$ error of DA-V2-S except on DIODE-outdoor (supplement).
+When the zoom factor is known, scaling depth by $s^{\hat\alpha}$ (ZoomFix) removes 38--70\% of the error a
+$3\times$ zoom adds to DA-V2-S, except on DIODE-outdoor (supplement).

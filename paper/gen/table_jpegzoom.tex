@@ -1,0 +1,10 @@
+\begin{table}[t]\centering\small
+\caption{JPEG (quality 75) together with a $2\times$ digital zoom, on the complete test sets (all four datasets pooled). Median depth ratio on the same pixels. Zoom: the plain zoom against the unzoomed image. JPEG $1\times$: compression alone. JPEG after zoom (a camera that zooms and saves a JPEG) and zoom of a JPEG (cropping a saved photo): against the plain zoom of the same image, so 1 means JPEG adds nothing.}\label{tab:jpegzoom}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lccccc}\toprule
+Model & images & zoom $2\times$ & JPEG $1\times$ & JPEG after zoom & zoom of JPEG \\ \midrule
+DA-V2-S & 2425 & 0.53 & 1.00 & 1.00 & 0.97 \\
+MoGe-2-S & 2425 & 0.78 & 1.06 & 1.05 & 1.18 \\
+Metric3D v2-S & 2425 & 1.04 & 1.00 & 1.00 & 0.98 \\
+UniDepthV2-S & 2425 & 0.75 & 1.01 & 1.02 & 1.16 \\
+\bottomrule\end{tabular}\end{table}
