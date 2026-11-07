@@ -49,7 +49,6 @@ zoom-equivariance/
 ├── tests/                unit tests (no model weights needed; CI runs them on every push)
 ├── outputs/results/      every result CSV the paper is built from
 ├── outputs/eft/          training logs (checkpoints are not in git)
-├── logs/kaggle/          one log per Kaggle kernel run
 └── paper/                LaTeX: main.tex (anonymous), main_named.tex, supp.tex, sec/, gen/ (generated)
 ```
 
