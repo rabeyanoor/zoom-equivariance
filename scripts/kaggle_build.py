@@ -1,6 +1,6 @@
 """Build a one-file Kaggle kernel: project code (base64) + job list + kaggle/templates/<kind>_main.py.
 
-    python scripts/kaggle_build.py <kaggle-username> audit [smoke|a|b]   (a, b: two halves, 12 h limit)
+    python scripts/kaggle_build.py <kaggle-username> audit [smoke|a|b]   (a, b: two halves, within Kaggle's session limit)
     python scripts/kaggle_build.py <kaggle-username> eft [smoke]
     python scripts/kaggle_build.py <kaggle-username> tpu [smoke|main|cam|camgpu|calib]   (TPU VM CPUs in parallel; camgpu: GPU)
     kaggle kernels push -p kaggle/build/<kind>[_<part>]

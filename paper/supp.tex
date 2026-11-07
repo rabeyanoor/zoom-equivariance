@@ -328,7 +328,7 @@ shape is the frozen model's by construction.
 distribution of the residual $\log\hat D_0(\text{view})-\log\hat D_0(I)$ over the crop. We store 100 quantiles of
 that residual and the token features for 4{,}000 random zoom and blur views per domain, drawn as for EFT+B
 from the same training images, from a single pass of the frozen model. The head is then fitted on this cache
-(60 epochs, AdamW, learning rate $10^{-3}$, batch 64) in about a minute on a CPU.
+(60 epochs, AdamW, learning rate $10^{-3}$, batch 64) on a CPU.
 
 \paragraph{Results.} \Cref{tab:scale} gives the per-dataset numbers of the scale-only variant EFT-S discussed in
 \cref{sec:eftresults}, next to the frozen model and EFT+B. Without the blur term, blur alone moves its KITTI depth by
@@ -414,13 +414,18 @@ DIODE-outdoor, UniDepthV2-S over-estimates the scale by more than $2\times$ on \
 
 \paragraph{JPEG together with the zoom.} The JPEG control above compresses the unzoomed image. A camera that zooms
 digitally saves the zoomed crop as a JPEG, and cropping a saved photo zooms into an image that is already
-compressed. \Cref{tab:jpegzoom} runs both orders on the complete test sets. Compressing after the zoom moves depth by a
-factor of \DavTwoSJpegAfterZoom{} to \MogeTwoSJpegAfterZoom{} relative to the plain zoom, the size of the JPEG control itself, while the zoom alone gives
-\DavTwoSJzZoom{} (DA-V2-S), \MogeTwoSJzZoom{} (MoGe-2-S) and \UnidepthTwoSJzZoom{} (UniDepthV2-S): compression does
-not explain the zoom response. Zooming into a JPEG adds a further error for the two camera-predicting models
-(MoGe-2-S \MogeTwoSZoomOfJpeg, UniDepthV2-S \UnidepthTwoSZoomOfJpeg), largest on KITTI (\MogeTwoSZoomOfJpegKitti{}
-and \UnidepthTwoSZoomOfJpegKitti), and less for DA-V2-S and Metric3D v2 (\DavTwoSZoomOfJpeg{} and
-\MetricThreedSZoomOfJpeg; DA-V2-S \DavTwoSZoomOfJpegKitti{} on KITTI).
+compressed. \Cref{tab:jpegzoom} runs both orders on the complete test sets. The audit itself never compresses a
+zoomed image, so the zoom response of \cref{tab:audit} is not caused by compression; the question is whether
+compression changes it. For four of the five models, compressing after the zoom moves depth by a factor of
+\DavTwoSJpegAfterZoom{} to \MogeTwoSJpegAfterZoom{} relative to the plain zoom, about the size of the JPEG control
+itself. Depth Pro is the exception: JPEG after the zoom lowers its depth by a further factor of
+\DepthproJpegAfterZoom{} (\DepthproJzJpegOne{} for JPEG without the zoom), and the change sits in its focal
+estimate, which moves by \DepthproJpegAfterZoomFocal. A digital zoom followed by compression, as on a phone,
+therefore adds to Depth Pro's zoom error. Zooming into a JPEG adds more: \DepthproZoomOfJpeg{} for Depth Pro
+(focal \DepthproZoomOfJpegFocal), \MogeTwoSZoomOfJpeg{} for MoGe-2-S and \UnidepthTwoSZoomOfJpeg{} for
+UniDepthV2-S, for the last two largest on KITTI (\MogeTwoSZoomOfJpegKitti{} and \UnidepthTwoSZoomOfJpegKitti),
+and less for DA-V2-S and Metric3D v2 (\DavTwoSZoomOfJpeg{} and \MetricThreedSZoomOfJpeg; DA-V2-S
+\DavTwoSZoomOfJpegKitti{} on KITTI).
 
 \input{gen/table_jpegzoom}
 

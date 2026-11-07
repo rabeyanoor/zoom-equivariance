@@ -17,7 +17,7 @@ S3 = "https://s3.eu-central-1.amazonaws.com/avg-kitti"
 # single PyTorch CPU job barely speeds up); TpuV5E8 has 224 cores
 THREADS = max(6, min(16, (os.cpu_count() or 96) // max(1, len(JOBS))))  # noqa: F821
 SLOTS = max(1, (os.cpu_count() or 96) // THREADS)
-# Kaggle ends a session at 9 h and may then keep nothing: stop the jobs before that (the audit CSVs are written
+# Kaggle ends a session at its limit and may then keep nothing: stop the jobs before that (the audit CSVs are written
 # image by image, so a stopped job keeps what it finished)
 T_START, BUDGET_S = time.time(), 8.3 * 3600
 

@@ -46,7 +46,7 @@ unzoomed depth; detail loss alone is no longer evidence of a zoom. We use $\gamm
 The zoom error of the frozen model is almost one number per image: at $3\times$ the log depth of the crop
 moves by \fixedShiftThree, its shape (\cref{sec:audit}) by only \fixedShapeThree. EFT-S keeps DA-V2-S frozen and
 learns one log-scale per image, $\hat D = \hat D_0(I)\,e^{c(I)}$, with the EFT+B objective; $c$ is a small MLP on
-the frozen tokens that trains from a cache in about a minute on a CPU (supplement).
+the frozen tokens that trains from a cache on a CPU (supplement).
 
 \paragraph{Baselines and ablations.} Anchor-only tuning is no control (the student starts as the teacher, so
 its loss and gradient are exactly zero). \emph{Blur-only} drops the zoom term; a Zhong \etal-style~\cite{zhong2023equivariance}

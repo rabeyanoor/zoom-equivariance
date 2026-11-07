@@ -72,7 +72,7 @@ on the training domains, at a cost we report in full.
         ($\beta$ = cue reliability) yields \emph{FocalUnshrink}, a training- and label-free correction. Splitting a zoom into context loss and
         magnification shows that magnification drives the pixels-only models (\cref{sec:cues,tab:cues}).
   \item A careful test of \textbf{label-free correction}: self-consistency fine-tuning, the blur shortcut
-        it learns, EFT+B that removes it, a scale-only variant (EFT-S) that trains in a minute on a CPU,
+        it learns, EFT+B that removes it, a scale-only variant (EFT-S) that trains on a CPU from a cache,
         a training-free fix for known zoom factors, and the accuracy cost on unseen data
         (\cref{sec:eft,sec:eftresults}).
 \end{enumerate}

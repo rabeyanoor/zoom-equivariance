@@ -351,6 +351,10 @@ if list(A.RESULTS.glob(_jzpat)):
         vals = {k: float(np.exp(v.median())) for k, v in cells.items()}
         for k, v in vals.items():
             put(key(m, k), v)
+        if jz[jz.model == m].fx.notna().any():  # the same comparison for the model's own focal estimate
+            lf = np.log(jz[jz.model == m].pivot_table(index=["dataset", "name"], columns="kind", values="fx"))
+            put(key(m, "JpegAfterZoomFocal"), float(np.exp((lf["jpeg_after_zoom"] - lf["zoom"]).median())))
+            put(key(m, "ZoomOfJpegFocal"), float(np.exp((lf["zoom_of_jpeg"] - lf["zoom"]).median())))
         kit = t.xs("kitti", level="dataset")
         put(key(m, "ZoomOfJpegKitti"), float(np.exp((kit["zoom_of_jpeg"] - kit["zoom"]).median())))
         put(key(m, "JzImages"), len(t), "{:d}")
@@ -362,9 +366,10 @@ if list(A.RESULTS.glob(_jzpat)):
         r"JPEG $1\times$: compression alone. JPEG after zoom (a camera that zooms and saves a JPEG) and zoom of a JPEG "
         r"(cropping a saved photo): against the plain zoom of the same image, so 1 means JPEG adds nothing.}"
         r"\label{tab:jpegzoom}",
-        r"\setlength{\tabcolsep}{3.5pt}",
+        r"\setlength{\tabcolsep}{3pt}",
         r"\begin{tabular}{lccccc}\toprule",
-        r"Model & images & zoom $2\times$ & JPEG $1\times$ & JPEG after zoom & zoom of JPEG \\ \midrule",
+        r"Model & images & zoom & JPEG & JPEG after & zoom of \\",
+        r" & & $2\times$ & $1\times$ & zoom & a JPEG \\ \midrule",
         *rows, r"\bottomrule\end{tabular}\end{table}"])
 
 # goodness of the power law: RMS residual in log depth, and alpha from small vs large zooms

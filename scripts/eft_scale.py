@@ -7,7 +7,7 @@ The EFT-S student is D0(x) * exp(c(x)) with D0 frozen, and the EFT+B loss of one
 with r_z = log D0(zoomed) on the crop grid - log D0(x) in the crop, and r_b = log D0(blurred) -
 log D0(x). c is one number per image, so each mean only needs the distribution of r: its quantiles
 give the loss for any c. One pass of the frozen model per view therefore stores everything, and the
-head trains on the cache in seconds (the full EFT trainer would run the frozen model ~10^4 times
+head trains on the cache alone (the full EFT trainer would run the frozen model ~10^4 times
 per run on a CPU).
 
     python scripts/eft_scale.py cache outdoor --images "data/raw/kitti_raw/*/*/image_02/data/*.png" --shard 0 --shards 8
