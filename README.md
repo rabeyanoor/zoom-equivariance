@@ -3,6 +3,16 @@
 Code, results and paper for *Zoom In, Scale Out: Metric Depth Models Mistake Digital Zoom for Moving Closer*
 (CVPR 2027 submission, under double-blind review: do not link this repository from the paper).
 
+![A KITTI image at 1x, 2x and 3x digital zoom: Depth Anything V2 moves the scene closer](outputs/figures/teaser_kitti.png)
+
+**Main results** (800 images from KITTI, NYUv2 and DIODE):
+
+- Depth Anything V2 has α = 0.95: it reads a zoom almost entirely as moving closer.
+- Models that predict their own camera close only part of the gap (α ≈ 0.31–0.36), and their focal grows too little.
+- Given the true camera, Depth Pro and DA3-Nested keep their depth (α ≈ 0): the error is in the focal head.
+- FocalUnshrink, a label- and training-free correction, brings Depth Pro to α = 0.04.
+- Self-consistency fine-tuning with a blur-invariance term (EFT+B) brings DA-V2-S to α = 0.05 on KITTI and 0.07 on NYUv2.
+
 A centred crop followed by a resize is an exact digital zoom: the focal length is multiplied by the zoom
 factor s and the depth of the scene does not change. Fitting the predicted depth and focal to powers of s gives
 two label-free exponents per image:
