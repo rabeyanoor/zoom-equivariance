@@ -25,6 +25,8 @@ without depth labels.
 | EFT / EFT+B | fine-tuning DA-V2-S with a zoom self-consistency loss (+ blur invariance) | `src/eft.py`, `scripts/train_eft.py` |
 | EFT-S | frozen network + one learned log-scale per image | `scripts/eft_scale.py` |
 | EFT-F | Depth Pro's focal head tuned with a focal-consistency loss; depth network untouched | `src/eft_focal.py`, `scripts/train_eft_focal.py` |
+| JPEG with zoom | JPEG 75 after a 2× zoom and a 2× zoom of a JPEG, against the plain zoom, complete test sets | `src/audit.py` (`--jpeg-zoom`) |
+| ZoomCal pilot (follow-up, not in the paper) | what an orbit of zooms can diagnose without labels: shared vs view vs pixel error, stale-camera detection, selective correction | `src/zoomcal.py`, `scripts/zoomcal_*.py` |
 
 ## Layout
 
@@ -83,6 +85,8 @@ stored in this repository.
 | `tpu focal` | EFT-F training and audit; SR-RAW real optical zoom |
 | `tpu full` | main models except Depth Pro on the complete test sets, as image shards on the TPU VM's CPU cores (merged at the end; CPU fallback for `audit fulla`) |
 | `tpu figs <seq>` | Figure 1 maps of EFT+B, SR-RAW maps of one sequence, SR-RAW inventory (`scripts/srraw_check.py`) |
+| `audit jzgpu-a`, `audit jzgpu-b` | JPEG with a 2× zoom on the complete test sets (`results/*__jzfull.csv`; b: Depth Pro); ZoomCal pixel runs |
+| `audit zs-<model> [sets]` | ZoomCal pixel-level pilot for one model on a CPU kernel (`outputs/zoomcal/stress__*.csv`) |
 
 When a kernel is done:
 
