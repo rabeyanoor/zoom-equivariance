@@ -16,3 +16,9 @@ paper/*.pdf
 
 # run logs stay on the laptop
 logs/
+
+# paper sources and submission files stay on the laptop; the repository holds the research code
+paper/
+SUBMISSION.md
+scripts/kaggle_paper.py
+scripts/abstract_text.py

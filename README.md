@@ -1,6 +1,6 @@
 # Zoom equivariance of metric depth models
 
-Code, results and paper for *Zoom In, Scale Out: Metric Depth Models Mistake Digital Zoom for Moving Closer*
+Code and results for *Zoom In, Scale Out: Metric Depth Models Mistake Digital Zoom for Moving Closer*
 (CVPR 2027 submission, under double-blind review: do not link this repository from the paper).
 
 ![A KITTI image at 1x, 2x and 3x digital zoom: Depth Anything V2 moves the scene closer](outputs/figures/teaser_kitti.png)
@@ -56,9 +56,8 @@ zoom-equivariance/
 ├── kaggle/templates/     kernel bodies; scripts/kaggle_build.py packs src/ + scripts into one kernel
 ├── notebooks/            analysis notebooks (jupytext .py + executed .ipynb)
 ├── tests/                unit tests (no model weights needed; CI runs them on every push)
-├── outputs/results/      every result CSV the paper is built from
-├── outputs/eft/          training logs (checkpoints are not in git)
-└── paper/                LaTeX: main.tex (anonymous), main_named.tex, supp.tex, sec/, gen/ (generated)
+├── outputs/results/      every result CSV the paper's numbers come from
+└── outputs/eft/          training logs (checkpoints are not in git)
 ```
 
 ## Setup
@@ -100,9 +99,7 @@ When a kernel is done:
 ```bash
 kaggle kernels output <user>/zoom-equivariance-<kernel> -p /tmp/out
 cp /tmp/out/results/*.csv outputs/results/
-python scripts/make_paper_numbers.py      # every number and table of the paper -> paper/gen/
-python scripts/kaggle_paper.py <user>     # compiles the paper on a Kaggle CPU kernel (no local LaTeX needed)
-python scripts/abstract_text.py           # plain-text abstract with the numbers filled in -> paper/gen/abstract.txt
+python scripts/make_paper_numbers.py      # every number and table of the paper, as LaTeX macros -> paper/gen/
 ```
 
 Every number in the paper is a LaTeX macro written by `scripts/make_paper_numbers.py` from the CSVs in
@@ -124,8 +121,6 @@ Model weights come from their official Hugging Face or GitHub releases (see `src
   sample are in `outputs/samples/` (`scripts/export_samples.py`, which also checks the train/test drive split).
 - `CHECKPOINTS.md`: every checkpoint and fine-tuned variant with its training configuration.
 - `requirements-lock.txt`: the exact package versions behind every result (`requirements.txt` is the short list).
-
-The title, abstract, authors and keywords for the submission form are in `SUBMISSION.md`.
 
 ## License
 
